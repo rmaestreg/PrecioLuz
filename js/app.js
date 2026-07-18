@@ -438,6 +438,7 @@
     });
 
     document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && navigator.onLine && state.currentSource === "copia local") retryAfterConnection();
       if (!document.hidden && state.selectedDate === todayKey()) {
         updateHero();
         renderChart();
@@ -446,12 +447,17 @@
       }
     });
 
-    window.addEventListener("online", () => {
+    function retryAfterConnection() {
       if (!state.selectedDate) return;
       setStatus("Conexión recuperada. Actualizando datos…", "loading", formatDateLong(state.selectedDate));
-      loadData(state.selectedDate, { manual: true });
-      loadHistory();
-    });
+      window.setTimeout(() => {
+        if (!navigator.onLine) return;
+        loadData(state.selectedDate, { manual: true });
+        loadHistory();
+      }, 700);
+    }
+
+    window.addEventListener("online", retryAfterConnection);
 
     window.setInterval(() => {
       const newToday = todayKey();
