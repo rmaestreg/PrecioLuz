@@ -194,6 +194,31 @@
       updateDateNavigation();
     }
 
+    function clearViewForMissingData(message = "No hay datos disponibles.") {
+      state.data = [];
+      state.sourceUpdatedAt = null;
+      state.fetchedAt = null;
+      state.currentSource = "";
+
+      elements.currentTitle.textContent = "Datos no disponibles";
+      elements.currentAdvice.textContent = "Comprueba la conexión y vuelve a intentarlo.";
+      elements.currentPrice.textContent = "—";
+      elements.averagePrice.textContent = "—";
+      elements.averageDetail.textContent = "Sin datos";
+      elements.minimumPrice.textContent = "—";
+      elements.minimumHour.textContent = "—";
+      elements.maximumPrice.textContent = "—";
+      elements.maximumHour.textContent = "—";
+      elements.priceSpread.textContent = "—";
+      elements.spreadDetail.textContent = "—";
+      elements.rows.innerHTML = `<tr><td colspan="5">${message}</td></tr>`;
+      elements.csvButton.disabled = true;
+      elements.dryerButton.disabled = true;
+      updateSimulator();
+      renderChart();
+      updateDateNavigation();
+    }
+
     async function loadData(dateKey, { manual = false } = {}) {
       const sequence = ++state.loadSequence;
       state.selectedDate = dateKey;
@@ -205,6 +230,11 @@
         const { payload, source } = await fetchOfficialData(dateKey);
         if (sequence !== state.loadSequence) return;
         const normalised = normaliseApiResponse(payload, dateKey);
+        if (!normalised.rows.length) {
+          setStatus("No hay precios publicados para esta fecha.", "error", formatDateLong(dateKey));
+          clearViewForMissingData("No hay precios publicados para esta fecha.");
+          return;
+        }
         state.data = normalised.rows;
         if (dateKey === shiftDate(todayKey(), 1) && state.data.length) state.tomorrowAvailable = true;
         state.sourceUpdatedAt = normalised.sourceUpdatedAt;
@@ -219,6 +249,11 @@
         if (sequence !== state.loadSequence) return;
         const cached = loadCache(dateKey);
         if (cached) {
+          if (!cached.rows.length) {
+            setStatus("No hay precios publicados para esta fecha.", "error", formatDateLong(dateKey));
+            clearViewForMissingData("No hay precios publicados para esta fecha.");
+            return;
+          }
           state.data = cached.rows;
           state.sourceUpdatedAt = cached.sourceUpdatedAt;
           state.fetchedAt = cached.savedAt;
@@ -226,17 +261,8 @@
           setStatus("No se pudo conectar. Se muestra la última copia guardada.", "cached", `Guardada: ${formatDateTime(cached.savedAt)}`);
           renderAll();
         } else {
-          state.data = [];
-          state.sourceUpdatedAt = null;
-          state.fetchedAt = null;
-          state.currentSource = "";
           setStatus("No se pudieron cargar los precios.", "error", error.message);
-          elements.currentTitle.textContent = "Datos no disponibles";
-          elements.currentAdvice.textContent = "Comprueba la conexión y vuelve a pulsar “Actualizar”.";
-          elements.currentPrice.textContent = "—";
-          elements.rows.innerHTML = '<tr><td colspan="5">No se pudieron cargar los datos.</td></tr>';
-          renderChart();
-          elements.csvButton.disabled = true;
+          clearViewForMissingData("No se pudieron cargar los datos.");
         }
       } finally {
         if (sequence === state.loadSequence) elements.refreshButton.disabled = false;
