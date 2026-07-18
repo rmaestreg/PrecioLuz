@@ -150,12 +150,15 @@
       </aside>
     </section>
 
-    <section class="panel table-panel">
-      <div class="table-heading">
+    <details class="panel table-panel">
+      <summary class="table-heading">
         <div>
           <h2>Detalle horario</h2>
           <p class="panel-description" id="table-description">Valores del día seleccionado.</p>
         </div>
+        <span class="details-toggle" aria-hidden="true">Ver detalle <span>⌄</span></span>
+      </summary>
+      <div class="table-actions">
         <button class="button" id="csv-button" type="button" disabled>Exportar CSV</button>
       </div>
       <div class="table-scroll">
@@ -174,7 +177,7 @@
           </tbody>
         </table>
       </div>
-    </section>
+    </details>
 
     <footer class="footer">
       <p>Los valores representan el término de facturación de energía activa del PVPC. La factura final también incluye potencia contratada, alquiler del contador e impuestos. Actualización automática cada 15 minutos; si falla la red, se muestra la última copia guardada y se identifica claramente.</p>
