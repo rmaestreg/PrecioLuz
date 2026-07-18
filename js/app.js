@@ -124,17 +124,20 @@
       }
     }
 
-    function askDryer() {
+    function askLight() {
       const index = currentDataIndex();
       if (index < 0) {
-        window.alert("Selecciona “Hoy” y espera a que se carguen los precios actuales.");
+        window.alert("Selecciona “Hoy” y espera a que se cargue el precio actual.");
         return;
       }
 
       const current = state.data[index];
       const daySummary = summary();
-      const isGoodTime = current.level === "low" || current.priceKWh <= daySummary.average;
-      const answer = isGoodTime ? "Sí, es una buena hora para poner la secadora." : "Mejor espera: ahora el precio está por encima de la media del día.";
+      const answer = current.level === "low"
+        ? "Está barata: es una buena franja para consumir."
+        : current.level === "high"
+          ? "Está cara: si puedes, conviene esperar a otra franja."
+          : "Está en un nivel intermedio, cerca de la media del día.";
       window.alert(`${answer}\n\nAhora (${current.label}): ${formatPrice(current.priceKWh)} €/kWh`);
     }
 
@@ -288,7 +291,7 @@
       loadData(elements.dateInput.value, { manual: true });
     });
     elements.themeButton.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
-    elements.dryerButton.addEventListener("click", askDryer);
+    elements.dryerButton.addEventListener("click", askLight);
     elements.csvButton.addEventListener("click", downloadCsv);
 
     document.querySelectorAll(".tab").forEach(button => {
