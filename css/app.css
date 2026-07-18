@@ -408,6 +408,30 @@
       .field-row { grid-template-columns: 1fr; }
       .footer { grid-template-columns: 1fr; }
       .footer-links { justify-content: flex-start; }
+
+      .table-heading { padding: 16px; }
+      .table-scroll { overflow: visible; }
+      table { display: block; min-width: 0; }
+      thead { display: none; }
+      tbody { display: grid; gap: 9px; padding: 12px; }
+      tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        box-shadow: 0 3px 12px rgba(23, 32, 51, .05);
+      }
+      tbody tr.current-row { background: var(--primary-soft); }
+      tbody tr td { padding: 5px 0; border: 0; font-size: .8rem; }
+      tbody tr td:first-child { grid-column: 1 / -1; padding-bottom: 8px; font-weight: 760; }
+      tbody tr td:nth-child(2) { display: none; }
+      tbody tr td:nth-child(3)::before { content: "€/kWh "; color: var(--muted); font-size: .72rem; }
+      tbody tr td:nth-child(4)::before { content: "Nivel "; color: var(--muted); font-size: .72rem; }
+      tbody tr td:nth-child(5)::before { content: "Media "; color: var(--muted); font-size: .72rem; }
+      tbody tr:last-child td { border-bottom: 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
