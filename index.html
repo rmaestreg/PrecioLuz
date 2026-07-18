@@ -448,7 +448,9 @@
 
       <div class="toolbar" aria-label="Controles de la página">
         <label class="sr-only" for="date-input">Fecha</label>
+        <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior">‹</button>
         <input class="control" id="date-input" type="date">
+        <button class="button icon-button" id="next-day-button" type="button" aria-label="Día siguiente" title="Día siguiente">›</button>
         <button class="button" id="today-button" type="button">Hoy</button>
         <button class="button" id="dryer-button" type="button" disabled>¿Pongo la secadora?</button>
         <button class="button primary" id="refresh-button" type="button">Actualizar</button>
@@ -629,6 +631,8 @@
     const $ = id => document.getElementById(id);
     const elements = {
       dateInput: $("date-input"),
+      previousDayButton: $("previous-day-button"),
+      nextDayButton: $("next-day-button"),
       todayButton: $("today-button"),
       dryerButton: $("dryer-button"),
       refreshButton: $("refresh-button"),
@@ -680,6 +684,12 @@
     }
 
     function todayKey() { return partsInSpain().dateKey; }
+
+    function shiftDate(dateKey, days) {
+      const date = new Date(`${dateKey}T12:00:00`);
+      date.setDate(date.getDate() + days);
+      return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+    }
 
     function formatDateLong(dateKey) {
       const [year, month, day] = dateKey.split("-").map(Number);
@@ -1233,6 +1243,16 @@
     elements.todayButton.addEventListener("click", () => {
       state.followingToday = true;
       loadData(todayKey(), { manual: true });
+    });
+    elements.previousDayButton.addEventListener("click", () => {
+      if (!elements.dateInput.value) return;
+      state.followingToday = false;
+      loadData(shiftDate(elements.dateInput.value, -1), { manual: true });
+    });
+    elements.nextDayButton.addEventListener("click", () => {
+      if (!elements.dateInput.value) return;
+      state.followingToday = false;
+      loadData(shiftDate(elements.dateInput.value, 1), { manual: true });
     });
     elements.dateInput.addEventListener("change", () => {
       if (!elements.dateInput.value) return;
