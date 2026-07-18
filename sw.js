@@ -1,4 +1,4 @@
-const CACHE_NAME = "precio-luz-shell-v2";
+const CACHE_NAME = "precio-luz-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,7 +18,13 @@ const APP_SHELL = [
 ];
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => Promise.all(
+      APP_SHELL.map(asset => cache.add(asset).catch(error => {
+        console.warn("No se pudo guardar en caché", asset, error);
+      }))
+    ))
+  );
   self.skipWaiting();
 });
 
@@ -46,7 +52,7 @@ self.addEventListener("fetch", event => {
           caches.open(CACHE_NAME).then(cache => cache.put("./index.html", copy));
           return response;
         })
-        .catch(() => caches.match("./index.html"))
+        .catch(() => caches.match("./index.html").then(response => response || caches.match("./")))
     );
     return;
   }
