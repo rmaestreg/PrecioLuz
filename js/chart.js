@@ -5,8 +5,9 @@ function colourForLevel(level) {
 
     function renderChart() {
       const svg = elements.chart;
-      const width = Math.max(svg.clientWidth || 0, 720);
-      const height = window.innerWidth < 640 ? 440 : 390;
+      const isMobile = window.innerWidth < 640;
+      const width = Math.max(svg.clientWidth || 0, isMobile ? 320 : 720);
+      const height = isMobile ? 320 : 390;
       const margin = { top: 20, right: 14, bottom: 62, left: 58 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;

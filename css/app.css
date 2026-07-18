@@ -412,8 +412,8 @@
       .card { padding: 15px; }
       .panel { padding: 16px; }
       .panel-header { flex-direction: column; }
-      .chart-wrap { min-height: 360px; }
-      #price-chart { height: 360px; }
+      .chart-wrap { min-height: 320px; }
+      #price-chart { height: 320px; }
       .field-row { grid-template-columns: 1fr; }
       .footer { grid-template-columns: 1fr; }
       .footer-links { justify-content: flex-start; }
