@@ -30,6 +30,10 @@
       todayButton: $("today-button"),
       dryerButton: $("dryer-button"),
       installButton: $("install-button"),
+      lightDialog: $("light-dialog"),
+      lightDialogMessage: $("light-dialog-message"),
+      lightDialogClose: $("light-dialog-close"),
+      lightDialogAccept: $("light-dialog-accept"),
       refreshButton: $("refresh-button"),
       themeButton: $("theme-button"),
       statusLine: $("status-line"),
@@ -69,6 +73,14 @@
     function hideInstallButton() {
       elements.installButton.hidden = true;
     }
+
+    function showLightDialog(message) {
+      elements.lightDialogMessage.textContent = message;
+      elements.lightDialog.hidden = false;
+      elements.lightDialogAccept.focus();
+    }
+
+    function closeLightDialog() { elements.lightDialog.hidden = true; }
 
     window.addEventListener("beforeinstallprompt", event => {
       event.preventDefault();
@@ -146,21 +158,46 @@
       }
     }
 
-    function askLight() {
+    async function askLight() {
       const index = currentDataIndex();
       if (index < 0) {
-        window.alert("Selecciona “Hoy” y espera a que se cargue el precio actual.");
+        showLightDialog("Selecciona “Hoy” y espera a que se cargue el precio actual.");
         return;
       }
 
       const current = state.data[index];
       const daySummary = summary();
-      const answer = current.level === "low"
-        ? "Está barata: es una buena franja para consumir."
-        : current.level === "high"
-          ? "Está cara: si puedes, conviene esperar a otra franja."
+      if (current.level !== "high") {
+        const answer = current.level === "low"
+          ? "Está barata: es una buena franja para consumir."
           : "Está en un nivel intermedio, cerca de la media del día.";
-      window.alert(`${answer}\n\nAhora (${current.label}): ${formatPrice(current.priceKWh)} €/kWh`);
+        showLightDialog(`${answer}\n\nAhora (${current.label}): ${formatPrice(current.priceKWh)} €/kWh`);
+        return;
+      }
+
+      let nextCheap = state.data.slice(index + 1).find(item => item.level === "low");
+      let nextDate = todayKey();
+
+      if (!nextCheap && state.tomorrowAvailable) {
+        try {
+          const tomorrow = shiftDate(todayKey(), 1);
+          const cached = loadCache(tomorrow);
+          let tomorrowRows = cached?.rows || [];
+          if (!tomorrowRows.length) {
+            const { payload } = await fetchOfficialData(tomorrow);
+            tomorrowRows = normaliseApiResponse(payload, tomorrow).rows;
+          }
+          nextCheap = tomorrowRows.find(item => item.level === "low");
+          nextDate = tomorrow;
+        } catch (error) {
+          console.warn("No se pudo consultar la próxima franja barata", error);
+        }
+      }
+
+      const nextMessage = nextCheap
+        ? `La próxima franja barata es el ${formatDateLong(nextDate)}, de ${nextCheap.label}, a ${formatPrice(nextCheap.priceKWh)} €/kWh.`
+        : "No hay otra franja barata disponible en los datos publicados.";
+      showLightDialog(`Está cara: ahora (${current.label}) cuesta ${formatPrice(current.priceKWh)} €/kWh. Conviene esperar.\n\n${nextMessage}`);
     }
 
     function updateMetricCards() {
@@ -340,6 +377,14 @@
     });
     elements.themeButton.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
     elements.dryerButton.addEventListener("click", askLight);
+    elements.lightDialogClose.addEventListener("click", closeLightDialog);
+    elements.lightDialogAccept.addEventListener("click", closeLightDialog);
+    elements.lightDialog.addEventListener("click", event => {
+      if (event.target === elements.lightDialog) closeLightDialog();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !elements.lightDialog.hidden) closeLightDialog();
+    });
     elements.installButton.addEventListener("click", async () => {
       if (!deferredInstallPrompt) return;
       deferredInstallPrompt.prompt();

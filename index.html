@@ -188,6 +188,16 @@
   </main>
 
   <div class="tooltip" id="tooltip" role="tooltip"></div>
+  <div class="dialog-backdrop" id="light-dialog" hidden>
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="light-dialog-title">
+      <div class="dialog-header">
+        <div><p class="eyebrow">Estado del precio</p><h2 id="light-dialog-title">¿Cómo está la luz?</h2></div>
+        <button class="button icon-button" id="light-dialog-close" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <p class="dialog-message" id="light-dialog-message"></p>
+      <div class="dialog-actions"><button class="button primary" id="light-dialog-accept" type="button">Entendido</button></div>
+    </section>
+  </div>
   <script src="./js/api.js"></script>
   <script src="./js/chart.js"></script>
   <script src="./js/planner.js"></script>

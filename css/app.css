@@ -321,6 +321,15 @@
       transition: opacity .08s ease;
     }
 
+    .dialog-backdrop { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 20px; background: rgba(12, 17, 27, .52); }
+    .dialog-backdrop[hidden] { display: none; }
+    .dialog { width: min(100%, 440px); border: 1px solid var(--border); border-radius: 18px; padding: 20px; background: var(--surface); box-shadow: 0 24px 70px rgba(12, 17, 27, .3); }
+    .dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .dialog-header .eyebrow { margin: 0 0 5px; }
+    .dialog h2 { margin: 0; font-size: 1.22rem; letter-spacing: -.025em; }
+    .dialog-message { margin: 18px 0; line-height: 1.55; white-space: pre-line; }
+    .dialog-actions { display: flex; justify-content: flex-end; }
+
     .simulator { display: grid; gap: 13px; }
     .field { display: grid; gap: 5px; }
     .field label { color: var(--muted); font-size: .78rem; font-weight: 680; }
