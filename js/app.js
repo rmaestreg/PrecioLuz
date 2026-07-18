@@ -18,7 +18,8 @@
       activeFilter: "all",
       followingToday: true,
       currentSource: "",
-      loadSequence: 0
+      loadSequence: 0,
+      tomorrowAvailable: false
     };
 
     const $ = id => document.getElementById(id);
@@ -73,6 +74,24 @@
       if (state.selectedDate !== todayKey()) return -1;
       const now = Date.now();
       return state.data.findIndex(item => now >= item.startMs && now < item.endMs);
+    }
+
+    function updateDateNavigation() {
+      const today = todayKey();
+      const tomorrow = shiftDate(today, 1);
+      const selectedDate = elements.dateInput.value || state.selectedDate;
+      elements.nextDayButton.disabled = selectedDate >= tomorrow || (selectedDate === today && !state.tomorrowAvailable);
+    }
+
+    async function checkTomorrowAvailability() {
+      try {
+        const tomorrow = shiftDate(todayKey(), 1);
+        const { payload } = await fetchOfficialData(tomorrow);
+        state.tomorrowAvailable = normaliseApiResponse(payload, tomorrow).rows.length > 0;
+      } catch (error) {
+        state.tomorrowAvailable = false;
+      }
+      updateDateNavigation();
     }
 
     function updateHero() {
@@ -147,6 +166,7 @@
       updateSimulator();
       elements.csvButton.disabled = !state.data.length;
       elements.dryerButton.disabled = currentDataIndex() < 0;
+      updateDateNavigation();
     }
 
     async function loadData(dateKey, { manual = false } = {}) {
@@ -161,6 +181,7 @@
         if (sequence !== state.loadSequence) return;
         const normalised = normaliseApiResponse(payload, dateKey);
         state.data = normalised.rows;
+        if (dateKey === shiftDate(todayKey(), 1) && state.data.length) state.tomorrowAvailable = true;
         state.sourceUpdatedAt = normalised.sourceUpdatedAt;
         state.fetchedAt = new Date().toISOString();
         state.currentSource = source;
@@ -251,11 +272,18 @@
     });
     elements.nextDayButton.addEventListener("click", () => {
       if (!elements.dateInput.value) return;
+      if (elements.nextDayButton.disabled) return;
       state.followingToday = false;
       loadData(shiftDate(elements.dateInput.value, 1), { manual: true });
     });
     elements.dateInput.addEventListener("change", () => {
       if (!elements.dateInput.value) return;
+      const latestAllowedDate = state.tomorrowAvailable ? shiftDate(todayKey(), 1) : todayKey();
+      if (elements.dateInput.value > latestAllowedDate) {
+        elements.dateInput.value = state.selectedDate;
+        updateDateNavigation();
+        return;
+      }
       state.followingToday = elements.dateInput.value === todayKey();
       loadData(elements.dateInput.value, { manual: true });
     });
@@ -317,6 +345,8 @@
     initialiseTheme();
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
+    updateDateNavigation();
+    checkTomorrowAvailability();
     loadData(state.selectedDate);
 
     if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
