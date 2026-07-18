@@ -449,6 +449,7 @@
         <label class="sr-only" for="date-input">Fecha</label>
         <input class="control" id="date-input" type="date">
         <button class="button" id="today-button" type="button">Hoy</button>
+        <button class="button" id="dryer-button" type="button" disabled>¿Pongo la secadora?</button>
         <button class="button primary" id="refresh-button" type="button">Actualizar</button>
         <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
       </div>
@@ -627,6 +628,7 @@
     const elements = {
       dateInput: $("date-input"),
       todayButton: $("today-button"),
+      dryerButton: $("dryer-button"),
       refreshButton: $("refresh-button"),
       themeButton: $("theme-button"),
       statusLine: $("status-line"),
@@ -918,6 +920,20 @@
       }
     }
 
+    function askDryer() {
+      const index = currentDataIndex();
+      if (index < 0) {
+        window.alert("Selecciona “Hoy” y espera a que se carguen los precios actuales.");
+        return;
+      }
+
+      const current = state.data[index];
+      const daySummary = summary();
+      const isGoodTime = current.level === "low" || current.priceKWh <= daySummary.average;
+      const answer = isGoodTime ? "Sí, es una buena hora para poner la secadora." : "Mejor espera: ahora el precio está por encima de la media del día.";
+      window.alert(`${answer}\n\nAhora (${current.label}): ${formatPrice(current.priceKWh)} €/kWh`);
+    }
+
     function updateMetricCards() {
       const daySummary = summary();
       if (!daySummary) return;
@@ -1118,6 +1134,7 @@
       renderTable();
       updateSimulator();
       elements.csvButton.disabled = !state.data.length;
+      elements.dryerButton.disabled = currentDataIndex() < 0;
     }
 
     async function loadData(dateKey, { manual = false } = {}) {
@@ -1221,6 +1238,7 @@
       loadData(elements.dateInput.value, { manual: true });
     });
     elements.themeButton.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+    elements.dryerButton.addEventListener("click", askDryer);
     elements.csvButton.addEventListener("click", downloadCsv);
 
     document.querySelectorAll(".tab").forEach(button => {
