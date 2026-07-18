@@ -119,6 +119,7 @@
     }
 
     .brand-copy { min-width: 0; }
+    .app-version { display: inline-block; margin-top: 3px; color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .04em; }
 
     .toolbar {
       display: flex;
