@@ -367,6 +367,24 @@
     .details-chevron { font-size: 1.15rem; line-height: 1; transition: transform .15s ease; }
     .table-panel[open] .details-chevron { transform: rotate(180deg); }
     .table-actions { display: flex; justify-content: flex-end; padding: 12px 20px 0; }
+    .history-panel { margin-bottom: 14px; }
+    .history-panel .panel-header { margin-bottom: 0; }
+    .history-chart { display: flex; align-items: end; gap: 10px; min-height: 210px; padding: 22px 8px 0; overflow-x: auto; }
+    .history-day { display: grid; flex: 1 0 82px; grid-template-rows: 1fr auto auto; gap: 6px; min-width: 82px; height: 205px; text-align: center; }
+    .history-bars { display: flex; align-items: end; justify-content: center; gap: 4px; height: 100%; border-bottom: 1px solid var(--border); }
+    .history-bar { width: 12px; min-height: 2px; border-radius: 5px 5px 0 0; }
+    .history-bar.minimum { background: var(--low); }
+    .history-bar.average { background: var(--primary); }
+    .history-bar.maximum { background: var(--high); }
+    .history-day-label { color: var(--muted); font-size: .7rem; white-space: nowrap; }
+    .history-values { display: grid; gap: 2px; color: var(--muted); font-size: .62rem; line-height: 1.2; white-space: nowrap; }
+    .history-values strong { color: var(--text); font-weight: 700; }
+    .history-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; color: var(--muted); font-size: .76rem; }
+    .history-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .history-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .history-dot.minimum { background: var(--low); }
+    .history-dot.average { background: var(--primary); }
+    .history-dot.maximum { background: var(--high); }
     .table-scroll { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 720px; }
     th, td { padding: 13px 18px; border-bottom: 1px solid var(--border); text-align: left; font-size: .84rem; }
@@ -425,6 +443,10 @@
 
       .table-heading { padding: 16px; }
       .table-actions { padding: 10px 16px 0; }
+      .history-panel { padding: 16px; }
+      .history-chart { gap: 7px; padding-inline: 0; }
+      .history-day { flex-basis: 78px; min-width: 78px; }
+      .history-bar { width: 10px; }
       .table-scroll { overflow: visible; }
       table { display: block; min-width: 0; }
       thead { display: none; }

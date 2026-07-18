@@ -19,7 +19,8 @@
       followingToday: true,
       currentSource: "",
       loadSequence: 0,
-      tomorrowAvailable: false
+      tomorrowAvailable: false,
+      history: []
     };
 
     const $ = id => document.getElementById(id);
@@ -60,7 +61,9 @@
       bestCost: $("best-cost"),
       currentCost: $("current-cost"),
       savingBox: $("saving-box"),
-      csvButton: $("csv-button")
+      csvButton: $("csv-button"),
+      historyChart: $("history-chart"),
+      historyStatus: $("history-status")
     };
 
     function showLightDialog(message) {
@@ -219,6 +222,37 @@
       elements.csvButton.disabled = !state.data.length;
       elements.dryerButton.disabled = currentDataIndex() < 0;
       updateDateNavigation();
+    }
+
+    function renderHistory() {
+      if (!state.history.length) {
+        elements.historyChart.innerHTML = '<p class="panel-description">No hay datos históricos disponibles.</p>';
+        return;
+      }
+      const maximum = Math.max(...state.history.map(item => item.maximum), .001);
+      elements.historyChart.innerHTML = state.history.map(item => {
+        const shortDate = new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit" }).format(new Date(`${item.dateKey}T12:00:00`));
+        const bar = (value, type, label) => `<div class="history-bar ${type}" style="height:${Math.max(2, value / maximum * 100)}%" title="${label}: ${formatPrice(value)} €/kWh"></div>`;
+        return `<div class="history-day" aria-label="${shortDate}: mínimo ${formatPrice(item.minimum)} €/kWh, media ${formatPrice(item.average)} €/kWh, máximo ${formatPrice(item.maximum)} €/kWh"><div class="history-bars">${bar(item.minimum, "minimum", "Mínimo")}${bar(item.average, "average", "Media")}${bar(item.maximum, "maximum", "Máximo")}</div><span class="history-day-label">${shortDate}</span><span class="history-values"><span>Mín <strong>${formatPrice(item.minimum)}</strong></span><span>Med <strong>${formatPrice(item.average)}</strong></span><span>Máx <strong>${formatPrice(item.maximum)}</strong></span></span></div>`;
+      }).join("");
+      elements.historyStatus.textContent = `${state.history.length} días con precios publicados.`;
+    }
+
+    async function loadHistory() {
+      const dates = Array.from({ length: 7 }, (_, index) => shiftDate(todayKey(), -index));
+      const results = await Promise.all(dates.map(async dateKey => {
+        try {
+          const cached = loadCache(dateKey);
+          const sourceData = cached || normaliseApiResponse((await fetchOfficialData(dateKey)).payload, dateKey);
+          if (!sourceData.rows.length) return null;
+          const prices = sourceData.rows.map(item => item.priceKWh);
+          return { dateKey, average: prices.reduce((sum, price) => sum + price, 0) / prices.length, minimum: Math.min(...prices), maximum: Math.max(...prices) };
+        } catch (error) {
+          return null;
+        }
+      }));
+      state.history = results.filter(Boolean).sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+      renderHistory();
     }
 
     function clearViewForMissingData(message = "No hay datos disponibles.") {
@@ -437,6 +471,7 @@
     updateDateNavigation();
     checkTomorrowAvailability();
     loadData(state.selectedDate);
+    loadHistory();
 
     if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
       window.addEventListener("load", () => {
