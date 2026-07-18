@@ -29,7 +29,6 @@
       nextDayButton: $("next-day-button"),
       todayButton: $("today-button"),
       dryerButton: $("dryer-button"),
-      installButton: $("install-button"),
       lightDialog: $("light-dialog"),
       lightDialogMessage: $("light-dialog-message"),
       lightDialogClose: $("light-dialog-close"),
@@ -64,16 +63,6 @@
       csvButton: $("csv-button")
     };
 
-    let deferredInstallPrompt = null;
-
-    function isStandalone() {
-      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-    }
-
-    function hideInstallButton() {
-      elements.installButton.hidden = true;
-    }
-
     function showLightDialog(message) {
       elements.lightDialogMessage.textContent = message;
       elements.lightDialog.hidden = false;
@@ -81,21 +70,6 @@
     }
 
     function closeLightDialog() { elements.lightDialog.hidden = true; }
-
-    function showInstallHelp() {
-      showLightDialog("Este navegador no ha habilitado la instalación automática. Usa el menú del navegador y elige “Instalar aplicación” o “Añadir a pantalla de inicio”.");
-    }
-
-    window.addEventListener("beforeinstallprompt", event => {
-      event.preventDefault();
-      deferredInstallPrompt = event;
-      if (!isStandalone()) elements.installButton.hidden = false;
-    });
-
-    window.addEventListener("appinstalled", () => {
-      deferredInstallPrompt = null;
-      hideInstallButton();
-    });
 
     
 
@@ -389,16 +363,6 @@
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && !elements.lightDialog.hidden) closeLightDialog();
     });
-    elements.installButton.addEventListener("click", async () => {
-      if (!deferredInstallPrompt) {
-        showInstallHelp();
-        return;
-      }
-      deferredInstallPrompt.prompt();
-      const { outcome } = await deferredInstallPrompt.userChoice;
-      if (outcome === "accepted") hideInstallButton();
-      deferredInstallPrompt = null;
-    });
     elements.csvButton.addEventListener("click", downloadCsv);
 
     document.querySelectorAll(".tab").forEach(button => {
@@ -453,8 +417,6 @@
     }, CONFIG.refreshMs);
 
     initialiseTheme();
-    if (isStandalone()) hideInstallButton();
-    else elements.installButton.hidden = false;
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
     updateDateNavigation();
