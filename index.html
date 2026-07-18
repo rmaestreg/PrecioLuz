@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="Precio horario PVPC de la electricidad en España con datos oficiales de Red Eléctrica.">
+  <meta name="theme-color" id="theme-color-meta" content="#315ee7">
+  <meta name="application-name" content="Precio Luz">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Precio Luz">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <title>Precio de la luz · PVPC horario</title>
   <style>
     :root {
@@ -111,6 +122,23 @@
       color: var(--muted);
       font-size: .98rem;
     }
+
+
+    .brand-heading {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .brand-icon {
+      width: clamp(52px, 6vw, 68px);
+      height: clamp(52px, 6vw, 68px);
+      flex: 0 0 auto;
+      border-radius: 19px;
+      box-shadow: 0 11px 28px rgba(25, 79, 181, .22);
+    }
+
+    .brand-copy { min-width: 0; }
 
     .toolbar {
       display: flex;
@@ -409,10 +437,13 @@
 <body>
   <main class="shell">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">Tarifa regulada · España</p>
-        <h1>Precio de la luz</h1>
-        <p class="subtitle">Precio horario del término de energía PVPC, actualizado desde Red Eléctrica. No incluye potencia contratada, alquiler de contador ni impuestos.</p>
+      <div class="brand-heading">
+        <img class="brand-icon" src="./icons/icon-192.png" alt="" width="68" height="68">
+        <div class="brand-copy">
+          <p class="eyebrow">Tarifa regulada · España</p>
+          <h1>Precio de la luz</h1>
+          <p class="subtitle">Precio horario del término de energía PVPC, actualizado desde Red Eléctrica. No incluye potencia contratada, alquiler de contador ni impuestos.</p>
+        </div>
       </div>
 
       <div class="toolbar" aria-label="Controles de la página">
@@ -1167,6 +1198,8 @@
     function applyTheme(theme) {
       document.documentElement.dataset.theme = theme;
       safeStorageSet("pvpc-theme", theme);
+      const themeMeta = document.getElementById("theme-color-meta");
+      if (themeMeta) themeMeta.content = theme === "dark" ? "#0c111b" : "#315ee7";
       elements.themeButton.textContent = theme === "dark" ? "☀" : "◐";
       elements.themeButton.setAttribute("aria-label", theme === "dark" ? "Activar tema claro" : "Activar tema oscuro");
       if (state.data.length) renderChart();
@@ -1246,6 +1279,14 @@
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
     loadData(state.selectedDate);
+
+    if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(error => {
+          console.warn("No se pudo registrar el modo instalable:", error);
+        });
+      });
+    }
   </script>
 </body>
 </html>
