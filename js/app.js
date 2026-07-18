@@ -67,6 +67,17 @@
       historyStatus: $("history-status")
     };
 
+    async function loadAppVersion() {
+      try {
+        const response = await fetch("./version.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("No se pudo cargar la versión");
+        const { version } = await response.json();
+        if (version) $("app-version").textContent = `v${version}`;
+      } catch (error) {
+        console.warn("No se pudo cargar la versión de la App", error);
+      }
+    }
+
     function showLightDialog(message) {
       elements.lightDialogMessage.textContent = message;
       elements.lightDialog.hidden = false;
@@ -486,6 +497,7 @@
     }, 15 * 1000);
 
     initialiseTheme();
+    loadAppVersion();
     syncHourlyDetails();
     document.getElementById("hourly-details")?.addEventListener("toggle", event => updateHourlyDetailsLabel(event.currentTarget));
     window.matchMedia("(max-width: 640px)").addEventListener("change", syncHourlyDetails);
