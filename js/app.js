@@ -29,6 +29,7 @@
       nextDayButton: $("next-day-button"),
       todayButton: $("today-button"),
       dryerButton: $("dryer-button"),
+      installButton: $("install-button"),
       refreshButton: $("refresh-button"),
       themeButton: $("theme-button"),
       statusLine: $("status-line"),
@@ -58,6 +59,27 @@
       savingBox: $("saving-box"),
       csvButton: $("csv-button")
     };
+
+    let deferredInstallPrompt = null;
+
+    function isStandalone() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    function hideInstallButton() {
+      elements.installButton.hidden = true;
+    }
+
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      if (!isStandalone()) elements.installButton.hidden = false;
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      hideInstallButton();
+    });
 
     
 
@@ -292,6 +314,13 @@
     });
     elements.themeButton.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
     elements.dryerButton.addEventListener("click", askLight);
+    elements.installButton.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === "accepted") hideInstallButton();
+      deferredInstallPrompt = null;
+    });
     elements.csvButton.addEventListener("click", downloadCsv);
 
     document.querySelectorAll(".tab").forEach(button => {
@@ -346,6 +375,7 @@
     }, CONFIG.refreshMs);
 
     initialiseTheme();
+    if (isStandalone()) hideInstallButton();
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
     updateDateNavigation();
