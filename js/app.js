@@ -446,6 +446,13 @@
       }
     });
 
+    window.addEventListener("online", () => {
+      if (!state.selectedDate) return;
+      setStatus("Conexión recuperada. Actualizando datos…", "loading", formatDateLong(state.selectedDate));
+      loadData(state.selectedDate, { manual: true });
+      loadHistory();
+    });
+
     window.setInterval(() => {
       const newToday = todayKey();
       if (state.followingToday && newToday !== state.selectedDate) {
