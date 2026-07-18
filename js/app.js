@@ -82,6 +82,10 @@
 
     function closeLightDialog() { elements.lightDialog.hidden = true; }
 
+    function showInstallHelp() {
+      showLightDialog("Este navegador no ha habilitado la instalación automática. Usa el menú del navegador y elige “Instalar aplicación” o “Añadir a pantalla de inicio”.");
+    }
+
     window.addEventListener("beforeinstallprompt", event => {
       event.preventDefault();
       deferredInstallPrompt = event;
@@ -386,7 +390,10 @@
       if (event.key === "Escape" && !elements.lightDialog.hidden) closeLightDialog();
     });
     elements.installButton.addEventListener("click", async () => {
-      if (!deferredInstallPrompt) return;
+      if (!deferredInstallPrompt) {
+        showInstallHelp();
+        return;
+      }
       deferredInstallPrompt.prompt();
       const { outcome } = await deferredInstallPrompt.userChoice;
       if (outcome === "accepted") hideInstallButton();
@@ -447,6 +454,7 @@
 
     initialiseTheme();
     if (isStandalone()) hideInstallButton();
+    else elements.installButton.hidden = false;
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
     updateDateNavigation();
