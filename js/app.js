@@ -71,6 +71,18 @@
 
     function closeLightDialog() { elements.lightDialog.hidden = true; }
 
+    function syncHourlyDetails() {
+      const details = document.getElementById("hourly-details");
+      if (!details) return;
+      details.open = !window.matchMedia("(max-width: 640px)").matches;
+      updateHourlyDetailsLabel(details);
+    }
+
+    function updateHourlyDetailsLabel(details) {
+      const label = document.getElementById("details-toggle-label");
+      if (label) label.textContent = details.open ? "Ocultar detalle" : "Ver detalle";
+    }
+
     
 
     function summary() {
@@ -417,6 +429,9 @@
     }, CONFIG.refreshMs);
 
     initialiseTheme();
+    syncHourlyDetails();
+    document.getElementById("hourly-details")?.addEventListener("toggle", event => updateHourlyDetailsLabel(event.currentTarget));
+    window.matchMedia("(max-width: 640px)").addEventListener("change", syncHourlyDetails);
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
     updateDateNavigation();
