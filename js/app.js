@@ -20,7 +20,8 @@
       currentSource: "",
       loadSequence: 0,
       tomorrowAvailable: false,
-      history: []
+      history: [],
+      retryScheduled: false
     };
 
     const $ = id => document.getElementById(id);
@@ -448,15 +449,20 @@
     });
 
     function retryAfterConnection() {
-      if (!state.selectedDate) return;
+      if (!state.selectedDate || state.retryScheduled) return;
+      state.retryScheduled = true;
       setStatus("Conexión recuperada. Actualizando datos…", "loading", formatDateLong(state.selectedDate));
       window.setTimeout(() => {
+        state.retryScheduled = false;
         if (!navigator.onLine) return;
         loadData(state.selectedDate, { manual: true });
         loadHistory();
       }, 700);
     }
 
+    window.addEventListener("offline", () => {
+      setStatus("Sin conexión. Se muestran los últimos datos guardados.", "cached", "Los precios se actualizarán al recuperar Internet.");
+    });
     window.addEventListener("online", retryAfterConnection);
 
     window.setInterval(() => {
@@ -474,6 +480,10 @@
     window.setInterval(() => {
       if (!document.hidden) loadData(state.selectedDate);
     }, CONFIG.refreshMs);
+
+    window.setInterval(() => {
+      if (!document.hidden && navigator.onLine && state.currentSource === "copia local") retryAfterConnection();
+    }, 15 * 1000);
 
     initialiseTheme();
     syncHourlyDetails();
