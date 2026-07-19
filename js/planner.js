@@ -39,7 +39,7 @@ function bestWindow(duration) {
         const savingPercent = currentCost > 0 ? saving / currentCost * 100 : 0;
         elements.currentCost.textContent = formatCurrency(currentCost);
         elements.savingBox.textContent = saving > .0005
-          ? `Desplazar este consumo a la mejor franja ahorraría aproximadamente ${formatCurrency(saving)} (${savingPercent.toLocaleString("es-ES", { maximumFractionDigits: 1 })} %).`
+          ? `Desplazar este consumo a la mejor franja ahorraría aproximadamente ${formatCurrency(saving)} (${savingPercent.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} %).`
           : "La franja actual ya está entre las opciones más económicas para este consumo.";
       } else {
         elements.currentCost.textContent = "No aplicable";

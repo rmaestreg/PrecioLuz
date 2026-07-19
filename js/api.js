@@ -28,7 +28,7 @@ function partsInSpain(date = new Date()) {
     function formatDateLong(dateKey) {
       const [year, month, day] = dateKey.split("-").map(Number);
       const safeDate = new Date(Date.UTC(year, month - 1, day, 12));
-      return new Intl.DateTimeFormat("es-ES", {
+      return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : "es-ES", {
         timeZone: "UTC",
         weekday: "long",
         day: "numeric",
@@ -39,7 +39,7 @@ function partsInSpain(date = new Date()) {
 
     function formatPrice(value, decimals = 5) {
       if (!Number.isFinite(value)) return "—";
-      return value.toLocaleString("es-ES", {
+      return value.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
       });
@@ -47,12 +47,12 @@ function partsInSpain(date = new Date()) {
 
     function formatCurrency(value) {
       if (!Number.isFinite(value)) return "—";
-      return value.toLocaleString("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 3 });
+      return value.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 3 });
     }
 
     function formatDateTime(date) {
       if (!date || Number.isNaN(new Date(date).getTime())) return "—";
-      return new Intl.DateTimeFormat("es-ES", {
+      return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : "es-ES", {
         timeZone: CONFIG.timezone,
         dateStyle: "short",
         timeStyle: "short"
@@ -80,6 +80,7 @@ function partsInSpain(date = new Date()) {
     }
 
     function levelLabel(level) {
+      if (window.i18n?.language === "en") return level === "low" ? "Low" : level === "high" ? "High" : "Medium";
       return level === "low" ? "Bajo" : level === "high" ? "Alto" : "Medio";
     }
 
@@ -141,8 +142,9 @@ function partsInSpain(date = new Date()) {
           const next = ordered[index + 1];
           const end = next ? next.start : new Date(bucket.start.getTime() + 60 * 60 * 1000);
           const priceMWh = bucket.values.reduce((sum, number) => sum + number, 0) / bucket.values.length;
-          const startHour = new Intl.DateTimeFormat("es-ES", { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(bucket.start);
-          const endHour = new Intl.DateTimeFormat("es-ES", { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(end);
+          const locale = window.i18n?.language === "en" ? "en-US" : "es-ES";
+          const startHour = new Intl.DateTimeFormat(locale, { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(bucket.start);
+          const endHour = new Intl.DateTimeFormat(locale, { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(end);
           return {
             index,
             startIso: bucket.start.toISOString(),
