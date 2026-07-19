@@ -147,6 +147,7 @@
     .language-flag, .language-menu button span { font-size: 1.15rem; line-height: 1; }
     .language-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 25; display: none; min-width: 166px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
     .language-menu[hidden] { display: none; }
+    .language-picker.open .language-menu[hidden] { display: none; }
     .language-picker.open .language-menu { display: grid; gap: 2px; }
     .language-menu button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; text-align: left; font: inherit; }
     .language-menu button:hover, .language-menu button[aria-selected="true"] { background: var(--primary-soft); }
