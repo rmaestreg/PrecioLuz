@@ -1,4 +1,6 @@
 /* Renderizado del gráfico horario y de la tabla de detalle. */
+const chartText = (key, values = {}) => window.i18n?.t(key, values) || key;
+
 function colourForLevel(level) {
       const styles = getComputedStyle(document.documentElement);
       return styles.getPropertyValue(level === "low" ? "--low" : level === "high" ? "--high" : "--medium").trim();
@@ -27,7 +29,7 @@ function colourForLevel(level) {
       };
 
       if (!state.data.length) {
-        add("text", { x: width / 2, y: height / 2, "text-anchor": "middle", class: "empty-chart" }, "No hay datos para representar.");
+        add("text", { x: width / 2, y: height / 2, "text-anchor": "middle", class: "empty-chart" }, chartText("chart.empty"));
         return;
       }
 
@@ -50,7 +52,7 @@ function colourForLevel(level) {
         const value = minY + range * (i / ticks);
         const y = yFor(value);
         add("line", { x1: margin.left, y1: y, x2: width - margin.right, y2: y, class: "grid-line" });
-        add("text", { x: margin.left - 9, y: y + 4, "text-anchor": "end", class: "axis-text" }, value.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 3 }));
+        add("text", { x: margin.left - 9, y: y + 4, "text-anchor": "end", class: "axis-text" }, value.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 3 }));
       }
 
       const averageY = yFor(daySummary.average);
@@ -68,7 +70,7 @@ function colourForLevel(level) {
           fill: colourForLevel(item.level),
           class: `bar${isDimmed ? " dimmed" : ""}`,
           tabindex: "0",
-          "aria-label": `${item.label}: ${formatPrice(item.priceKWh)} ${window.i18n?.language === "en" ? "euros per kilowatt-hour" : "euros por kilovatio hora"}`
+          "aria-label": `${item.label}: ${formatPrice(item.priceKWh)} ${chartText("chart.eurosPerKWh")}`
         });
 
         if (index === currentIndex) {
@@ -88,7 +90,7 @@ function colourForLevel(level) {
         const showTooltip = event => {
           const box = rect.getBoundingClientRect();
           const relative = ((item.priceKWh / daySummary.average) - 1) * 100;
-          elements.tooltip.innerHTML = `<strong>${item.label}</strong><br>${formatPrice(item.priceKWh)} €/kWh<br>${relative >= 0 ? "+" : ""}${relative.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} % frente a la media`;
+          elements.tooltip.innerHTML = `<strong>${item.label}</strong><br>${formatPrice(item.priceKWh)} €/kWh<br>${relative >= 0 ? "+" : ""}${relative.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 })} % ${chartText("chart.relativeAverage")}`;
           elements.tooltip.style.left = `${event.clientX || box.left + box.width / 2}px`;
           elements.tooltip.style.top = `${event.clientY || box.top}px`;
           elements.tooltip.style.opacity = "1";
@@ -112,7 +114,7 @@ function colourForLevel(level) {
     function renderTable() {
       const daySummary = summary();
       if (!daySummary) {
-        elements.rows.innerHTML = '<tr><td colspan="4">No hay datos disponibles.</td></tr>';
+        elements.rows.innerHTML = `<tr><td colspan="4">${chartText("detail.noData")}</td></tr>`;
         return;
       }
 
@@ -120,12 +122,12 @@ function colourForLevel(level) {
       elements.rows.innerHTML = state.data.map((item, index) => {
         const difference = ((item.priceKWh / daySummary.average) - 1) * 100;
         return `<tr class="${index === currentIndex ? "current-row" : ""}">
-          <td><strong>${item.label}</strong>${index === currentIndex ? " · ahora" : ""}</td>
+          <td><strong>${item.label}</strong>${index === currentIndex ? ` ${chartText("detail.currentNow")}` : ""}</td>
           <td><strong>${formatPrice(item.priceKWh)}</strong></td>
           <td><span class="badge ${item.level}">${levelLabel(item.level)}</span></td>
-          <td>${difference >= 0 ? "+" : ""}${difference.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} %</td>
+          <td>${difference >= 0 ? "+" : ""}${difference.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 })} %</td>
         </tr>`;
       }).join("");
 
-      elements.tableDescription.textContent = `${formatDateLong(state.selectedDate)} · ${state.data.length} franjas.`;
+      elements.tableDescription.textContent = `${formatDateLong(state.selectedDate)} · ${state.data.length} ${chartText("detail.publishedSlots")}`;
     }

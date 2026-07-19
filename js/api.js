@@ -80,9 +80,7 @@ function partsInSpain(date = new Date()) {
     }
 
     function levelLabel(level) {
-      if (window.i18n?.language === "en") return level === "low" ? "Low" : level === "high" ? "High" : "Medium";
-      if (window.i18n?.language === "fr") return level === "low" ? "Bas" : level === "high" ? "Élevé" : "Moyen";
-      return level === "low" ? "Bajo" : level === "high" ? "Alto" : "Medio";
+      return window.i18n?.t(`levels.${level}`) || (level === "low" ? "Bajo" : level === "high" ? "Alto" : "Medio");
     }
 
     function extractOffset(datetime) {
@@ -143,7 +141,7 @@ function partsInSpain(date = new Date()) {
           const next = ordered[index + 1];
           const end = next ? next.start : new Date(bucket.start.getTime() + 60 * 60 * 1000);
           const priceMWh = bucket.values.reduce((sum, number) => sum + number, 0) / bucket.values.length;
-          const locale = window.i18n?.language === "en" ? "en-US" : "es-ES";
+          const locale = window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES";
           const startHour = new Intl.DateTimeFormat(locale, { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(bucket.start);
           const endHour = new Intl.DateTimeFormat(locale, { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(end);
           return {

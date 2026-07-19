@@ -24,7 +24,11 @@
       tomorrowAvailable: false,
       history: [],
       historyRange: 7,
-      retryScheduled: false
+      retryScheduled: false,
+      statusKey: "status.loading",
+      statusType: "loading",
+      statusValues: {},
+      statusMeta: ""
     };
 
     const $ = id => document.getElementById(id);
@@ -75,6 +79,16 @@
       updateButton: $("update-button")
     };
 
+    const tr = (key, values = {}) => window.i18n?.t(key, values) || key;
+
+    function setLocalizedStatus(key, type = "ready", meta = "", values = {}) {
+      state.statusKey = key;
+      state.statusType = type;
+      state.statusValues = values;
+      state.statusMeta = meta;
+      setStatus(tr(key, values), type, meta);
+    }
+
     const runningVersion = $("app-version").textContent.trim();
     let availableVersion = runningVersion;
     let serviceWorkerRegistration = null;
@@ -95,8 +109,8 @@
 
     function showUpdateNotice(version = "") {
       elements.updateButton.hidden = false;
-      elements.updateButton.textContent = version ? `Actualizar ${version}` : "Actualizar";
-      elements.updateButton.setAttribute("aria-label", version ? `Actualizar a la versión ${version}` : "Actualizar aplicación");
+      elements.updateButton.textContent = version ? tr("update.to", { version }) : tr("update.generic");
+      elements.updateButton.setAttribute("aria-label", version ? tr("update.to", { version }) : tr("controls.installUpdate"));
     }
 
     function activateWaitingWorker(registration) {
@@ -132,7 +146,7 @@
 
     function updateHourlyDetailsLabel(details) {
       const label = document.getElementById("details-toggle-label");
-      if (label) label.textContent = details.open ? "Ocultar detalle" : "Ver detalle";
+      if (label) label.textContent = window.i18n?.t(details.open ? "detail.hide" : "detail.show") || (details.open ? "Ocultar detalle" : "Ver detalle");
     }
 
     
@@ -174,10 +188,10 @@
       const daySummary = summary();
       const index = currentDataIndex();
       if (!daySummary || index < 0) {
-        elements.currentTitle.textContent = state.selectedDate === todayKey() ? "Precio actual no disponible" : `Datos del ${formatDateLong(state.selectedDate)}`;
+        elements.currentTitle.textContent = state.selectedDate === todayKey() ? tr("hero.unavailable") : tr("hero.dataFor", { date: formatDateLong(state.selectedDate) });
         elements.currentAdvice.textContent = state.selectedDate === todayKey()
-          ? "No se ha podido asociar la hora actual con una franja publicada."
-          : "Selecciona “Hoy” para ver el precio correspondiente a este momento.";
+          ? tr("hero.noCurrentSlot")
+          : tr("hero.selectToday");
         elements.currentPrice.textContent = "—";
         return;
       }
@@ -185,36 +199,33 @@
       const current = state.data[index];
       const relation = ((current.priceKWh / daySummary.average) - 1) * 100;
       const relationText = Math.abs(relation) < .5
-        ? (window.i18n?.language === "en" ? "practically equal to the average" : "prácticamente igual a la media")
-        : `${Math.abs(relation).toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} % ${window.i18n?.language === "en" ? (relation < 0 ? "below" : "above") : (relation < 0 ? "por debajo" : "por encima")} ${window.i18n?.language === "en" ? "the average" : "de la media"}`;
+        ? tr("hero.relationEqual")
+        : `${Math.abs(relation).toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 })} % ${relation < 0 ? tr("hero.relationBelow") : tr("hero.relationAbove")}`;
 
-      const priceWord = window.i18n?.language === "en" ? "price" : window.i18n?.language === "fr" ? "prix" : "precio";
-      elements.currentTitle.textContent = `${current.label} · ${priceWord} ${levelLabel(current.level).toLowerCase()}`;
+      elements.currentTitle.textContent = tr("hero.currentTitle", { slot: current.label, level: levelLabel(current.level).toLowerCase() });
       elements.currentPrice.textContent = formatPrice(current.priceKWh);
 
       if (current.level === "low") {
-        elements.currentAdvice.textContent = `Esta franja está ${relationText}. Es una de las opciones más favorables del día para desplazar consumo flexible.`;
+        elements.currentAdvice.textContent = tr("hero.lowAdvice", { relation: relationText });
       } else if (current.level === "high") {
-        elements.currentAdvice.textContent = `Esta franja está ${relationText}. Conviene posponer consumos flexibles cuando sea posible.`;
+        elements.currentAdvice.textContent = tr("hero.highAdvice", { relation: relationText });
       } else {
-        elements.currentAdvice.textContent = `Esta franja está ${relationText}. El planificador permite comprobar si existe una ventana claramente más barata.`;
+        elements.currentAdvice.textContent = tr("hero.mediumAdvice", { relation: relationText });
       }
     }
 
     async function askLight() {
       const index = currentDataIndex();
       if (index < 0) {
-        showLightDialog("Selecciona “Hoy” y espera a que se cargue el precio actual.");
+        showLightDialog(tr("light.selectToday"));
         return;
       }
 
       const current = state.data[index];
       const daySummary = summary();
       if (current.level !== "high") {
-        const answer = current.level === "low"
-          ? "Está barata: es una buena franja para consumir."
-          : "Está en un nivel intermedio, cerca de la media del día.";
-        showLightDialog(`${answer}\n\nAhora (${current.label}): ${formatPrice(current.priceKWh)} €/kWh`);
+        const answer = current.level === "low" ? tr("light.cheap") : tr("light.medium");
+        showLightDialog(`${answer}\n\n${tr("light.now", { slot: current.label, price: formatPrice(current.priceKWh) })}`);
         return;
       }
 
@@ -238,16 +249,16 @@
       }
 
       const nextMessage = nextCheap
-        ? `La próxima franja barata es el ${formatDateLong(nextDate)}, de ${nextCheap.label}, a ${formatPrice(nextCheap.priceKWh)} €/kWh.`
-        : "No hay otra franja barata disponible en los datos publicados.";
-      showLightDialog(`Está cara: ahora (${current.label}) cuesta ${formatPrice(current.priceKWh)} €/kWh. Conviene esperar.\n\n${nextMessage}`);
+        ? tr("light.nextCheap", { date: formatDateLong(nextDate), slot: nextCheap.label, price: formatPrice(nextCheap.priceKWh) })
+        : tr("light.noNextCheap");
+      showLightDialog(`${tr("light.expensiveNow", { slot: current.label, price: formatPrice(current.priceKWh) })}\n\n${nextMessage}`);
     }
 
     function updateMetricCards() {
       const daySummary = summary();
       if (!daySummary) return;
       elements.averagePrice.textContent = `${formatPrice(daySummary.average)} €`;
-      elements.averageDetail.textContent = `${state.data.length} franjas publicadas`;
+      elements.averageDetail.textContent = `${state.data.length} ${tr("detail.publishedCount")}`;
       elements.minimumPrice.textContent = `${formatPrice(daySummary.minimum.priceKWh)} €`;
       elements.minimumHour.textContent = daySummary.minimum.label;
       elements.maximumPrice.textContent = `${formatPrice(daySummary.maximum.priceKWh)} €`;
@@ -255,8 +266,8 @@
       elements.priceSpread.textContent = `${formatPrice(daySummary.spread)} €`;
       const ratio = daySummary.minimum.priceKWh === 0 ? null : daySummary.maximum.priceKWh / daySummary.minimum.priceKWh;
       elements.spreadDetail.textContent = ratio && ratio > 0
-        ? `El máximo es ${ratio.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 2 })}× el mínimo`
-        : "Diferencia absoluta del día";
+        ? tr("hero.maximumRatio", { ratio: ratio.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 2 }) })
+        : tr("hero.difference");
     }
 
     
@@ -280,7 +291,7 @@
         elements.historyMinimum.textContent = "—";
         elements.historyMaximum.textContent = "—";
         elements.historySpread.textContent = "—";
-        elements.historyChart.innerHTML = '<p class="panel-description">No hay datos históricos disponibles.</p>';
+        elements.historyChart.innerHTML = `<p class="panel-description">${tr("history.noData")}</p>`;
         return;
       }
       const periodAverage = state.history.reduce((sum, item) => sum + item.average, 0) / state.history.length;
@@ -296,12 +307,15 @@
         const shortDate = state.historyRange === 365
           ? new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { month: "short" }).format(date).replace(".", "").toUpperCase()
           : new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { day: "2-digit", month: "2-digit" }).format(date);
+        const minimumLabel = tr("history.minimumShort");
+        const averageLabel = tr("history.averageShort");
+        const maximumLabel = tr("history.maximumShort");
         const bar = (value, type, label) => `<div class="history-bar ${type}" style="height:${Math.max(2, value / maximum * 100)}%" title="${label}: ${formatPrice(value)} €/kWh"></div>`;
-        const tooltip = `${shortDate}\nMínimo: ${formatPrice(item.minimum)} €/kWh\nMedia: ${formatPrice(item.average)} €/kWh\nMáximo: ${formatPrice(item.maximum)} €/kWh`;
-        return `<div class="history-day" aria-label="${tooltip.replaceAll("\n", ", ")}"><div class="history-bars"><span class="history-tooltip">${tooltip}</span>${bar(item.minimum, "minimum", "Mínimo")}${bar(item.average, "average", "Media")}${bar(item.maximum, "maximum", "Máximo")}</div><span class="history-day-label">${shortDate}</span></div>`;
+        const tooltip = `${shortDate}\n${minimumLabel}: ${formatPrice(item.minimum)} €/kWh\n${averageLabel}: ${formatPrice(item.average)} €/kWh\n${maximumLabel}: ${formatPrice(item.maximum)} €/kWh`;
+        return `<div class="history-day" aria-label="${tooltip.replaceAll("\n", ", ")}"><div class="history-bars"><span class="history-tooltip">${tooltip}</span>${bar(item.minimum, "minimum", minimumLabel)}${bar(item.average, "average", averageLabel)}${bar(item.maximum, "maximum", maximumLabel)}</div><span class="history-day-label">${shortDate}</span></div>`;
       }).join("");
-      const periodLabel = state.historyRange === 365 ? "meses" : "días";
-      elements.historyStatus.textContent = `${state.history.length} ${periodLabel} con precios publicados.`;
+      const periodKey = state.historyRange === 365 ? "history.publishedMonths" : "history.publishedDays";
+      elements.historyStatus.textContent = `${state.history.length} ${tr(periodKey)}`;
     }
 
     async function loadHistory() {
@@ -361,17 +375,17 @@
       renderHistory();
     }
 
-    function clearViewForMissingData(message = "No hay datos disponibles.") {
+    function clearViewForMissingData(message = tr("detail.noData")) {
       state.data = [];
       state.sourceUpdatedAt = null;
       state.fetchedAt = null;
       state.currentSource = "";
 
-      elements.currentTitle.textContent = "Datos no disponibles";
-      elements.currentAdvice.textContent = "Comprueba la conexión y vuelve a intentarlo.";
+      elements.currentTitle.textContent = tr("common.unavailable");
+      elements.currentAdvice.textContent = tr("status.loadError");
       elements.currentPrice.textContent = "—";
       elements.averagePrice.textContent = "—";
-      elements.averageDetail.textContent = "Sin datos";
+      elements.averageDetail.textContent = tr("common.noData");
       elements.minimumPrice.textContent = "—";
       elements.minimumHour.textContent = "—";
       elements.maximumPrice.textContent = "—";
@@ -391,15 +405,15 @@
       state.selectedDate = dateKey;
       elements.dateInput.value = dateKey;
       elements.refreshButton.disabled = true;
-      setStatus(manual ? "Actualizando datos oficiales…" : "Cargando datos oficiales…", "loading", formatDateLong(dateKey));
+      setLocalizedStatus(manual ? "status.refreshing" : "status.loading", "loading", formatDateLong(dateKey));
 
       try {
         const { payload, source } = await fetchOfficialData(dateKey);
         if (sequence !== state.loadSequence) return;
         const normalised = normaliseApiResponse(payload, dateKey);
         if (!normalised.rows.length) {
-          setStatus("No hay precios publicados para esta fecha.", "error", formatDateLong(dateKey));
-          clearViewForMissingData("No hay precios publicados para esta fecha.");
+          setLocalizedStatus("status.noPricesForDate", "error", formatDateLong(dateKey));
+          clearViewForMissingData(tr("status.noPricesForDate"));
           return;
         }
         state.data = normalised.rows;
@@ -408,8 +422,8 @@
         state.fetchedAt = new Date().toISOString();
         state.currentSource = source;
         saveCache(dateKey, normalised);
-        const publication = state.sourceUpdatedAt ? `Publicación: ${formatDateTime(state.sourceUpdatedAt)} · ` : "";
-        setStatus("Datos oficiales cargados correctamente.", "ready", `${publication}Consulta: ${formatDateTime(state.fetchedAt)} · Fuente: ${source}`);
+        const publication = state.sourceUpdatedAt ? tr("status.publication", { date: formatDateTime(state.sourceUpdatedAt) }) : "";
+        setLocalizedStatus("status.loaded", "ready", `${publication}${tr("status.consultation", { date: formatDateTime(state.fetchedAt), source })}`);
         renderAll();
       } catch (error) {
         console.error(error);
@@ -417,19 +431,19 @@
         const cached = loadCache(dateKey);
         if (cached) {
           if (!cached.rows.length) {
-            setStatus("No hay precios publicados para esta fecha.", "error", formatDateLong(dateKey));
-            clearViewForMissingData("No hay precios publicados para esta fecha.");
+            setLocalizedStatus("status.noPricesForDate", "error", formatDateLong(dateKey));
+            clearViewForMissingData(tr("status.noPricesForDate"));
             return;
           }
           state.data = cached.rows;
           state.sourceUpdatedAt = cached.sourceUpdatedAt;
           state.fetchedAt = cached.savedAt;
           state.currentSource = "copia local";
-          setStatus("No se pudo conectar. Se muestra la última copia guardada.", "cached", `Guardada: ${formatDateTime(cached.savedAt)}`);
+          setLocalizedStatus("status.cached", "cached", tr("status.savedAt", { date: formatDateTime(cached.savedAt) }));
           renderAll();
         } else {
-          setStatus("No se pudieron cargar los precios.", "error", error.message);
-          clearViewForMissingData("No se pudieron cargar los datos.");
+          setLocalizedStatus("status.loadError", "error");
+          clearViewForMissingData(tr("status.loadDataError"));
         }
       } finally {
         if (sequence === state.loadSequence) elements.refreshButton.disabled = false;
@@ -468,7 +482,7 @@
       const themeMeta = document.getElementById("theme-color-meta");
       if (themeMeta) themeMeta.content = theme === "dark" ? "#0c111b" : "#315ee7";
       elements.themeButton.textContent = theme === "dark" ? "☀" : "◐";
-      elements.themeButton.setAttribute("aria-label", theme === "dark" ? "Activar tema claro" : "Activar tema oscuro");
+      elements.themeButton.setAttribute("aria-label", theme === "dark" ? tr("theme.light") : tr("theme.dark"));
       if (state.data.length) renderChart();
     }
 
@@ -531,9 +545,26 @@
         document.querySelectorAll(".history-tab").forEach(item => item.classList.remove("active"));
         button.classList.add("active");
         state.historyRange = Number(button.dataset.historyRange);
-        elements.historyStatus.textContent = "Cargando histórico…";
+        elements.historyStatus.textContent = tr("history.loading");
         loadHistory();
       });
+    });
+
+    window.addEventListener("languagechange", () => {
+      syncHourlyDetails();
+      if (state.data.length) renderAll();
+      else clearViewForMissingData();
+      renderHistory();
+      let localizedMeta = state.statusMeta;
+      if (["status.loading", "status.refreshing", "status.online", "status.noPricesForDate"].includes(state.statusKey)) localizedMeta = state.selectedDate ? formatDateLong(state.selectedDate) : state.statusMeta;
+      if (state.statusKey === "status.loaded") {
+        const publication = state.sourceUpdatedAt ? tr("status.publication", { date: formatDateTime(state.sourceUpdatedAt) }) : "";
+        localizedMeta = `${publication}${tr("status.consultation", { date: formatDateTime(state.fetchedAt), source: state.currentSource })}`;
+      }
+      if (state.statusKey === "status.cached") localizedMeta = tr("status.savedAt", { date: formatDateTime(state.fetchedAt) });
+      if (state.statusKey === "status.offline") localizedMeta = tr("status.offlineDetail");
+      setStatus(tr(state.statusKey, state.statusValues), state.statusType, localizedMeta);
+      if (!elements.updateButton.hidden) showUpdateNotice(availableVersion !== runningVersion ? availableVersion : "");
     });
 
     elements.applianceSelect.addEventListener("change", () => {
@@ -566,7 +597,7 @@
     function retryAfterConnection() {
       if (!state.selectedDate || state.retryScheduled) return;
       state.retryScheduled = true;
-      setStatus("Conexión recuperada. Actualizando datos…", "loading", formatDateLong(state.selectedDate));
+      setLocalizedStatus("status.online", "loading", formatDateLong(state.selectedDate));
       window.setTimeout(() => {
         state.retryScheduled = false;
         if (!navigator.onLine) return;
@@ -576,7 +607,7 @@
     }
 
     window.addEventListener("offline", () => {
-      setStatus("Sin conexión. Se muestran los últimos datos guardados.", "cached", "Los precios se actualizarán al recuperar Internet.");
+      setLocalizedStatus("status.offline", "cached", tr("status.offlineDetail"));
     });
     window.addEventListener("online", retryAfterConnection);
 

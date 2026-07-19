@@ -16,7 +16,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-  <title>Precio de la luz · PVPC horario</title>
+  <title data-i18n="app.title">Precio de la luz · PVPC horario</title>
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
@@ -28,29 +28,29 @@
           <p class="eyebrow">Tarifa regulada · España</p>
           <h1>Precio de la luz</h1>
           <span class="app-version" id="app-version">1.0.6</span>
-          <button class="version-update-button" id="update-button" type="button" hidden>Actualizar</button>
+        <button class="version-update-button" id="update-button" type="button" hidden>Actualizar</button>
         </div>
       </div>
 
-      <div class="toolbar" aria-label="Controles de la página">
-        <label class="sr-only" for="date-input">Fecha</label>
-        <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior">‹</button>
+      <div class="toolbar" aria-label="Controles de la página" data-i18n-aria-label="controls.page">
+        <label class="sr-only" for="date-input" data-i18n="controls.date">Fecha</label>
+        <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior" data-i18n-aria-label="controls.previousDayTitle" data-i18n-title="controls.previousDayTitle">‹</button>
         <input class="control" id="date-input" type="date">
-        <button class="button icon-button" id="next-day-button" type="button" aria-label="Día siguiente" title="Día siguiente">›</button>
+        <button class="button icon-button" id="next-day-button" type="button" aria-label="Día siguiente" title="Día siguiente" data-i18n-aria-label="controls.nextDayTitle" data-i18n-title="controls.nextDayTitle">›</button>
         <button class="button" id="today-button" type="button">Hoy</button>
         <div class="language-picker" id="language-picker">
-          <button class="control language-button" id="language-button" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <button class="control language-button" id="language-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Idioma" data-i18n-aria-label="controls.language">
             <span class="language-flag" id="language-flag">🇪🇸</span><span class="sr-only" id="language-name">Español</span>
           </button>
-          <div class="language-menu" id="language-menu" role="listbox" aria-label="Idioma" hidden>
-            <button type="button" role="option" data-language="es"><span>🇪🇸</span>Español</button>
-            <button type="button" role="option" data-language="en"><span>🇬🇧</span>English</button>
-            <button type="button" role="option" data-language="fr"><span>🇫🇷</span>Français</button>
+          <div class="language-menu" id="language-menu" role="listbox" aria-label="Idioma" data-i18n-aria-label="controls.language" hidden>
+            <button type="button" role="option" data-language="es"><span>🇪🇸</span><span data-i18n="language.es">Español</span></button>
+            <button type="button" role="option" data-language="en"><span>🇬🇧</span><span data-i18n="language.en">English</span></button>
+            <button type="button" role="option" data-language="fr"><span>🇫🇷</span><span data-i18n="language.fr">Français</span></button>
           </div>
         </div>
         <button class="button" id="dryer-button" type="button" disabled>¿Cómo está la luz?</button>
         <button class="button primary" id="refresh-button" type="button">Actualizar</button>
-        <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
+        <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema" data-i18n-aria-label="controls.theme" data-i18n-title="controls.theme">◐</button>
       </div>
     </header>
 
@@ -62,16 +62,16 @@
     <section class="hero" aria-labelledby="current-title">
       <div class="hero-copy">
         <p class="hero-label">Precio en este momento</p>
-        <h2 id="current-title">Consultando la franja actual…</h2>
+        <h2 id="current-title" data-i18n="hero.initial">Consultando la franja actual…</h2>
         <p class="hero-advice" id="current-advice">La recomendación se calcula a partir del precio horario publicado.</p>
       </div>
       <div class="hero-price">
         <strong id="current-price">—</strong>
-        <small>€/kWh · término de energía</small>
+        <small data-i18n="hero.energyTerm">€/kWh · término de energía</small>
       </div>
     </section>
 
-    <section class="metrics" aria-label="Resumen diario">
+    <section class="metrics" aria-label="Resumen diario" data-i18n-aria-label="metrics.dailySummary">
       <article class="card">
         <div class="card-label">Media diaria</div>
         <div class="card-value" id="average-price">—</div>
@@ -101,20 +101,20 @@
             <h2>Precio por hora</h2>
             <p class="panel-description">Las barras permanecen en su posición al aplicar filtros. La línea discontinua marca la media diaria.</p>
           </div>
-          <div class="tabs" role="group" aria-label="Filtrar niveles de precio">
-            <button class="tab active" data-filter="all" type="button">Todos</button>
-            <button class="tab" data-filter="low" type="button">Bajo</button>
-            <button class="tab" data-filter="medium" type="button">Medio</button>
-            <button class="tab" data-filter="high" type="button">Alto</button>
+          <div class="tabs" role="group" aria-label="Filtrar niveles de precio" data-i18n-aria-label="controls.priceLevels">
+            <button class="tab active" data-filter="all" type="button" data-i18n="chart.all">Todos</button>
+            <button class="tab" data-filter="low" type="button" data-i18n="chart.low">Bajo</button>
+            <button class="tab" data-filter="medium" type="button" data-i18n="chart.medium">Medio</button>
+            <button class="tab" data-filter="high" type="button" data-i18n="chart.high">Alto</button>
           </div>
         </div>
         <div class="chart-wrap">
-          <svg id="price-chart" role="img" aria-label="Gráfico de barras de precios horarios"></svg>
+          <svg id="price-chart" role="img" aria-label="Gráfico de barras de precios horarios" data-i18n-aria-label="chart.priceAria"></svg>
         </div>
-        <div class="legend" aria-label="Umbrales de precio">
-          <span class="legend-item"><i class="legend-dot" style="background:var(--low)"></i>Bajo: menos de 0,10 €/kWh</span>
-          <span class="legend-item"><i class="legend-dot" style="background:var(--medium)"></i>Medio: 0,10–0,15 €/kWh</span>
-          <span class="legend-item"><i class="legend-dot" style="background:var(--high)"></i>Alto: más de 0,15 €/kWh</span>
+        <div class="legend" aria-label="Umbrales de precio" data-i18n-aria-label="chart.thresholds">
+          <span class="legend-item"><i class="legend-dot" style="background:var(--low)"></i><span data-i18n="chart.lowLegend">Bajo: menos de 0,10 €/kWh</span></span>
+          <span class="legend-item"><i class="legend-dot" style="background:var(--medium)"></i><span data-i18n="chart.mediumLegend">Medio: 0,10–0,15 €/kWh</span></span>
+          <span class="legend-item"><i class="legend-dot" style="background:var(--high)"></i><span data-i18n="chart.highLegend">Alto: más de 0,15 €/kWh</span></span>
         </div>
       </article>
 
@@ -128,35 +128,35 @@
 
         <div class="simulator">
           <div class="field">
-            <label for="appliance-select">Uso habitual</label>
+            <label for="appliance-select" data-i18n="planner.typicalUse">Uso habitual</label>
             <select id="appliance-select">
-              <option value="0.25,1">Ordenador · 1 h · 0,25 kWh</option>
-              <option value="0.75,2" selected>Lavadora eco · 0,75 kWh</option>
-              <option value="0.85,3">Lavavajillas eco · 0,85 kWh</option>
-              <option value="1.5,2">Secadora · 2 h · 1,50 kWh</option>
-              <option value="2,1">Horno · 1 h · 2,00 kWh</option>
-              <option value="1.2,1">Aire acondicionado · 1 h · 1,20 kWh</option>
-              <option value="20,6">Carga de vehículo · 20 kWh</option>
-              <option value="custom">Personalizado</option>
+              <option value="0.25,1" data-i18n="planner.computer">Ordenador · 1 h · 0,25 kWh</option>
+              <option value="0.75,2" selected data-i18n="planner.washer">Lavadora eco · 0,75 kWh</option>
+              <option value="0.85,3" data-i18n="planner.dishwasher">Lavavajillas eco · 0,85 kWh</option>
+              <option value="1.5,2" data-i18n="planner.dryer">Secadora · 2 h · 1,50 kWh</option>
+              <option value="2,1" data-i18n="planner.oven">Horno · 1 h · 2,00 kWh</option>
+              <option value="1.2,1" data-i18n="planner.airConditioner">Aire acondicionado · 1 h · 1,20 kWh</option>
+              <option value="20,6" data-i18n="planner.vehicle">Carga de vehículo · 20 kWh</option>
+              <option value="custom" data-i18n="planner.custom">Personalizado</option>
             </select>
           </div>
 
           <div class="field-row">
             <div class="field">
-              <label for="energy-input">Consumo total (kWh)</label>
+              <label for="energy-input" data-i18n="planner.energy">Consumo total (kWh)</label>
               <input id="energy-input" type="number" min="0.01" max="200" step="0.01" value="0.75" inputmode="decimal">
             </div>
             <div class="field">
-              <label for="duration-input">Duración (horas)</label>
+              <label for="duration-input" data-i18n="planner.duration">Duración (horas)</label>
               <input id="duration-input" type="number" min="1" max="12" step="1" value="2" inputmode="numeric">
             </div>
           </div>
 
           <div class="sim-results">
-            <div class="result-row"><span>Mejor franja</span><strong id="best-window">—</strong></div>
-            <div class="result-row"><span>Coste en mejor franja</span><strong class="low-text" id="best-cost">—</strong></div>
-            <div class="result-row"><span>Coste empezando ahora</span><strong id="current-cost">—</strong></div>
-            <div class="saving-box" id="saving-box">Introduce el consumo para calcular el ahorro posible.</div>
+            <div class="result-row"><span data-i18n="planner.bestSlot">Mejor franja</span><strong id="best-window">—</strong></div>
+            <div class="result-row"><span data-i18n="planner.bestCost">Coste en mejor franja</span><strong class="low-text" id="best-cost">—</strong></div>
+            <div class="result-row"><span data-i18n="planner.currentCost">Coste empezando ahora</span><strong id="current-cost">—</strong></div>
+            <div class="saving-box" id="saving-box" data-i18n="planner.empty">Introduce el consumo para calcular el ahorro posible.</div>
           </div>
         </div>
       </aside>
@@ -165,26 +165,26 @@
     <details class="panel table-panel" id="hourly-details">
       <summary class="table-heading">
         <div>
-          <h2>Detalle horario</h2>
+          <h2 data-i18n="detail.title">Detalle horario</h2>
           <p class="panel-description" id="table-description">Valores del día seleccionado.</p>
         </div>
         <span class="details-toggle"><span id="details-toggle-label">Ver detalle</span> <span class="details-chevron" aria-hidden="true">⌄</span></span>
       </summary>
       <div class="table-actions">
-        <button class="button" id="csv-button" type="button" disabled>Exportar CSV</button>
+        <button class="button" id="csv-button" type="button" data-i18n="detail.export" disabled>Exportar CSV</button>
       </div>
       <div class="table-scroll">
         <table>
           <thead>
             <tr>
-              <th>Franja</th>
-              <th>€/kWh</th>
-              <th>Nivel</th>
-              <th>Respecto a la media</th>
+              <th data-i18n="detail.headers.slot">Franja</th>
+              <th data-i18n="detail.headers.price">€/kWh</th>
+              <th data-i18n="detail.headers.level">Nivel</th>
+              <th data-i18n="detail.headers.comparison">Respecto a la media</th>
             </tr>
           </thead>
           <tbody id="price-rows">
-            <tr><td colspan="4">Cargando datos…</td></tr>
+            <tr><td colspan="4" data-i18n="detail.loading">Cargando datos…</td></tr>
           </tbody>
         </table>
       </div>
@@ -196,30 +196,30 @@
           <h2 id="history-title">Histórico de precios</h2>
           <p class="panel-description" id="history-status">Media, mínimo y máximo de los últimos días.</p>
         </div>
-        <div class="history-range" role="group" aria-label="Periodo del histórico">
-          <button class="tab history-tab active" data-history-range="7" type="button">1 semana</button>
-          <button class="tab history-tab" data-history-range="30" type="button">1 mes</button>
-          <button class="tab history-tab" data-history-range="365" type="button">1 año</button>
+        <div class="history-range" role="group" aria-label="Periodo del histórico" data-i18n-aria-label="controls.historyPeriod">
+          <button class="tab history-tab active" id="history-range-week" data-history-range="7" type="button">1 semana</button>
+          <button class="tab history-tab" id="history-range-month" data-history-range="30" type="button">1 mes</button>
+          <button class="tab history-tab" id="history-range-year" data-history-range="365" type="button">1 año</button>
         </div>
       </div>
-      <div class="history-stats" aria-label="Estadísticas del histórico">
-        <div><span>Media del periodo</span><strong id="history-average">—</strong></div>
-        <div><span>Mínimo registrado</span><strong id="history-minimum">—</strong></div>
-        <div><span>Máximo registrado</span><strong id="history-maximum">—</strong></div>
-        <div><span>Diferencia</span><strong id="history-spread">—</strong></div>
+      <div class="history-stats" aria-label="Estadísticas del histórico" data-i18n-aria-label="controls.historyStats">
+        <div><span id="history-average-label">Media del periodo</span><strong id="history-average">—</strong></div>
+        <div><span id="history-minimum-label">Mínimo registrado</span><strong id="history-minimum">—</strong></div>
+        <div><span id="history-maximum-label">Máximo registrado</span><strong id="history-maximum">—</strong></div>
+        <div><span id="history-spread-label">Diferencia</span><strong id="history-spread">—</strong></div>
       </div>
-      <div class="history-chart" id="history-chart" role="img" aria-label="Gráfico histórico de precios"></div>
-      <div class="history-legend" aria-label="Leyenda del histórico">
-        <span><i class="history-dot minimum"></i>Mínimo</span>
-        <span><i class="history-dot average"></i>Media</span>
-        <span><i class="history-dot maximum"></i>Máximo</span>
+      <div class="history-chart" id="history-chart" role="img" aria-label="Gráfico histórico de precios" data-i18n-aria-label="history.chartAria"></div>
+      <div class="history-legend" aria-label="Leyenda del histórico" data-i18n-aria-label="controls.historyLegend">
+        <span><i class="history-dot minimum"></i><span data-i18n="history.minimumShort">Mínimo</span></span>
+        <span><i class="history-dot average"></i><span data-i18n="history.averageShort">Media</span></span>
+        <span><i class="history-dot maximum"></i><span data-i18n="history.maximumShort">Máximo</span></span>
       </div>
     </section>
 
     <footer class="footer">
-      <p>Los valores representan el término de facturación de energía activa del PVPC. La factura final también incluye potencia contratada, alquiler del contador e impuestos. Actualización automática cada 15 minutos; si falla la red, se muestra la última copia guardada y se identifica claramente.</p>
-      <nav class="footer-links" aria-label="Fuentes">
-        <a href="https://www.ree.es/es/operacion/sistema-electrico/pvpc" target="_blank" rel="noopener noreferrer">Información PVPC</a>
+      <p data-i18n="footer.description">Los valores representan el término de facturación de energía activa del PVPC. La factura final también incluye potencia contratada, alquiler del contador e impuestos. Actualización automática cada 15 minutos; si falla la red, se muestra la última copia guardada y se identifica claramente.</p>
+      <nav class="footer-links" aria-label="Fuentes" data-i18n-aria-label="controls.sources">
+        <a href="https://www.ree.es/es/operacion/sistema-electrico/pvpc" target="_blank" rel="noopener noreferrer" data-i18n="footer.pvpc">Información PVPC</a>
         <a href="https://www.esios.ree.es/es/pvpc" target="_blank" rel="noopener noreferrer">ESIOS</a>
         <a href="https://tarifaluzhora.es/" target="_blank" rel="noopener noreferrer">Tarifaluzhora</a>
       </nav>
@@ -230,11 +230,11 @@
   <div class="dialog-backdrop" id="light-dialog" hidden>
     <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="light-dialog-title">
       <div class="dialog-header">
-        <div><p class="eyebrow">Estado del precio</p><h2 id="light-dialog-title">¿Cómo está la luz?</h2></div>
-        <button class="button icon-button" id="light-dialog-close" type="button" aria-label="Cerrar">×</button>
+        <div><p class="eyebrow" data-i18n="dialog.priceStatus">Estado del precio</p><h2 id="light-dialog-title">¿Cómo está la luz?</h2></div>
+        <button class="button icon-button" id="light-dialog-close" type="button" aria-label="Cerrar" data-i18n-aria-label="controls.close">×</button>
       </div>
       <p class="dialog-message" id="light-dialog-message"></p>
-      <div class="dialog-actions"><button class="button primary" id="light-dialog-accept" type="button">Entendido</button></div>
+      <div class="dialog-actions"><button class="button primary" id="light-dialog-accept" type="button" data-i18n="dialog.accept">Entendido</button></div>
     </section>
   </div>
   <script src="./js/api.js"></script>

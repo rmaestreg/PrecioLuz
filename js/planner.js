@@ -1,4 +1,6 @@
 /* Cálculo de ventanas consecutivas y costes del planificador. */
+const plannerText = (key, values = {}) => window.i18n?.t(key, values) || key;
+
 function bestWindow(duration) {
       if (!state.data.length || duration < 1 || duration > state.data.length) return null;
       let best = null;
@@ -19,7 +21,7 @@ function bestWindow(duration) {
         elements.bestWindow.textContent = "—";
         elements.bestCost.textContent = "—";
         elements.currentCost.textContent = "—";
-        elements.savingBox.textContent = "Introduce un consumo y una duración válidos.";
+        elements.savingBox.textContent = plannerText("planner.invalid");
         return;
       }
 
@@ -39,12 +41,12 @@ function bestWindow(duration) {
         const savingPercent = currentCost > 0 ? saving / currentCost * 100 : 0;
         elements.currentCost.textContent = formatCurrency(currentCost);
         elements.savingBox.textContent = saving > .0005
-          ? `Desplazar este consumo a la mejor franja ahorraría aproximadamente ${formatCurrency(saving)} (${savingPercent.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} %).`
-          : "La franja actual ya está entre las opciones más económicas para este consumo.";
+          ? plannerText("planner.saving", { saving: formatCurrency(saving), percent: savingPercent.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 }) })
+          : plannerText("planner.currentCheap");
       } else {
-        elements.currentCost.textContent = "No aplicable";
+        elements.currentCost.textContent = plannerText("planner.notApplicable");
         elements.savingBox.textContent = state.selectedDate === todayKey()
-          ? "No quedan suficientes horas publicadas para completar esa duración empezando ahora."
-          : "El coste empezando ahora solo se calcula cuando está seleccionado el día de hoy.";
+          ? plannerText("planner.noHours")
+          : plannerText("planner.todayOnly");
       }
     }
