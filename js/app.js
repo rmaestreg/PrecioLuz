@@ -24,6 +24,7 @@
       tomorrowAvailable: false,
       history: [],
       historyRange: 7,
+      historyLoadSequence: 0,
       retryScheduled: false,
       statusKey: "status.loading",
       statusType: "loading",
@@ -177,7 +178,9 @@
       try {
         const tomorrow = shiftDate(todayKey(), 1);
         const { payload } = await fetchOfficialData(tomorrow);
-        state.tomorrowAvailable = normaliseApiResponse(payload, tomorrow).rows.length > 0;
+        const normalised = normaliseApiResponse(payload, tomorrow);
+        state.tomorrowAvailable = normalised.rows.length > 0;
+        if (state.tomorrowAvailable) saveCache(tomorrow, normalised);
       } catch (error) {
         state.tomorrowAvailable = false;
       }
@@ -214,6 +217,43 @@
       }
     }
 
+    function formatSignedPercent(value, decimals = 0) {
+      const locale = window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES";
+      const number = Math.abs(value).toLocaleString(locale, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+      return `${value < 0 ? "−" : value > 0 ? "+" : ""}${number}`;
+    }
+
+    function formatPercent(value, decimals = 1) {
+      const locale = window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES";
+      return Math.abs(value).toLocaleString(locale, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+    }
+
+    function formatWaitDuration(milliseconds) {
+      const minutes = Math.max(0, Math.round(milliseconds / 60000));
+      if (minutes < 1) return tr("light.lessThanMinute");
+      if (minutes < 60) return `${minutes} ${tr("light.minutesUnit")}`;
+      const hours = Math.floor(minutes / 60);
+      const remaining = minutes % 60;
+      return remaining ? `${hours} ${tr("light.hoursUnit")} ${remaining} ${tr("light.minutesUnit")}` : `${hours} ${tr("light.hoursUnit")}`;
+    }
+
+    function findFutureWindow(rows, duration) {
+      if (!Number.isInteger(duration) || duration < 1 || rows.length <= duration) return null;
+      let best = null;
+      for (let start = 1; start <= rows.length - duration; start += 1) {
+        const slice = rows.slice(start, start + duration);
+        const average = slice.reduce((sum, item) => sum + item.priceKWh, 0) / duration;
+        if (!best || average < best.average) best = { rows: slice, average };
+      }
+      return best;
+    }
+
+    function windowLabel(rows) {
+      const first = rows[0];
+      const last = rows.at(-1);
+      return `${first.label.split("–")[0]}–${last.label.split("–")[1]}`;
+    }
+
     async function askLight() {
       const index = currentDataIndex();
       if (index < 0) {
@@ -222,36 +262,56 @@
       }
 
       const current = state.data[index];
-      const daySummary = summary();
       if (current.level !== "high") {
         const answer = current.level === "low" ? tr("light.cheap") : tr("light.medium");
         showLightDialog(`${answer}\n\n${tr("light.now", { slot: current.label, price: formatPrice(current.priceKWh) })}`);
         return;
       }
 
-      let nextCheap = state.data.slice(index + 1).find(item => item.level === "low");
-      let nextDate = todayKey();
-
-      if (!nextCheap && state.tomorrowAvailable) {
+      let tomorrowRows = [];
+      if (state.tomorrowAvailable) {
         try {
           const tomorrow = shiftDate(todayKey(), 1);
           const cached = loadCache(tomorrow);
-          let tomorrowRows = cached?.rows || [];
+          tomorrowRows = cached?.rows || [];
           if (!tomorrowRows.length) {
             const { payload } = await fetchOfficialData(tomorrow);
             tomorrowRows = normaliseApiResponse(payload, tomorrow).rows;
           }
-          nextCheap = tomorrowRows.find(item => item.level === "low");
-          nextDate = tomorrow;
         } catch (error) {
-          console.warn("No se pudo consultar la próxima franja barata", error);
+          console.warn("No se pudo consultar la próxima ventana barata", error);
         }
       }
 
-      const nextMessage = nextCheap
-        ? tr("light.nextCheap", { date: formatDateLong(nextDate), slot: nextCheap.label, price: formatPrice(nextCheap.priceKWh) })
+      const today = todayKey();
+      const futureRows = [
+        ...state.data.slice(index).map(row => ({ ...row, dateKey: today })),
+        ...tomorrowRows.map(row => ({ ...row, dateKey: shiftDate(today, 1) }))
+      ];
+      const nextCheap = futureRows.slice(1).find(item => item.level === "low");
+      const nextSlot = nextCheap
+        ? nextCheap.dateKey === today ? nextCheap.label.split("–")[0] : `${formatDateLong(nextCheap.dateKey)}, ${nextCheap.label.split("–")[0]}`
+        : null;
+      const difference = nextCheap ? (nextCheap.priceKWh / current.priceKWh - 1) * 100 : null;
+      const waitText = nextCheap ? formatWaitDuration(nextCheap.startMs - Date.now()) : null;
+      const rawDuration = Number(elements.durationInput.value);
+      const duration = Number.isFinite(rawDuration) ? Math.max(1, Math.round(rawDuration)) : 1;
+      const energy = Number(elements.energyInput.value);
+      const currentRows = futureRows.slice(0, duration);
+      const currentCost = Number.isFinite(energy) && energy > 0 && currentRows.length === duration
+        ? energy * currentRows.reduce((sum, row) => sum + row.priceKWh, 0) / duration
+        : null;
+      const bestFuture = Number.isFinite(energy) && energy > 0 ? findFutureWindow(futureRows, duration) : null;
+      const bestCost = bestFuture ? energy * bestFuture.average : null;
+      const saving = currentCost !== null && bestCost !== null ? Math.max(0, currentCost - bestCost) : null;
+      const savingPercent = currentCost > 0 && saving !== null ? saving / currentCost * 100 : null;
+      const consumption = Number.isFinite(energy) && energy > 0
+        ? `\n\n${tr("light.consumptionHeader", { energy: formatPrice(energy, 2), hours: duration })}\n${currentCost !== null ? tr("light.currentConsumption", { cost: formatCurrency(currentCost) }) : tr("planner.notApplicable")}\n${bestFuture ? tr("light.bestWindow", { slot: windowLabel(bestFuture.rows), price: formatPrice(bestFuture.average) }) : tr("light.noWindow")}\n${bestCost !== null ? currentCost !== null ? tr("light.bestConsumption", { cost: formatCurrency(bestCost), saving: formatCurrency(saving), percent: formatPercent(savingPercent, 1) }) : tr("light.futureCost", { cost: formatCurrency(bestCost) }) : ""}`
+        : "";
+      const comparison = nextCheap
+        ? `${tr("light.waitUntil", { slot: nextSlot })}\n${tr("light.thenPrice", { price: formatPrice(nextCheap.priceKWh) })}\n${tr("light.difference", { percent: formatSignedPercent(difference) })}\n${tr("light.waitTime", { duration: waitText })}`
         : tr("light.noNextCheap");
-      showLightDialog(`${tr("light.expensiveNow", { slot: current.label, price: formatPrice(current.priceKWh) })}\n\n${nextMessage}`);
+      showLightDialog(`${tr("light.expensiveHeadline")}\n\n${tr("light.currentPrice", { price: formatPrice(current.priceKWh) })}\n${comparison}${consumption}`);
     }
 
     function updateMetricCards() {
@@ -318,7 +378,36 @@
       elements.historyStatus.textContent = `${state.history.length} ${tr(periodKey)}`;
     }
 
+    async function mapWithConcurrency(items, limit, worker) {
+      const results = new Array(items.length);
+      let nextIndex = 0;
+      async function runWorker() {
+        while (nextIndex < items.length) {
+          const index = nextIndex++;
+          results[index] = await worker(items[index], index);
+        }
+      }
+      await Promise.all(Array.from({ length: Math.min(limit, items.length) }, runWorker));
+      return results;
+    }
+
+    function summariseHistoricalRows(rows, monthKey) {
+      if (!rows.length) return null;
+      return {
+        monthKey,
+        dateKey: `${monthKey}-01`,
+        average: rows.reduce((sum, item) => sum + item.average, 0) / rows.length,
+        minimum: Math.min(...rows.map(item => item.minimum)),
+        maximum: Math.max(...rows.map(item => item.maximum))
+      };
+    }
+
+    function setHistoryProgress(current, total) {
+      elements.historyStatus.textContent = tr("history.loadingMonths", { current, total });
+    }
+
     async function loadHistory() {
+      const sequence = ++state.historyLoadSequence;
       const dates = Array.from({ length: state.historyRange }, (_, index) => shiftDate(todayKey(), -index));
       const results = [];
       if (state.historyRange <= 7) {
@@ -343,19 +432,41 @@
           const nextMonth = new Date(cursor);
           nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
           const monthEnd = shiftDate([nextMonth.getFullYear(), String(nextMonth.getMonth() + 1).padStart(2, "0"), String(nextMonth.getDate()).padStart(2, "0")].join("-"), -1);
-          ranges.push({ start: monthStart < startDate ? startDate : monthStart, end: monthEnd > endDate ? endDate : monthEnd });
+          const range = { start: monthStart < startDate ? startDate : monthStart, end: monthEnd > endDate ? endDate : monthEnd };
+          const monthKey = monthStart.slice(0, 7);
+          const complete = range.start === monthStart && range.end === monthEnd && monthEnd < endDate;
+          const cached = complete ? loadHistoricalMonthCache(monthKey) : null;
+          if (cached) results.push(cached);
+          else ranges.push({ ...range, monthKey, complete });
           cursor = nextMonth;
         }
-        const chunks = await Promise.all(ranges.map(async range => {
+
+        let completed = results.length;
+        if (sequence !== state.historyLoadSequence) return;
+        setHistoryProgress(completed, ranges.length + results.length);
+        const chunks = await mapWithConcurrency(ranges, 3, async range => {
           try {
             const { payload } = await fetchOfficialRange(range.start, range.end);
-            return normaliseHistoricalPayload(payload, range.start, range.end);
+            const daily = normaliseHistoricalPayload(payload, range.start, range.end);
+            if (range.complete) {
+              const summary = summariseHistoricalRows(daily, range.monthKey);
+              if (summary) {
+                saveHistoricalMonthCache(range.monthKey, summary);
+                return [summary];
+              }
+            }
+            return daily;
           } catch (error) {
             return [];
+          } finally {
+            completed += 1;
+            if (sequence === state.historyLoadSequence) setHistoryProgress(completed, ranges.length + results.length);
           }
-        }));
+        });
+        if (sequence !== state.historyLoadSequence) return;
         results.push(...chunks.flat());
       }
+      if (sequence !== state.historyLoadSequence) return;
       const available = results.filter(Boolean);
       if (state.historyRange === 365) {
         const months = new Map();

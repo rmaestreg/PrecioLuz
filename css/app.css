@@ -145,7 +145,7 @@
     }
 
     .language-picker { position: relative; }
-    .language-button { display: inline-flex; align-items: center; gap: 6px; min-width: 56px; justify-content: center; padding: 8px 10px; cursor: pointer; }
+    .language-button { display: inline-flex; align-items: center; justify-content: center; width: 42px; min-width: 42px; height: 42px; padding: 0; cursor: pointer; }
     .language-flag, .language-menu button span { font-size: 1.15rem; line-height: 1; }
     .language-menu { position: absolute; top: calc(100% + 6px); left: 50%; right: auto; transform: translateX(-50%); z-index: 25; display: none; min-width: 166px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
     .language-menu[hidden] { display: none; }
@@ -171,6 +171,10 @@
     .button.primary { border-color: var(--primary); background: var(--primary); color: white; }
     :root[data-theme="dark"] .button.primary { color: #0c111b; }
     .icon-button { width: 42px; padding: 0; }
+    .light-status-button { font-size: 1.15rem; font-weight: 800; }
+    #today-button { font-size: 1.35rem; font-weight: 800; }
+    .refresh-button { font-size: 1.35rem; font-weight: 800; }
+    .button.primary.refresh-button { flex: 0 0 42px; }
 
     .status-line {
       display: flex;

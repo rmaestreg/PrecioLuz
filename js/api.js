@@ -249,3 +249,29 @@ function partsInSpain(date = new Date()) {
       }
     }
 
+    function historicalMonthCacheKey(monthKey) { return `${CONFIG.cachePrefix}history-month:${monthKey}`; }
+
+    function saveHistoricalMonthCache(monthKey, summary) {
+      try {
+        localStorage.setItem(historicalMonthCacheKey(monthKey), JSON.stringify({
+          savedAt: new Date().toISOString(),
+          ...summary
+        }));
+      } catch (error) {
+        console.warn("No se pudo guardar la caché mensual del histórico", error);
+      }
+    }
+
+    function loadHistoricalMonthCache(monthKey) {
+      try {
+        const raw = localStorage.getItem(historicalMonthCacheKey(monthKey));
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed.monthKey !== monthKey || ![parsed.average, parsed.minimum, parsed.maximum].every(Number.isFinite)) return null;
+        return parsed;
+      } catch (error) {
+        console.warn("No se pudo leer la caché mensual del histórico", error);
+        return null;
+      }
+    }
+

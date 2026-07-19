@@ -37,9 +37,11 @@
         <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior" data-i18n-aria-label="controls.previousDayTitle" data-i18n-title="controls.previousDayTitle">‹</button>
         <input class="control" id="date-input" type="date">
         <button class="button icon-button" id="next-day-button" type="button" aria-label="Día siguiente" title="Día siguiente" data-i18n-aria-label="controls.nextDayTitle" data-i18n-title="controls.nextDayTitle">›</button>
-        <button class="button" id="today-button" type="button">Hoy</button>
+        <button class="button icon-button" id="today-button" type="button" aria-label="Hoy" title="Hoy" data-i18n-aria-label="controls.today" data-i18n-title="controls.today">⌂</button>
+        <button class="button primary icon-button refresh-button" id="refresh-button" type="button" aria-label="Actualizar" title="Actualizar" data-i18n-aria-label="controls.refresh" data-i18n-title="controls.refresh"><span aria-hidden="true">↻</span></button>
+        <button class="button icon-button light-status-button" id="dryer-button" type="button" aria-label="¿Cómo está la luz?" title="¿Cómo está la luz?" data-i18n-aria-label="controls.lightStatus" data-i18n-title="controls.lightStatus" disabled><span aria-hidden="true">?</span></button>
         <div class="language-picker" id="language-picker">
-          <button class="control language-button" id="language-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Idioma" data-i18n-aria-label="controls.language">
+          <button class="control language-button" id="language-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Idioma" title="Idioma" data-i18n-aria-label="controls.language" data-i18n-title="controls.language">
             <span class="language-flag" id="language-flag">🇪🇸</span><span class="sr-only" id="language-name">Español</span>
           </button>
           <div class="language-menu" id="language-menu" role="listbox" aria-label="Idioma" data-i18n-aria-label="controls.language" hidden>
@@ -48,8 +50,6 @@
             <button type="button" role="option" data-language="fr"><span>🇫🇷</span><span data-i18n="language.fr">Français</span></button>
           </div>
         </div>
-        <button class="button" id="dryer-button" type="button" disabled>¿Cómo está la luz?</button>
-        <button class="button primary" id="refresh-button" type="button">Actualizar</button>
         <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema" data-i18n-aria-label="controls.theme" data-i18n-title="controls.theme">◐</button>
       </div>
     </header>
