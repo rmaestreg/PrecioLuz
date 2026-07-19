@@ -161,9 +161,9 @@ function partsInSpain(date = new Date()) {
       };
     }
 
-    function buildApiUrl(dateKey) {
+    function buildApiUrl(dateKey, endDateKey = dateKey) {
       const start = `${dateKey}T00:00`;
-      const end = `${dateKey}T23:59`;
+      const end = `${endDateKey}T23:59`;
       const query = new URLSearchParams({ start_date: start, end_date: end, time_trunc: "hour", cached: "false" });
       return `${CONFIG.apiBase}?${query.toString()}`;
     }
@@ -177,7 +177,11 @@ function partsInSpain(date = new Date()) {
     }
 
     async function fetchOfficialData(dateKey) {
-      const url = buildApiUrl(dateKey);
+      return fetchOfficialRange(dateKey, dateKey).then(result => ({ payload: result.payload, source: result.source }));
+    }
+
+    async function fetchOfficialRange(startDateKey, endDateKey) {
+      const url = buildApiUrl(startDateKey, endDateKey);
       const attempts = [
         { name: "Red Eléctrica", run: () => requestJson(url) },
         { name: "Red Eléctrica mediante respaldo CORS", run: () => requestJson(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`) }
@@ -192,6 +196,29 @@ function partsInSpain(date = new Date()) {
         }
       }
       throw new Error(errors.join(" · "));
+    }
+
+    function normaliseHistoricalPayload(payload, startDateKey, endDateKey) {
+      if (!payload || !Array.isArray(payload.included)) throw new Error("Formato inesperado en el histórico.");
+      const series = payload.included.find(item => String(item.id) === "1001") || payload.included.find(item => /PVPC/i.test(item?.attributes?.title || item?.type || ""));
+      if (!series || !Array.isArray(series?.attributes?.values)) throw new Error("No se encontró la serie PVPC histórica.");
+
+      const grouped = new Map();
+      for (const value of series.attributes.values) {
+        const price = Number(value.value);
+        if (!Number.isFinite(price) || !value.datetime) continue;
+        const local = localDateHour(value.datetime);
+        if (local.dateKey < startDateKey || local.dateKey > endDateKey) continue;
+        if (!grouped.has(local.dateKey)) grouped.set(local.dateKey, []);
+        grouped.get(local.dateKey).push(price / 1000);
+      }
+
+      return [...grouped.entries()].map(([dateKey, prices]) => ({
+        dateKey,
+        average: prices.reduce((sum, price) => sum + price, 0) / prices.length,
+        minimum: Math.min(...prices),
+        maximum: Math.max(...prices)
+      }));
     }
 
     function cacheKey(dateKey) { return `${CONFIG.cachePrefix}${dateKey}`; }

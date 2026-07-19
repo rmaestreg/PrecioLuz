@@ -275,26 +275,42 @@
 
     async function loadHistory() {
       const dates = Array.from({ length: state.historyRange }, (_, index) => shiftDate(todayKey(), -index));
-      const getDay = async dateKey => {
-        try {
-          const cached = loadCache(dateKey);
-          const sourceData = cached || normaliseApiResponse((await fetchOfficialData(dateKey)).payload, dateKey);
-          if (!sourceData.rows.length) return null;
-          const prices = sourceData.rows.map(item => item.priceKWh);
-          return { dateKey, average: prices.reduce((sum, price) => sum + price, 0) / prices.length, minimum: Math.min(...prices), maximum: Math.max(...prices) };
-        } catch (error) {
-          return null;
-        }
-      };
       const results = [];
-      let cursor = 0;
-      const workers = Array.from({ length: Math.min(6, dates.length) }, async () => {
-        while (cursor < dates.length) {
-          const dateKey = dates[cursor++];
-          results.push(await getDay(dateKey));
+      if (state.historyRange <= 7) {
+        for (const dateKey of dates) {
+          const cached = loadCache(dateKey);
+          let rows = cached?.rows || [];
+          if (!rows.length) {
+            try { rows = normaliseApiResponse((await fetchOfficialData(dateKey)).payload, dateKey).rows; } catch (error) { rows = []; }
+          }
+          if (rows.length) {
+            const prices = rows.map(item => item.priceKWh);
+            results.push({ dateKey, average: prices.reduce((sum, price) => sum + price, 0) / prices.length, minimum: Math.min(...prices), maximum: Math.max(...prices) });
+          }
         }
-      });
-      await Promise.all(workers);
+      } else {
+        const startDate = dates.at(-1);
+        const ranges = [];
+        let cursor = new Date(`${startDate}T12:00:00`);
+        const endDate = todayKey();
+        while (cursor <= new Date(`${endDate}T12:00:00`)) {
+          const monthStart = [cursor.getFullYear(), String(cursor.getMonth() + 1).padStart(2, "0"), "01"].join("-");
+          const nextMonth = new Date(cursor);
+          nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
+          const monthEnd = shiftDate([nextMonth.getFullYear(), String(nextMonth.getMonth() + 1).padStart(2, "0"), String(nextMonth.getDate()).padStart(2, "0")].join("-"), -1);
+          ranges.push({ start: monthStart < startDate ? startDate : monthStart, end: monthEnd > endDate ? endDate : monthEnd });
+          cursor = nextMonth;
+        }
+        const chunks = await Promise.all(ranges.map(async range => {
+          try {
+            const { payload } = await fetchOfficialRange(range.start, range.end);
+            return normaliseHistoricalPayload(payload, range.start, range.end);
+          } catch (error) {
+            return [];
+          }
+        }));
+        results.push(...chunks.flat());
+      }
       const available = results.filter(Boolean);
       if (state.historyRange === 365) {
         const months = new Map();
