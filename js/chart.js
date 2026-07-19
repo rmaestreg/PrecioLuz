@@ -55,7 +55,6 @@ function colourForLevel(level) {
 
       const averageY = yFor(daySummary.average);
       add("line", { x1: margin.left, y1: averageY, x2: width - margin.right, y2: averageY, class: "average-line" });
-      add("text", { x: width - margin.right, y: averageY - 7, "text-anchor": "end", class: "axis-text" }, `Media ${formatPrice(daySummary.average, 3)} €`);
 
       state.data.forEach((item, index) => {
         const x = margin.left + index * slot + (slot - barWidth) / 2;
@@ -102,6 +101,11 @@ function colourForLevel(level) {
         rect.addEventListener("blur", hideTooltip);
       });
 
+      const averageLabel = formatPrice(daySummary.average, 3);
+      const lastBarRight = margin.left + (state.data.length - 1) * slot + (slot + barWidth) / 2;
+      const averageLabelX = lastBarRight + 7;
+      add("rect", { x: averageLabelX - 4, y: averageY - 10, width: 112, height: 20, rx: 4, class: "average-label-bg" });
+      add("text", { x: averageLabelX, y: averageY + 4, "text-anchor": "start", class: "axis-text average-label" }, averageLabel);
       add("text", { x: 15, y: margin.top + plotHeight / 2, "text-anchor": "middle", class: "axis-text", transform: `rotate(-90 15 ${margin.top + plotHeight / 2})` }, "€/kWh");
     }
 
