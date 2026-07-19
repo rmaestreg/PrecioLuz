@@ -99,7 +99,8 @@
     const flag = document.getElementById("language-flag");
     const name = document.getElementById("language-name");
     const languages = { es: ["🇪🇸", "Español"], en: ["🇬🇧", "English"], fr: ["🇫🇷", "Français"] };
-    if (button) button.addEventListener("click", () => { const open = picker.classList.toggle("open"); button.setAttribute("aria-expanded", String(open)); });
+    const menu = document.getElementById("language-menu");
+    if (button) button.addEventListener("click", () => { const open = picker.classList.toggle("open"); if (menu) menu.hidden = !open; button.setAttribute("aria-expanded", String(open)); });
     document.querySelectorAll("[data-language]").forEach(option => {
       option.setAttribute("aria-selected", String(option.dataset.language === language));
       option.addEventListener("click", () => applyLanguage(option.dataset.language));
@@ -108,7 +109,7 @@
     if (flag) flag.textContent = selected[0];
     if (name) name.textContent = selected[1];
     if (button) button.setAttribute("aria-label", selected[1]);
-    document.addEventListener("click", event => { if (picker && !picker.contains(event.target)) { picker.classList.remove("open"); button?.setAttribute("aria-expanded", "false"); } });
+    document.addEventListener("click", event => { if (picker && !picker.contains(event.target)) { picker.classList.remove("open"); if (menu) menu.hidden = true; button?.setAttribute("aria-expanded", "false"); } });
     translateDom();
     new MutationObserver(() => translateDom()).observe(document.body, { childList: true, subtree: true });
   });
