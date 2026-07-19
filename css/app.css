@@ -1,22 +1,22 @@
 :root {
       color-scheme: light;
-      --bg: #f5f7fb;
+      --bg: #eef4fb;
       --surface: #ffffff;
-      --surface-soft: #f8fafc;
-      --text: #172033;
-      --muted: #667085;
-      --border: #e4e8f0;
-      --primary: #315ee7;
-      --primary-soft: #eaf0ff;
+      --surface-soft: #f1f6fd;
+      --text: #172b45;
+      --muted: #60738d;
+      --border: #d5e1ef;
+      --primary: #2e63c6;
+      --primary-soft: #e4efff;
       --low: #16865a;
       --low-soft: #e7f7ef;
       --medium: #a96900;
       --medium-soft: #fff4d6;
       --high: #c43737;
       --high-soft: #ffecec;
-      --shadow: 0 16px 44px rgba(23, 32, 51, .08);
-      --grid: #e8ecf3;
-      --focus: 0 0 0 3px rgba(49, 94, 231, .20);
+      --shadow: 0 16px 44px rgba(42, 82, 130, .10);
+      --grid: #dce7f3;
+      --focus: 0 0 0 3px rgba(46, 99, 198, .22);
     }
 
     :root[data-theme="dark"] {
@@ -172,7 +172,7 @@
     :root[data-theme="dark"] .button.primary { color: #0c111b; }
     .icon-button { width: 42px; padding: 0; }
     .light-status-button { font-size: 1.15rem; font-weight: 800; }
-    #today-button { font-size: 1.35rem; font-weight: 800; }
+    #today-button { font-size: 1.5rem; font-weight: 800; }
     .refresh-button { font-size: 1.35rem; font-weight: 800; }
     .button.primary.refresh-button { flex: 0 0 42px; }
 
@@ -266,6 +266,7 @@
     }
 
     .card { min-width: 0; padding: 18px; border-radius: 16px; }
+    :root:not([data-theme="dark"]) .card { background: var(--surface-soft); }
     .card-label { color: var(--muted); font-size: .76rem; font-weight: 750; letter-spacing: .075em; text-transform: uppercase; }
     .card-value { margin-top: 8px; font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 820; letter-spacing: -.035em; overflow-wrap: anywhere; }
     .card-detail { min-height: 1.2em; margin-top: 4px; color: var(--muted); font-size: .83rem; }
@@ -388,7 +389,7 @@
     .details-chevron { font-size: 1.15rem; line-height: 1; transition: transform .15s ease; }
     .table-panel[open] .details-chevron { transform: rotate(180deg); }
     .table-actions { display: flex; justify-content: flex-end; padding: 12px 20px 0; }
-    .history-panel { margin-bottom: 14px; }
+    .history-panel { margin-top: 14px; margin-bottom: 14px; }
     .history-panel .panel-header { margin-bottom: 0; }
     .history-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 14px; }
     .history-stats div { display: grid; gap: 4px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-soft); }
