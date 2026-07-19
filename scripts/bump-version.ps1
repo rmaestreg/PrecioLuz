@@ -20,6 +20,7 @@ $serviceWorker = Get-Content -Raw $serviceWorkerPath
 $serviceWorker = [regex]::Replace($serviceWorker, 'precio-luz-shell-v[0-9]+\.[0-9]+\.[0-9]+', "precio-luz-shell-v$next", 1)
 Set-Content -Path $serviceWorkerPath -Value $serviceWorker -Encoding utf8
 $index = Get-Content -Raw $indexPath
-$index = [regex]::Replace($index, '(<span class="app-version" id="app-version">)v?[0-9]+\.[0-9]+\.[0-9]+(</span>)', "`$1$next`$2", 1)
+$replacement = '${1}' + $next + '${2}'
+$index = [regex]::Replace($index, '(<span class="app-version" id="app-version">)v?[0-9]+\.[0-9]+\.[0-9]+(</span>)', $replacement, 1)
 Set-Content -Path $indexPath -Value $index -Encoding utf8
 Write-Output "Versión actualizada a $next"
