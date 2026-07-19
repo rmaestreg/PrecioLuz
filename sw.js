@@ -1,4 +1,4 @@
-const CACHE_NAME = "precio-luz-shell-v1.0.2";
+const CACHE_NAME = "precio-luz-shell-v1.0.3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -69,3 +69,4 @@ self.addEventListener("fetch", event => {
     }))
   );
 });
+
