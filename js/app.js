@@ -71,17 +71,38 @@
       historyAverage: $("history-average"),
       historyMinimum: $("history-minimum"),
       historyMaximum: $("history-maximum"),
-      historySpread: $("history-spread")
+      historySpread: $("history-spread"),
+      updateButton: $("update-button")
     };
+
+    let currentAppVersion = $("app-version").textContent.trim();
+    let serviceWorkerRegistration = null;
 
     async function loadAppVersion() {
       try {
-        const response = await fetch("./version.json", { cache: "no-store" });
+        const response = await fetch(`./version.json?check=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) throw new Error("No se pudo cargar la versión");
         const { version } = await response.json();
+        if (version && version !== currentAppVersion) {
+          if (currentAppVersion && currentAppVersion !== "—") showUpdateNotice(version);
+          currentAppVersion = version;
+        }
         if (version) $("app-version").textContent = version;
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
+      }
+    }
+
+    function showUpdateNotice(version = "") {
+      elements.updateButton.hidden = false;
+      elements.updateButton.setAttribute("aria-label", version ? `Actualizar a la versión ${version}` : "Actualizar aplicación");
+    }
+
+    async function checkForUpdates() {
+      await loadAppVersion();
+      if (serviceWorkerRegistration) {
+        await serviceWorkerRegistration.update();
+        if (serviceWorkerRegistration.waiting) showUpdateNotice();
       }
     }
 
@@ -581,10 +602,19 @@
     checkTomorrowAvailability();
     loadData(state.selectedDate);
     loadHistory();
+    elements.updateButton.addEventListener("click", () => {
+      if (serviceWorkerRegistration?.waiting) serviceWorkerRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
+      window.location.reload();
+    });
+    checkForUpdates();
+    window.setInterval(checkForUpdates, 15 * 60 * 1000);
 
     if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(error => {
+        navigator.serviceWorker.register("./sw.js").then(registration => {
+          serviceWorkerRegistration = registration;
+          if (registration.waiting) showUpdateNotice();
+        }).catch(error => {
           console.warn("No se pudo registrar el modo instalable:", error);
         });
       });
