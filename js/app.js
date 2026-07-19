@@ -21,6 +21,7 @@
       loadSequence: 0,
       tomorrowAvailable: false,
       history: [],
+      historyRange: 7,
       retryScheduled: false
     };
 
@@ -243,15 +244,20 @@
       }
       const maximum = Math.max(...state.history.map(item => item.maximum), .001);
       elements.historyChart.innerHTML = state.history.map(item => {
-        const shortDate = new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit" }).format(new Date(`${item.dateKey}T12:00:00`));
+        const date = new Date(`${item.dateKey}T12:00:00`);
+        const shortDate = state.historyRange === 365
+          ? new Intl.DateTimeFormat("es-ES", { month: "short" }).format(date).replace(".", "").toUpperCase()
+          : new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit" }).format(date);
         const bar = (value, type, label) => `<div class="history-bar ${type}" style="height:${Math.max(2, value / maximum * 100)}%" title="${label}: ${formatPrice(value)} €/kWh"></div>`;
-        return `<div class="history-day" aria-label="${shortDate}: mínimo ${formatPrice(item.minimum)} €/kWh, media ${formatPrice(item.average)} €/kWh, máximo ${formatPrice(item.maximum)} €/kWh"><div class="history-bars">${bar(item.minimum, "minimum", "Mínimo")}${bar(item.average, "average", "Media")}${bar(item.maximum, "maximum", "Máximo")}</div><span class="history-day-label">${shortDate}</span><span class="history-values"><span>Mín <strong>${formatPrice(item.minimum)}</strong></span><span>Med <strong>${formatPrice(item.average)}</strong></span><span>Máx <strong>${formatPrice(item.maximum)}</strong></span></span></div>`;
+        const tooltip = `${shortDate}\nMínimo: ${formatPrice(item.minimum)} €/kWh\nMedia: ${formatPrice(item.average)} €/kWh\nMáximo: ${formatPrice(item.maximum)} €/kWh`;
+        return `<div class="history-day" aria-label="${tooltip.replaceAll("\n", ", ")}"><div class="history-bars"><span class="history-tooltip">${tooltip}</span>${bar(item.minimum, "minimum", "Mínimo")}${bar(item.average, "average", "Media")}${bar(item.maximum, "maximum", "Máximo")}</div><span class="history-day-label">${shortDate}</span></div>`;
       }).join("");
-      elements.historyStatus.textContent = `${state.history.length} días con precios publicados.`;
+      const periodLabel = state.historyRange === 365 ? "meses" : "días";
+      elements.historyStatus.textContent = `${state.history.length} ${periodLabel} con precios publicados.`;
     }
 
     async function loadHistory() {
-      const dates = Array.from({ length: 7 }, (_, index) => shiftDate(todayKey(), -index));
+      const dates = Array.from({ length: state.historyRange }, (_, index) => shiftDate(todayKey(), -index));
       const results = await Promise.all(dates.map(async dateKey => {
         try {
           const cached = loadCache(dateKey);
@@ -263,7 +269,22 @@
           return null;
         }
       }));
-      state.history = results.filter(Boolean).sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+      const available = results.filter(Boolean);
+      if (state.historyRange === 365) {
+        const months = new Map();
+        available.forEach(item => {
+          const month = item.dateKey.slice(0, 7);
+          const group = months.get(month) || { dateKey: `${month}-01`, averages: [], minimum: Infinity, maximum: -Infinity };
+          group.averages.push(item.average);
+          group.minimum = Math.min(group.minimum, item.minimum);
+          group.maximum = Math.max(group.maximum, item.maximum);
+          months.set(month, group);
+        });
+        state.history = [...months.values()].map(item => ({ dateKey: item.dateKey, average: item.averages.reduce((sum, value) => sum + value, 0) / item.averages.length, minimum: item.minimum, maximum: item.maximum }));
+      } else {
+        state.history = available;
+      }
+      state.history.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
       renderHistory();
     }
 
@@ -423,12 +444,22 @@
     });
     elements.csvButton.addEventListener("click", downloadCsv);
 
-    document.querySelectorAll(".tab").forEach(button => {
+    document.querySelectorAll(".tabs .tab").forEach(button => {
       button.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
         button.classList.add("active");
         state.activeFilter = button.dataset.filter;
         renderChart();
+      });
+    });
+
+    document.querySelectorAll(".history-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".history-tab").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        state.historyRange = Number(button.dataset.historyRange);
+        elements.historyStatus.textContent = "Cargando histórico…";
+        loadHistory();
       });
     });
 
