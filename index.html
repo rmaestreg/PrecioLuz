@@ -143,6 +143,17 @@
 
           <div class="field-row">
             <div class="field">
+              <label for="planner-start-time" data-i18n="planner.startAllowed">Inicio permitido</label>
+              <input id="planner-start-time" type="time" value="00:00">
+            </div>
+            <div class="field">
+              <label for="planner-end-time" data-i18n="planner.endBefore">Debe acabar antes de</label>
+              <input id="planner-end-time" type="time" value="23:59">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
               <label for="energy-input" data-i18n="planner.energy">Consumo total (kWh)</label>
               <input id="energy-input" type="number" min="0.01" max="200" step="0.01" value="0.75" inputmode="decimal">
             </div>

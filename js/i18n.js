@@ -75,6 +75,15 @@
   Object.assign(en, lightDetailTranslations.en);
   Object.assign(fr, lightDetailTranslations.fr);
 
+  const plannerDetailTranslations = {
+    es: { "planner.startAllowed": "Inicio permitido", "planner.endBefore": "Debe acabar antes de", "planner.noWindow": "No hay una ventana completa dentro del horario permitido.", "planner.loadingNextDay": "Consultando las franjas del día siguiente…" },
+    en: { "planner.startAllowed": "Allowed start", "planner.endBefore": "Must finish before", "planner.noWindow": "There is no complete window within the allowed schedule.", "planner.loadingNextDay": "Loading the following day’s time slots…" },
+    fr: { "planner.startAllowed": "Début autorisé", "planner.endBefore": "Doit se terminer avant", "planner.noWindow": "Aucun créneau complet ne respecte l’horaire autorisé.", "planner.loadingNextDay": "Chargement des créneaux du jour suivant…" }
+  };
+  Object.assign(es, plannerDetailTranslations.es);
+  Object.assign(en, plannerDetailTranslations.en);
+  Object.assign(fr, plannerDetailTranslations.fr);
+
   const storageKey = "pvpc-language";
   function readLanguage() { try { return ["es", "en", "fr"].includes(localStorage.getItem(storageKey)) ? localStorage.getItem(storageKey) : "es"; } catch { return "es"; } }
   let language = readLanguage();

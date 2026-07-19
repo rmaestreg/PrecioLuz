@@ -25,6 +25,9 @@
       history: [],
       historyRange: 7,
       historyLoadSequence: 0,
+      plannerNextDayKey: "",
+      plannerNextDayRows: [],
+      plannerNextDayLoading: false,
       retryScheduled: false,
       statusKey: "status.loading",
       statusType: "loading",
@@ -64,6 +67,8 @@
       rows: $("price-rows"),
       tableDescription: $("table-description"),
       applianceSelect: $("appliance-select"),
+      plannerStartTime: $("planner-start-time"),
+      plannerEndTime: $("planner-end-time"),
       energyInput: $("energy-input"),
       durationInput: $("duration-input"),
       bestWindow: $("best-window"),
@@ -180,11 +185,42 @@
         const { payload } = await fetchOfficialData(tomorrow);
         const normalised = normaliseApiResponse(payload, tomorrow);
         state.tomorrowAvailable = normalised.rows.length > 0;
-        if (state.tomorrowAvailable) saveCache(tomorrow, normalised);
+        if (state.tomorrowAvailable) {
+          saveCache(tomorrow, normalised);
+          state.plannerNextDayKey = tomorrow;
+          state.plannerNextDayRows = normalised.rows;
+        }
       } catch (error) {
         state.tomorrowAvailable = false;
       }
       updateDateNavigation();
+      if (typeof updateSimulator === "function") updateSimulator();
+    }
+
+    async function ensurePlannerFollowingDay(nextDate) {
+      if (!nextDate || state.plannerNextDayKey === nextDate || state.plannerNextDayLoading) return;
+      const cached = loadCache(nextDate);
+      if (cached?.rows?.length) {
+        state.plannerNextDayKey = nextDate;
+        state.plannerNextDayRows = cached.rows;
+        updateSimulator();
+        return;
+      }
+      if (state.selectedDate !== todayKey() || !state.tomorrowAvailable) return;
+      state.plannerNextDayLoading = true;
+      updateSimulator();
+      try {
+        const { payload } = await fetchOfficialData(nextDate);
+        const normalised = normaliseApiResponse(payload, nextDate);
+        state.plannerNextDayKey = nextDate;
+        state.plannerNextDayRows = normalised.rows;
+        saveCache(nextDate, normalised);
+      } catch (error) {
+        console.warn("No se pudo cargar el día siguiente para el planificador", error);
+      } finally {
+        state.plannerNextDayLoading = false;
+        updateSimulator();
+      }
     }
 
     function updateHero() {
@@ -513,7 +549,13 @@
 
     async function loadData(dateKey, { manual = false } = {}) {
       const sequence = ++state.loadSequence;
+      const previousDate = state.selectedDate;
       state.selectedDate = dateKey;
+      if (previousDate && previousDate !== dateKey) {
+        state.plannerNextDayKey = "";
+        state.plannerNextDayRows = [];
+        state.plannerNextDayLoading = false;
+      }
       elements.dateInput.value = dateKey;
       elements.refreshButton.disabled = true;
       setLocalizedStatus(manual ? "status.refreshing" : "status.loading", "loading", formatDateLong(dateKey));
@@ -686,6 +728,8 @@
       }
       updateSimulator();
     });
+    elements.plannerStartTime.addEventListener("change", updateSimulator);
+    elements.plannerEndTime.addEventListener("change", updateSimulator);
     elements.energyInput.addEventListener("input", updateSimulator);
     elements.durationInput.addEventListener("input", updateSimulator);
 
