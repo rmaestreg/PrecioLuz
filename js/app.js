@@ -275,7 +275,7 @@
 
     async function loadHistory() {
       const dates = Array.from({ length: state.historyRange }, (_, index) => shiftDate(todayKey(), -index));
-      const results = await Promise.all(dates.map(async dateKey => {
+      const getDay = async dateKey => {
         try {
           const cached = loadCache(dateKey);
           const sourceData = cached || normaliseApiResponse((await fetchOfficialData(dateKey)).payload, dateKey);
@@ -285,7 +285,16 @@
         } catch (error) {
           return null;
         }
-      }));
+      };
+      const results = [];
+      let cursor = 0;
+      const workers = Array.from({ length: Math.min(6, dates.length) }, async () => {
+        while (cursor < dates.length) {
+          const dateKey = dates[cursor++];
+          results.push(await getDay(dateKey));
+        }
+      });
+      await Promise.all(workers);
       const available = results.filter(Boolean);
       if (state.historyRange === 365) {
         const months = new Map();
