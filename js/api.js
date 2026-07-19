@@ -1,3 +1,4 @@
+/* API, normalización de franjas horarias y caché local por fecha. */
 function partsInSpain(date = new Date()) {
       const parts = new Intl.DateTimeFormat("en-CA", {
         timeZone: CONFIG.timezone,

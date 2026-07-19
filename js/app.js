@@ -1,5 +1,7 @@
 "use strict";
 
+/* Estado de la interfaz, eventos, modo offline, histórico e inicialización. */
+
     const CONFIG = Object.freeze({
       timezone: "Europe/Madrid",
       apiBase: "https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real",

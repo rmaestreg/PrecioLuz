@@ -1,3 +1,4 @@
+/* Cálculo de ventanas consecutivas y costes del planificador. */
 function bestWindow(duration) {
       if (!state.data.length || duration < 1 || duration > state.data.length) return null;
       let best = null;

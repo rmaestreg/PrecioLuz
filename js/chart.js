@@ -1,3 +1,4 @@
+/* Renderizado del gráfico horario y de la tabla de detalle. */
 function colourForLevel(level) {
       const styles = getComputedStyle(document.documentElement);
       return styles.getPropertyValue(level === "low" ? "--low" : level === "high" ? "--high" : "--medium").trim();
