@@ -10,6 +10,7 @@ css/app.css                 Estilos, temas y diseño responsive
 js/api.js                   API de Red Eléctrica, normalización y caché
 js/chart.js                 Gráfico de precios por hora y tabla horaria
 js/planner.js               Cálculo de la mejor ventana de consumo
+js/i18n.js                  Idiomas ESP/ENG y preferencias locales
 js/app.js                   Estado, eventos, histórico e inicialización
 manifest.webmanifest        Configuración de la PWA
 sw.js                       Caché del shell y funcionamiento offline

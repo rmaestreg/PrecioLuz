@@ -1,4 +1,4 @@
-const CACHE_NAME = "precio-luz-shell-v1.0.0";
+const CACHE_NAME = "precio-luz-shell-v1.0.1";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./js/api.js",
   "./js/chart.js",
   "./js/planner.js",
+  "./js/i18n.js",
   "./js/app.js",
   "./icons/favicon-32.png",
   "./icons/favicon-64.png",

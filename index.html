@@ -37,6 +37,11 @@
         <input class="control" id="date-input" type="date">
         <button class="button icon-button" id="next-day-button" type="button" aria-label="Día siguiente" title="Día siguiente">›</button>
         <button class="button" id="today-button" type="button">Hoy</button>
+        <label class="sr-only" for="language-select">Idioma</label>
+        <select class="control language-select" id="language-select" aria-label="Idioma">
+          <option value="es">ESP</option>
+          <option value="en">ENG</option>
+        </select>
         <button class="button" id="dryer-button" type="button" disabled>¿Cómo está la luz?</button>
         <button class="button primary" id="refresh-button" type="button">Actualizar</button>
         <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
@@ -230,6 +235,7 @@
   <script src="./js/api.js"></script>
   <script src="./js/chart.js"></script>
   <script src="./js/planner.js"></script>
+  <script src="./js/i18n.js"></script>
   <script src="./js/app.js"></script>
 </body>
 </html>
