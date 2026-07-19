@@ -73,6 +73,8 @@
     }
 
     .topbar {
+      position: relative;
+      z-index: 40;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -140,7 +142,13 @@
       padding: 8px 11px;
     }
 
-    .language-select { min-width: 66px; padding-inline: 8px; font-size: .76rem; font-weight: 750; }
+    .language-picker { position: relative; }
+    .language-button { display: inline-flex; align-items: center; gap: 6px; min-width: 56px; justify-content: center; padding: 8px 10px; cursor: pointer; }
+    .language-flag, .language-menu button span { font-size: 1.15rem; line-height: 1; }
+    .language-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 25; display: none; min-width: 166px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+    .language-picker.open .language-menu { display: grid; gap: 2px; }
+    .language-menu button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; text-align: left; font: inherit; }
+    .language-menu button:hover, .language-menu button[aria-selected="true"] { background: var(--primary-soft); }
 
     .button {
       display: inline-flex;
@@ -437,6 +445,7 @@
     @media (max-width: 640px) {
       .shell { width: min(100% - 20px, 1240px); padding-top: 22px; }
       .toolbar { width: 100%; }
+      .language-menu { left: 0; right: auto; max-width: calc(100vw - 20px); }
       .control { flex: 1 1 150px; }
       .button.primary { flex: 1 1 135px; }
       .status-line { align-items: flex-start; flex-direction: column; }

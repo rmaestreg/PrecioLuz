@@ -79,7 +79,7 @@
         const response = await fetch("./version.json", { cache: "no-store" });
         if (!response.ok) throw new Error("No se pudo cargar la versión");
         const { version } = await response.json();
-        if (version) $("app-version").textContent = `v${version}`;
+        if (version) $("app-version").textContent = version;
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
       }
@@ -158,7 +158,8 @@
         ? (window.i18n?.language === "en" ? "practically equal to the average" : "prácticamente igual a la media")
         : `${Math.abs(relation).toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} % ${window.i18n?.language === "en" ? (relation < 0 ? "below" : "above") : (relation < 0 ? "por debajo" : "por encima")} ${window.i18n?.language === "en" ? "the average" : "de la media"}`;
 
-      elements.currentTitle.textContent = `${current.label} · ${window.i18n?.language === "en" ? "price" : "precio"} ${levelLabel(current.level).toLowerCase()}`;
+      const priceWord = window.i18n?.language === "en" ? "price" : window.i18n?.language === "fr" ? "prix" : "precio";
+      elements.currentTitle.textContent = `${current.label} · ${priceWord} ${levelLabel(current.level).toLowerCase()}`;
       elements.currentPrice.textContent = formatPrice(current.priceKWh);
 
       if (current.level === "low") {
@@ -263,8 +264,8 @@
       elements.historyChart.innerHTML = state.history.map(item => {
         const date = new Date(`${item.dateKey}T12:00:00`);
         const shortDate = state.historyRange === 365
-          ? new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : "es-ES", { month: "short" }).format(date).replace(".", "").toUpperCase()
-          : new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : "es-ES", { day: "2-digit", month: "2-digit" }).format(date);
+          ? new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { month: "short" }).format(date).replace(".", "").toUpperCase()
+          : new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { day: "2-digit", month: "2-digit" }).format(date);
         const bar = (value, type, label) => `<div class="history-bar ${type}" style="height:${Math.max(2, value / maximum * 100)}%" title="${label}: ${formatPrice(value)} €/kWh"></div>`;
         const tooltip = `${shortDate}\nMínimo: ${formatPrice(item.minimum)} €/kWh\nMedia: ${formatPrice(item.average)} €/kWh\nMáximo: ${formatPrice(item.maximum)} €/kWh`;
         return `<div class="history-day" aria-label="${tooltip.replaceAll("\n", ", ")}"><div class="history-bars"><span class="history-tooltip">${tooltip}</span>${bar(item.minimum, "minimum", "Mínimo")}${bar(item.average, "average", "Media")}${bar(item.maximum, "maximum", "Máximo")}</div><span class="history-day-label">${shortDate}</span></div>`;

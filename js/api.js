@@ -28,7 +28,7 @@ function partsInSpain(date = new Date()) {
     function formatDateLong(dateKey) {
       const [year, month, day] = dateKey.split("-").map(Number);
       const safeDate = new Date(Date.UTC(year, month - 1, day, 12));
-      return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : "es-ES", {
+      return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", {
         timeZone: "UTC",
         weekday: "long",
         day: "numeric",
@@ -39,7 +39,7 @@ function partsInSpain(date = new Date()) {
 
     function formatPrice(value, decimals = 5) {
       if (!Number.isFinite(value)) return "—";
-      return value.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", {
+      return value.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
       });
@@ -47,12 +47,12 @@ function partsInSpain(date = new Date()) {
 
     function formatCurrency(value) {
       if (!Number.isFinite(value)) return "—";
-      return value.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 3 });
+      return value.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 3 });
     }
 
     function formatDateTime(date) {
       if (!date || Number.isNaN(new Date(date).getTime())) return "—";
-      return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : "es-ES", {
+      return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", {
         timeZone: CONFIG.timezone,
         dateStyle: "short",
         timeStyle: "short"
@@ -81,6 +81,7 @@ function partsInSpain(date = new Date()) {
 
     function levelLabel(level) {
       if (window.i18n?.language === "en") return level === "low" ? "Low" : level === "high" ? "High" : "Medium";
+      if (window.i18n?.language === "fr") return level === "low" ? "Bas" : level === "high" ? "Élevé" : "Moyen";
       return level === "low" ? "Bajo" : level === "high" ? "Alto" : "Medio";
     }
 

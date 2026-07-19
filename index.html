@@ -27,7 +27,7 @@
         <div class="brand-copy">
           <p class="eyebrow">Tarifa regulada · España</p>
           <h1>Precio de la luz</h1>
-          <span class="app-version" id="app-version">v1.0.0</span>
+          <span class="app-version" id="app-version">1.0.0</span>
         </div>
       </div>
 
@@ -37,11 +37,16 @@
         <input class="control" id="date-input" type="date">
         <button class="button icon-button" id="next-day-button" type="button" aria-label="Día siguiente" title="Día siguiente">›</button>
         <button class="button" id="today-button" type="button">Hoy</button>
-        <label class="sr-only" for="language-select">Idioma</label>
-        <select class="control language-select" id="language-select" aria-label="Idioma">
-          <option value="es">ESP</option>
-          <option value="en">ENG</option>
-        </select>
+        <div class="language-picker" id="language-picker">
+          <button class="control language-button" id="language-button" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="language-flag" id="language-flag">🇪🇸</span><span class="sr-only" id="language-name">Español</span>
+          </button>
+          <div class="language-menu" id="language-menu" role="listbox" aria-label="Idioma">
+            <button type="button" role="option" data-language="es"><span>🇪🇸</span>Español</button>
+            <button type="button" role="option" data-language="en"><span>🇬🇧</span>English</button>
+            <button type="button" role="option" data-language="fr"><span>🇫🇷</span>Français</button>
+          </div>
+        </div>
         <button class="button" id="dryer-button" type="button" disabled>¿Cómo está la luz?</button>
         <button class="button primary" id="refresh-button" type="button">Actualizar</button>
         <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
