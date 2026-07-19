@@ -67,7 +67,11 @@
       savingBox: $("saving-box"),
       csvButton: $("csv-button"),
       historyChart: $("history-chart"),
-      historyStatus: $("history-status")
+      historyStatus: $("history-status"),
+      historyAverage: $("history-average"),
+      historyMinimum: $("history-minimum"),
+      historyMaximum: $("history-maximum"),
+      historySpread: $("history-spread")
     };
 
     async function loadAppVersion() {
@@ -241,9 +245,20 @@
 
     function renderHistory() {
       if (!state.history.length) {
+        elements.historyAverage.textContent = "—";
+        elements.historyMinimum.textContent = "—";
+        elements.historyMaximum.textContent = "—";
+        elements.historySpread.textContent = "—";
         elements.historyChart.innerHTML = '<p class="panel-description">No hay datos históricos disponibles.</p>';
         return;
       }
+      const periodAverage = state.history.reduce((sum, item) => sum + item.average, 0) / state.history.length;
+      const periodMinimum = Math.min(...state.history.map(item => item.minimum));
+      const periodMaximum = Math.max(...state.history.map(item => item.maximum));
+      elements.historyAverage.textContent = `${formatPrice(periodAverage)} €/kWh`;
+      elements.historyMinimum.textContent = `${formatPrice(periodMinimum)} €/kWh`;
+      elements.historyMaximum.textContent = `${formatPrice(periodMaximum)} €/kWh`;
+      elements.historySpread.textContent = `${formatPrice(periodMaximum - periodMinimum)} €/kWh`;
       const maximum = Math.max(...state.history.map(item => item.maximum), .001);
       elements.historyChart.innerHTML = state.history.map(item => {
         const date = new Date(`${item.dateKey}T12:00:00`);
