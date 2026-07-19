@@ -75,7 +75,8 @@
       updateButton: $("update-button")
     };
 
-    let currentAppVersion = $("app-version").textContent.trim();
+    const runningVersion = $("app-version").textContent.trim();
+    let availableVersion = runningVersion;
     let serviceWorkerRegistration = null;
 
     async function loadAppVersion() {
@@ -83,11 +84,10 @@
         const response = await fetch(`./version.json?check=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) throw new Error("No se pudo cargar la versión");
         const { version } = await response.json();
-        if (version && version !== currentAppVersion) {
-          if (currentAppVersion && currentAppVersion !== "—") showUpdateNotice(version);
-          currentAppVersion = version;
+        if (version) {
+          availableVersion = version;
+          if (runningVersion !== "—" && availableVersion !== runningVersion) showUpdateNotice(availableVersion);
         }
-        if (version) $("app-version").textContent = version;
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
       }
@@ -95,7 +95,16 @@
 
     function showUpdateNotice(version = "") {
       elements.updateButton.hidden = false;
+      elements.updateButton.textContent = version ? `Actualizar ${version}` : "Actualizar";
       elements.updateButton.setAttribute("aria-label", version ? `Actualizar a la versión ${version}` : "Actualizar aplicación");
+    }
+
+    function activateWaitingWorker(registration) {
+      const waiting = registration?.waiting;
+      if (!waiting) return false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => window.location.reload(), { once: true });
+      waiting.postMessage({ type: "SKIP_WAITING" });
+      return true;
     }
 
     async function checkForUpdates() {
@@ -369,7 +378,7 @@
       elements.maximumHour.textContent = "—";
       elements.priceSpread.textContent = "—";
       elements.spreadDetail.textContent = "—";
-      elements.rows.innerHTML = `<tr><td colspan="5">${message}</td></tr>`;
+      elements.rows.innerHTML = `<tr><td colspan="4">${message}</td></tr>`;
       elements.csvButton.disabled = true;
       elements.dryerButton.disabled = true;
       updateSimulator();
@@ -603,8 +612,8 @@
     loadData(state.selectedDate);
     loadHistory();
     elements.updateButton.addEventListener("click", () => {
-      if (serviceWorkerRegistration?.waiting) serviceWorkerRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
-      window.location.reload();
+      if (activateWaitingWorker(serviceWorkerRegistration)) return;
+      serviceWorkerRegistration?.update().then(() => activateWaitingWorker(serviceWorkerRegistration));
     });
     checkForUpdates();
     window.setInterval(checkForUpdates, 15 * 60 * 1000);
@@ -614,6 +623,12 @@
         navigator.serviceWorker.register("./sw.js").then(registration => {
           serviceWorkerRegistration = registration;
           if (registration.waiting) showUpdateNotice();
+          registration.addEventListener("updatefound", () => {
+            const worker = registration.installing;
+            if (worker) worker.addEventListener("statechange", () => {
+              if (worker.state === "installed" && navigator.serviceWorker.controller) showUpdateNotice(availableVersion);
+            });
+          });
         }).catch(error => {
           console.warn("No se pudo registrar el modo instalable:", error);
         });

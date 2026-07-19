@@ -112,7 +112,7 @@ function colourForLevel(level) {
     function renderTable() {
       const daySummary = summary();
       if (!daySummary) {
-        elements.rows.innerHTML = '<tr><td colspan="5">No hay datos disponibles.</td></tr>';
+        elements.rows.innerHTML = '<tr><td colspan="4">No hay datos disponibles.</td></tr>';
         return;
       }
 
@@ -121,7 +121,6 @@ function colourForLevel(level) {
         const difference = ((item.priceKWh / daySummary.average) - 1) * 100;
         return `<tr class="${index === currentIndex ? "current-row" : ""}">
           <td><strong>${item.label}</strong>${index === currentIndex ? " · ahora" : ""}</td>
-          <td>${item.priceMWh.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
           <td><strong>${formatPrice(item.priceKWh)}</strong></td>
           <td><span class="badge ${item.level}">${levelLabel(item.level)}</span></td>
           <td>${difference >= 0 ? "+" : ""}${difference.toLocaleString(window.i18n?.language === "en" ? "en-US" : "es-ES", { maximumFractionDigits: 1 })} %</td>

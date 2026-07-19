@@ -493,10 +493,9 @@
       tbody tr.current-row { background: var(--primary-soft); }
       tbody tr td { padding: 5px 0; border: 0; font-size: .8rem; }
       tbody tr td:first-child { grid-column: 1 / -1; padding-bottom: 8px; font-weight: 760; }
-      tbody tr td:nth-child(2) { display: none; }
-      tbody tr td:nth-child(3)::before { content: "€/kWh "; color: var(--muted); font-size: .72rem; }
-      tbody tr td:nth-child(4)::before { content: "Nivel "; color: var(--muted); font-size: .72rem; }
-      tbody tr td:nth-child(5)::before { content: "Media "; color: var(--muted); font-size: .72rem; }
+      tbody tr td:nth-child(2)::before { content: "€/kWh "; color: var(--muted); font-size: .72rem; }
+      tbody tr td:nth-child(3)::before { content: "Nivel "; color: var(--muted); font-size: .72rem; }
+      tbody tr td:nth-child(4)::before { content: "Media "; color: var(--muted); font-size: .72rem; }
       tbody tr:last-child td { border-bottom: 0; }
     }
 
