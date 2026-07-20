@@ -9,9 +9,13 @@ function colourForLevel(level) {
     function renderChart() {
       const svg = elements.chart;
       const isMobile = window.innerWidth < 640;
-      const width = Math.max(svg.clientWidth || 0, isMobile ? 320 : 720);
-      const height = isMobile ? 320 : 390;
-      const margin = { top: 10, right: 14, bottom: 52, left: 58 };
+      // Usar el ancho real del panel evita imponer una anchura mínima que
+      // deje espacio sin utilizar en tabletas y paneles estrechos.
+      const width = svg.clientWidth || (isMobile ? 320 : 720);
+      // Mantener la misma proporción que el alto definido en CSS evita que
+      // preserveAspectRatio deje bandas vacías dentro del panel.
+      const height = isMobile ? 320 : 360;
+      const margin = { top: 10, right: 58, bottom: 52, left: 48 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const ns = "http://www.w3.org/2000/svg";
@@ -108,7 +112,7 @@ function colourForLevel(level) {
       const averageLabel = formatPrice(daySummary.average, 3);
       const lastBarRight = margin.left + (state.data.length - 1) * slot + (slot + barWidth) / 2;
       const averageLabelX = lastBarRight + 7;
-      add("rect", { x: averageLabelX - 4, y: averageY - 10, width: 112, height: 20, rx: 4, class: "average-label-bg" });
+      add("rect", { x: averageLabelX - 4, y: averageY - 10, width: 54, height: 20, rx: 4, class: "average-label-bg" });
       add("text", { x: averageLabelX, y: averageY + 4, "text-anchor": "start", class: "axis-text average-label" }, averageLabel);
       add("text", { x: 15, y: margin.top + plotHeight / 2, "text-anchor": "middle", class: "axis-text", transform: `rotate(-90 15 ${margin.top + plotHeight / 2})` }, "€/kWh");
     }
