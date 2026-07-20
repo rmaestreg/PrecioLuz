@@ -353,17 +353,18 @@
     function updateMetricCards() {
       const daySummary = summary();
       if (!daySummary) return;
-      elements.averagePrice.textContent = `${formatPrice(daySummary.average)} €`;
+      const metricValue = value => `<span class="metric-number">${formatPrice(value)}</span><span class="metric-unit">€/kWh</span>`;
+      elements.averagePrice.innerHTML = metricValue(daySummary.average);
       elements.averageDetail.textContent = `${state.data.length} ${tr("detail.publishedCount")}`;
-      elements.minimumPrice.textContent = `${formatPrice(daySummary.minimum.priceKWh)} €`;
+      elements.minimumPrice.innerHTML = metricValue(daySummary.minimum.priceKWh);
       elements.minimumHour.textContent = daySummary.minimum.label;
-      elements.maximumPrice.textContent = `${formatPrice(daySummary.maximum.priceKWh)} €`;
+      elements.maximumPrice.innerHTML = metricValue(daySummary.maximum.priceKWh);
       elements.maximumHour.textContent = daySummary.maximum.label;
-      elements.priceSpread.textContent = `${formatPrice(daySummary.spread)} €`;
-      const ratio = daySummary.minimum.priceKWh === 0 ? null : daySummary.maximum.priceKWh / daySummary.minimum.priceKWh;
-      elements.spreadDetail.textContent = ratio && ratio > 0
-        ? tr("hero.maximumRatio", { ratio: ratio.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 2 }) })
-        : tr("hero.difference");
+      elements.priceSpread.innerHTML = metricValue(daySummary.spread);
+      const relativeDifference = daySummary.minimum.priceKWh > 0 ? daySummary.spread / daySummary.minimum.priceKWh * 100 : null;
+      elements.spreadDetail.textContent = relativeDifference !== null
+        ? tr("metrics.relativeDifference", { value: formatPercent(relativeDifference, 1) })
+        : tr("metrics.absoluteDifference", { value: formatPrice(daySummary.spread) });
     }
 
     

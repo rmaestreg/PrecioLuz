@@ -268,7 +268,9 @@
     .card { min-width: 0; padding: 18px; border-radius: 16px; }
     :root:not([data-theme="dark"]) .card { background: var(--surface-soft); }
     .card-label { color: var(--muted); font-size: .76rem; font-weight: 750; letter-spacing: .075em; text-transform: uppercase; }
-    .card-value { margin-top: 8px; font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 820; letter-spacing: -.035em; overflow-wrap: anywhere; }
+    .card-value { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px; margin-top: 8px; font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 820; letter-spacing: -.035em; overflow-wrap: anywhere; }
+    .metric-number { min-width: 0; }
+    .metric-unit { color: var(--muted); font-size: .42em; font-weight: 760; letter-spacing: 0; white-space: nowrap; }
     .card-detail { min-height: 1.2em; margin-top: 4px; color: var(--muted); font-size: .83rem; }
     .low-text { color: var(--low); }
     .high-text { color: var(--high); }
