@@ -11,7 +11,7 @@ function colourForLevel(level) {
       const isMobile = window.innerWidth < 640;
       const width = Math.max(svg.clientWidth || 0, isMobile ? 320 : 720);
       const height = isMobile ? 320 : 390;
-      const margin = { top: 20, right: 14, bottom: 62, left: 58 };
+      const margin = { top: 10, right: 14, bottom: 52, left: 58 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const ns = "http://www.w3.org/2000/svg";
@@ -35,10 +35,12 @@ function colourForLevel(level) {
 
       const daySummary = summary();
       const values = state.data.map(item => item.priceKWh);
-      const minimumValue = Math.min(...values, 0);
+      const minimumValue = Math.min(...values);
       const maximumValue = Math.max(...values, 0);
-      const padding = Math.max((maximumValue - minimumValue) * .12, .0125);
-      const minY = Math.min(0, Math.floor((minimumValue - padding) / .025) * .025);
+      const padding = Math.max((maximumValue - minimumValue) * .06, .006);
+      const minY = minimumValue < 0
+        ? Math.floor((minimumValue - padding) / .025) * .025
+        : 0;
       const maxY = Math.max(.025, Math.ceil((maximumValue + padding) / .025) * .025);
       const range = maxY - minY || 1;
       const ticks = 5;

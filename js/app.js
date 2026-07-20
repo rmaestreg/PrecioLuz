@@ -73,6 +73,8 @@
       durationInput: $("duration-input"),
       bestWindow: $("best-window"),
       bestCost: $("best-cost"),
+      bestDayWindow: $("best-day-window"),
+      bestDayCost: $("best-day-cost"),
       currentCost: $("current-cost"),
       savingBox: $("saving-box"),
       csvButton: $("csv-button"),

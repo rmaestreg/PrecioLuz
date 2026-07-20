@@ -37,10 +37,12 @@ function plannerWindowAllowed(rows, start, duration, context) {
   return true;
 }
 
-function bestWindow(duration, rows = state.data, context = planningContext()) {
+function bestWindow(duration, rows = state.data, context = planningContext(), firstAllowedIndex = 0) {
   if (!rows.length || duration < 1 || duration > rows.length) return null;
+  const firstIndex = Math.max(0, Number.isInteger(firstAllowedIndex) ? firstAllowedIndex : 0);
+  if (firstIndex > rows.length - duration) return null;
   let best = null;
-  for (let start = 0; start <= rows.length - duration; start += 1) {
+  for (let start = firstIndex; start <= rows.length - duration; start += 1) {
     if (!plannerWindowAllowed(rows, start, duration, context)) continue;
     const slice = rows.slice(start, start + duration);
     const average = slice.reduce((sum, item) => sum + item.priceKWh, 0) / duration;
@@ -67,33 +69,45 @@ function updateSimulator() {
   if (!state.data.length || !Number.isFinite(energy) || energy <= 0 || !Number.isFinite(rawDuration) || duration > 12) {
     elements.bestWindow.textContent = "—";
     elements.bestCost.textContent = "—";
+    elements.bestDayWindow.textContent = "—";
+    elements.bestDayCost.textContent = "—";
     elements.currentCost.textContent = "—";
     elements.savingBox.textContent = plannerText("planner.invalid");
     return;
   }
 
-  const best = bestWindow(duration, context.rows, context);
-  if (!best) {
+  const currentIndex = currentDataIndex();
+  const firstAllowedIndex = state.selectedDate === todayKey() ? currentIndex : 0;
+  const bestAvailable = firstAllowedIndex >= 0
+    ? bestWindow(duration, context.rows, context, firstAllowedIndex)
+    : null;
+  const bestDay = bestWindow(duration, context.rows, context, 0);
+
+  if (!bestAvailable && !bestDay) {
     elements.bestWindow.textContent = "—";
     elements.bestCost.textContent = "—";
+    elements.bestDayWindow.textContent = "—";
+    elements.bestDayCost.textContent = "—";
     elements.currentCost.textContent = plannerText("planner.notApplicable");
     elements.savingBox.textContent = state.plannerNextDayLoading ? plannerText("planner.loadingNextDay") : plannerText("planner.noWindow");
     return;
   }
 
-  const bestCost = energy * best.average;
-  elements.bestWindow.textContent = plannerWindowLabel(best.rows);
-  elements.bestCost.textContent = formatCurrency(bestCost);
+  const bestAvailableCost = bestAvailable ? energy * bestAvailable.average : null;
+  const bestDayCost = bestDay ? energy * bestDay.average : null;
+  elements.bestWindow.textContent = bestAvailable ? plannerWindowLabel(bestAvailable.rows) : "—";
+  elements.bestCost.textContent = bestAvailableCost !== null ? formatCurrency(bestAvailableCost) : "—";
+  elements.bestDayWindow.textContent = bestDay ? plannerWindowLabel(bestDay.rows) : "—";
+  elements.bestDayCost.textContent = bestDayCost !== null ? formatCurrency(bestDayCost) : "—";
 
-  const currentIndex = currentDataIndex();
   if (currentIndex >= 0 && plannerWindowAllowed(context.rows, currentIndex, duration, context)) {
     const currentSlice = context.rows.slice(currentIndex, currentIndex + duration);
     const currentAverage = currentSlice.reduce((sum, item) => sum + item.priceKWh, 0) / duration;
     const currentCost = energy * currentAverage;
-    const saving = Math.max(0, currentCost - bestCost);
+    const saving = bestAvailableCost !== null ? Math.max(0, currentCost - bestAvailableCost) : 0;
     const savingPercent = currentCost > 0 ? saving / currentCost * 100 : 0;
     elements.currentCost.textContent = formatCurrency(currentCost);
-    elements.savingBox.textContent = saving > .0005
+    elements.savingBox.textContent = bestAvailableCost !== null && saving > .0005
       ? plannerText("planner.saving", { saving: formatCurrency(saving), percent: savingPercent.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 }) })
       : plannerText("planner.currentCheap");
   } else {
