@@ -27,7 +27,7 @@
         <div class="brand-copy">
           <p class="eyebrow">Tarifa regulada · España</p>
           <h1>Precio de la luz</h1>
-          <span class="app-version" id="app-version">1.0.14</span>
+          <span class="app-version" id="app-version">1.0.15</span>
         <button class="version-update-button" id="update-button" type="button" hidden>Actualizar</button>
           <div class="world-cup-tribute" aria-label="España campeona del mundo 2026" data-i18n-aria-label="tribute.worldCup">
             <span class="world-cup-stars" aria-hidden="true">★ ★</span>
@@ -121,8 +121,10 @@
           <span class="legend-item"><i class="legend-dot" style="background:var(--high)"></i><span data-i18n="chart.highLegend">Alto: más de 0,15 €/kWh</span></span>
         </div>
       </article>
+    </section>
 
-      <aside class="panel">
+    <section class="planner-grid">
+      <article class="panel planner-panel">
         <div class="panel-header">
           <div>
             <h3>Planificador de consumo</h3>
@@ -176,7 +178,60 @@
             <div class="saving-box" id="saving-box" data-i18n="planner.empty">Introduce el consumo para calcular el ahorro posible.</div>
           </div>
         </div>
-      </aside>
+      </article>
+
+      <article class="panel smart-queue-panel">
+        <section class="smart-queue" aria-labelledby="smart-queue-title">
+          <div class="smart-queue-heading">
+            <div>
+              <h3 id="smart-queue-title" data-i18n="planner.queue.title">Cola inteligente de tareas</h3>
+              <p class="panel-description" data-i18n="planner.queue.description">Añade tareas y calcula el calendario más barato con los precios publicados.</p>
+            </div>
+          </div>
+          <form class="smart-queue-form" id="smart-task-form">
+            <div class="field">
+              <label for="smart-task-name" data-i18n="planner.queue.taskName">Tarea</label>
+              <input id="smart-task-name" type="text" value="Lavadora" maxlength="40" autocomplete="off">
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="smart-task-energy" data-i18n="planner.queue.energy">Consumo (kWh)</label>
+                <input id="smart-task-energy" type="number" min="0.01" max="200" step="0.01" value="0.75" inputmode="decimal">
+              </div>
+              <div class="field">
+                <label for="smart-task-duration" data-i18n="planner.queue.duration">Duración (h)</label>
+                <input id="smart-task-duration" type="number" min="1" max="24" step="1" value="2" inputmode="numeric">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="smart-task-deadline" data-i18n="planner.queue.deadline">Debe acabar antes de</label>
+                <input id="smart-task-deadline" type="time" value="20:00">
+              </div>
+              <div class="field">
+                <label for="smart-task-power" data-i18n="planner.queue.power">Potencia (kW)</label>
+                <input id="smart-task-power" type="number" min="0.01" max="100" step="0.01" value="0.50" inputmode="decimal">
+              </div>
+            </div>
+            <label class="checkbox-field" for="smart-task-anytime">
+              <input id="smart-task-anytime" type="checkbox">
+              <span data-i18n="planner.queue.anytime">Sin hora límite</span>
+            </label>
+            <label class="checkbox-field" for="smart-task-interruptible">
+              <input id="smart-task-interruptible" type="checkbox">
+              <span data-i18n="planner.queue.interruptible">Se puede interrumpir</span>
+            </label>
+            <button class="button primary" type="submit" data-i18n="planner.queue.add">Añadir tarea</button>
+          </form>
+          <div class="field smart-queue-capacity">
+            <label for="smart-contracted-power" data-i18n="planner.queue.contractedPower">Potencia contratada (kW)</label>
+            <input id="smart-contracted-power" type="number" min="0.1" max="100" step="0.1" value="5.75" inputmode="decimal">
+          </div>
+          <div class="smart-task-list" id="smart-task-list"></div>
+          <p class="smart-queue-status" id="smart-queue-status" data-i18n="planner.queue.empty">Añade una tarea para generar el calendario.</p>
+          <div class="smart-queue-plan" id="smart-queue-plan" aria-live="polite"></div>
+        </section>
+      </article>
     </section>
 
     <details class="panel table-panel" id="hourly-details">
@@ -261,6 +316,7 @@
   <script src="./js/app.js"></script>
 </body>
 </html>
+
 
 
 

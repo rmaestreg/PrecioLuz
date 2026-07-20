@@ -279,10 +279,14 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.65fr) minmax(280px, .72fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 14px;
       margin-bottom: 14px;
     }
+    .dashboard-grid > .panel { grid-column: 1 / -1; width: 100%; }
+
+    .planner-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+    .planner-grid > .panel { min-width: 0; }
 
     .panel { border-radius: 18px; padding: 20px; }
     .panel-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
@@ -375,6 +379,21 @@
     .result-row strong { text-align: right; }
     .saving-box { margin-top: 5px; padding: 12px; border-radius: 11px; background: var(--low-soft); color: var(--low); font-size: .84rem; }
 
+    .smart-queue { display: grid; gap: 11px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+    .smart-queue-panel .smart-queue { margin-top: 0; padding-top: 0; border-top: 0; }
+    .smart-queue-heading h3 { margin: 0; font-size: 1rem; }
+    .smart-queue-form { display: grid; gap: 10px; }
+    .checkbox-field { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .78rem; }
+    .checkbox-field input { width: auto; min-height: 0; }
+    .smart-queue-capacity { margin-top: 1px; }
+    .smart-task-list, .smart-queue-plan { display: grid; gap: 7px; }
+    .smart-task-item, .smart-plan-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft); font-size: .8rem; }
+    .smart-task-item small, .smart-plan-item small { display: block; margin-top: 2px; color: var(--muted); font-size: .72rem; line-height: 1.35; }
+    .smart-task-remove { width: 30px; min-width: 30px; height: 30px; min-height: 30px; border-color: transparent; }
+    .smart-task-empty, .smart-queue-status { margin: 0; color: var(--muted); font-size: .78rem; }
+    .smart-queue-status { padding: 9px 10px; border-radius: 9px; background: var(--primary-soft); }
+    .smart-plan-item.unavailable { border-color: color-mix(in srgb, var(--high) 30%, var(--border)); }
+
     .legend {
       display: flex;
       flex-wrap: wrap;
@@ -455,6 +474,7 @@
       .hero-price { text-align: left; }
       .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .dashboard-grid { grid-template-columns: 1fr; }
+      .planner-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {

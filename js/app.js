@@ -77,6 +77,18 @@
       bestDayCost: $("best-day-cost"),
       currentCost: $("current-cost"),
       savingBox: $("saving-box"),
+      smartTaskForm: $("smart-task-form"),
+      smartTaskName: $("smart-task-name"),
+      smartTaskEnergy: $("smart-task-energy"),
+      smartTaskDuration: $("smart-task-duration"),
+      smartTaskDeadline: $("smart-task-deadline"),
+      smartTaskPower: $("smart-task-power"),
+      smartTaskAnytime: $("smart-task-anytime"),
+      smartTaskInterruptible: $("smart-task-interruptible"),
+      smartContractedPower: $("smart-contracted-power"),
+      smartTaskList: $("smart-task-list"),
+      smartQueueStatus: $("smart-queue-status"),
+      smartQueuePlan: $("smart-queue-plan"),
       csvButton: $("csv-button"),
       historyChart: $("history-chart"),
       historyStatus: $("history-status"),
@@ -248,6 +260,7 @@
       }
       updateDateNavigation();
       if (typeof updateSimulator === "function") updateSimulator();
+      if (typeof updateSmartQueue === "function") updateSmartQueue();
     }
 
     async function ensurePlannerFollowingDay(nextDate) {
@@ -430,6 +443,7 @@
       renderChart();
       renderTable();
       updateSimulator();
+      if (typeof updateSmartQueue === "function") updateSmartQueue();
       elements.csvButton.disabled = !state.data.length;
       elements.dryerButton.disabled = currentDataIndex() < 0;
       updateDateNavigation();
@@ -597,6 +611,7 @@
       elements.csvButton.disabled = true;
       elements.dryerButton.disabled = true;
       updateSimulator();
+      if (typeof updateSmartQueue === "function") updateSmartQueue();
       renderChart();
       updateDateNavigation();
     }
@@ -786,6 +801,7 @@
     elements.plannerEndTime.addEventListener("change", updateSimulator);
     elements.energyInput.addEventListener("input", updateSimulator);
     elements.durationInput.addEventListener("input", updateSimulator);
+    if (typeof initialiseSmartQueue === "function") initialiseSmartQueue();
 
     let resizeTimer;
     window.addEventListener("resize", () => {
