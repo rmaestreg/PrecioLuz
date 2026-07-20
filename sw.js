@@ -45,6 +45,16 @@ self.addEventListener("fetch", event => {
   // Never intercept API/CORS requests: only cache files hosted with this site.
   if (url.origin !== self.location.origin) return;
 
+  // La versión debe comprobarse contra el servidor al arrancar. El resto de
+  // la aplicación puede seguir usando la caché para funcionar sin conexión.
+  if (url.pathname.endsWith("/version.json")) {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" })
+        .catch(() => caches.match("./version.json"))
+    );
+    return;
+  }
+
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request)

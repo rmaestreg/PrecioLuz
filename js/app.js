@@ -95,44 +95,95 @@
       setStatus(tr(key, values), type, meta);
     }
 
-    const runningVersion = $("app-version").textContent.trim();
+    const runningVersion = $("app-version").textContent.trim().replace(/^v/i, "");
     let availableVersion = runningVersion;
     let serviceWorkerRegistration = null;
+    let updateActivationStarted = false;
 
     async function loadAppVersion() {
       try {
         const response = await fetch(`./version.json?check=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) throw new Error("No se pudo cargar la versión");
         const { version } = await response.json();
-        if (version) {
-          availableVersion = version;
-          if (runningVersion !== "—" && availableVersion !== runningVersion) showUpdateNotice(availableVersion);
-        }
+        if (version) availableVersion = String(version).replace(/^v/i, "");
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
       }
     }
 
     function showUpdateNotice(version = "") {
+      if (updateActivationStarted) return;
       elements.updateButton.hidden = false;
       elements.updateButton.textContent = version ? tr("update.to", { version }) : tr("update.generic");
-      elements.updateButton.setAttribute("aria-label", version ? tr("update.to", { version }) : tr("controls.installUpdate"));
+      elements.updateButton.setAttribute("aria-label", tr("controls.installUpdate"));
+      elements.updateButton.disabled = false;
+      elements.updateButton.removeAttribute("aria-busy");
     }
 
-    function activateWaitingWorker(registration) {
-      const waiting = registration?.waiting;
+    function hideUpdateNotice() {
+      if (updateActivationStarted) return;
+      elements.updateButton.hidden = true;
+      elements.updateButton.disabled = false;
+      elements.updateButton.removeAttribute("aria-busy");
+    }
+
+    function activateWaitingWorker(registration, worker = registration?.waiting) {
+      const waiting = registration?.waiting || worker;
       if (!waiting) return false;
+      updateActivationStarted = true;
+      elements.updateButton.disabled = true;
+      elements.updateButton.setAttribute("aria-busy", "true");
       navigator.serviceWorker.addEventListener("controllerchange", () => window.location.reload(), { once: true });
       waiting.postMessage({ type: "SKIP_WAITING" });
       return true;
     }
 
+    function waitForWaitingWorker(registration, timeoutMs = 10000) {
+      if (registration?.waiting) return Promise.resolve(registration.waiting);
+
+      return new Promise(resolve => {
+        let finished = false;
+        let timer;
+        const finish = worker => {
+          if (finished) return;
+          finished = true;
+          window.clearTimeout(timer);
+          resolve(worker || null);
+        };
+        const watch = worker => {
+          if (!worker) return;
+          if (worker.state === "installed") {
+            finish(registration.waiting || worker);
+            return;
+          }
+          worker.addEventListener("statechange", () => {
+            if (worker.state === "installed") finish(registration.waiting || worker);
+            if (worker.state === "redundant") finish(null);
+          });
+        };
+
+        if (registration.installing) watch(registration.installing);
+        registration.addEventListener("updatefound", () => watch(registration.installing), { once: true });
+        timer = window.setTimeout(() => finish(registration.waiting), timeoutMs);
+      });
+    }
+
     async function checkForUpdates() {
       await loadAppVersion();
-      if (serviceWorkerRegistration) {
-        await serviceWorkerRegistration.update();
-        if (serviceWorkerRegistration.waiting) showUpdateNotice();
+      const registration = serviceWorkerRegistration;
+      if (!registration || updateActivationStarted) return;
+
+      try {
+        // update() solo descarga e instala el nuevo worker en estado waiting;
+        // no lo activa porque sw.js no llama a skipWaiting automáticamente.
+        await registration.update();
+      } catch (error) {
+        console.warn("No se pudo comprobar si hay una actualización", error);
       }
+
+      if (registration.waiting) showUpdateNotice(availableVersion !== runningVersion ? availableVersion : "");
+      else if (availableVersion !== runningVersion && runningVersion !== "—") showUpdateNotice(availableVersion);
+      else hideUpdateNotice();
     }
 
     function showLightDialog(message) {
@@ -788,7 +839,6 @@
     }, 15 * 1000);
 
     initialiseTheme();
-    loadAppVersion();
     syncHourlyDetails();
     document.getElementById("hourly-details")?.addEventListener("toggle", event => updateHourlyDetailsLabel(event.currentTarget));
     window.matchMedia("(max-width: 640px)").addEventListener("change", syncHourlyDetails);
@@ -798,24 +848,39 @@
     checkTomorrowAvailability();
     loadData(state.selectedDate);
     loadHistory();
-    elements.updateButton.addEventListener("click", () => {
-      if (activateWaitingWorker(serviceWorkerRegistration)) return;
-      serviceWorkerRegistration?.update().then(() => activateWaitingWorker(serviceWorkerRegistration));
+    elements.updateButton.addEventListener("click", async () => {
+      const registration = serviceWorkerRegistration;
+      if (!registration || updateActivationStarted) return;
+
+      elements.updateButton.disabled = true;
+      elements.updateButton.setAttribute("aria-busy", "true");
+      try {
+        if (!registration.waiting) await registration.update();
+        const waiting = await waitForWaitingWorker(registration);
+        if (waiting) activateWaitingWorker(registration, waiting);
+        else showUpdateNotice(availableVersion !== runningVersion ? availableVersion : "");
+      } catch (error) {
+        console.warn("No se pudo preparar la actualización", error);
+        showUpdateNotice(availableVersion !== runningVersion ? availableVersion : "");
+      }
     });
-    checkForUpdates();
     window.setInterval(checkForUpdates, 15 * 60 * 1000);
 
     if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./sw.js").then(registration => {
           serviceWorkerRegistration = registration;
-          if (registration.waiting) showUpdateNotice();
           registration.addEventListener("updatefound", () => {
             const worker = registration.installing;
             if (worker) worker.addEventListener("statechange", () => {
-              if (worker.state === "installed" && navigator.serviceWorker.controller) showUpdateNotice(availableVersion);
+              if (worker.state === "installed" && navigator.serviceWorker.controller && !updateActivationStarted) {
+                showUpdateNotice(availableVersion !== runningVersion ? availableVersion : "");
+              }
             });
           });
+          // La comprobación se hace al arrancar, pero el worker nuevo queda
+          // esperando hasta que el usuario pulse el botón.
+          checkForUpdates();
         }).catch(error => {
           console.warn("No se pudo registrar el modo instalable:", error);
         });
