@@ -868,8 +868,9 @@
 
     if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").then(registration => {
+        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).then(registration => {
           serviceWorkerRegistration = registration;
+          if (registration.waiting) showUpdateNotice(availableVersion !== runningVersion ? availableVersion : "");
           registration.addEventListener("updatefound", () => {
             const worker = registration.installing;
             if (worker) worker.addEventListener("statechange", () => {
