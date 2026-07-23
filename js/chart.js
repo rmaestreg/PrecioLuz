@@ -111,7 +111,7 @@ function colourForLevel(level) {
 
       const averageLabel = formatPrice(daySummary.average, 3);
       const lastBarRight = margin.left + (state.data.length - 1) * slot + (slot + barWidth) / 2;
-      const averageLabelX = lastBarRight + 7;
+      const averageLabelX = Math.min(lastBarRight + 7, width - margin.right + 2);
       add("rect", { x: averageLabelX - 4, y: averageY - 10, width: 54, height: 20, rx: 4, class: "average-label-bg" });
       add("text", { x: averageLabelX, y: averageY + 4, "text-anchor": "start", class: "axis-text average-label" }, averageLabel);
       add("text", { x: 15, y: margin.top + plotHeight / 2, "text-anchor": "middle", class: "axis-text", transform: `rotate(-90 15 ${margin.top + plotHeight / 2})` }, "€/kWh");
