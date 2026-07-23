@@ -155,6 +155,7 @@
       const waiting = registration?.waiting || worker;
       if (!waiting) return false;
       updateActivationStarted = true;
+      elements.updateButton.hidden = true;
       elements.updateButton.disabled = true;
       elements.updateButton.setAttribute("aria-busy", "true");
       navigator.serviceWorker.addEventListener("controllerchange", () => window.location.reload(), { once: true });
@@ -880,6 +881,7 @@
       const registration = serviceWorkerRegistration;
       if (!registration || updateActivationStarted) return;
 
+      elements.updateButton.hidden = true;
       elements.updateButton.disabled = true;
       elements.updateButton.setAttribute("aria-busy", "true");
       try {
