@@ -724,6 +724,7 @@
     .toolbar .language-menu { top: calc(100% + 8px); background: #12231f; color: #f2faf7; }
     #update-button { display: none !important; }
     #refresh-button { display: none !important; }
+    .toolbar #today-button { display: none !important; }
     #chart-section { scroll-margin-top: 104px; }
     @media (min-width: 641px) {
       .ios-tabbar { display: none !important; }
@@ -812,4 +813,24 @@
       .toolbar .language-picker { display: block !important; position: relative; }
       .toolbar .language-button { position: relative; z-index: 52; display: inline-flex !important; align-items: center; justify-content: center; width: 38px; min-width: 38px; height: 38px; padding: 0; border-radius: 50%; background: #f5f4f8; border: 1px solid #e5e3ea; pointer-events: auto; }
       .toolbar .language-menu { top: calc(100% + 8px); right: 0; left: auto; z-index: 60; transform: none; min-width: 150px; background: #ffffff; color: #111116; pointer-events: auto; }
+    }
+
+    @media screen and (max-width: 430px) {
+      .shell { width: calc(100% - 16px); padding-top: 80px; }
+      .topbar { min-height: 58px; padding: 6px 5px; }
+      .toolbar { gap: 2px; }
+      .toolbar .button,
+      .toolbar .control,
+      .toolbar .language-button { width: 30px; min-width: 30px; flex-basis: 30px; height: 34px; min-height: 34px; border-radius: 9px; }
+      .toolbar #date-input { width: 116px; flex-basis: 116px; font-size: .78rem; padding-inline: 5px; }
+      .toolbar #today-button, .toolbar #dryer-button, .toolbar #theme-button { display: none !important; }
+      .toolbar .language-button { width: 30px; min-width: 30px; }
+      .toolbar .language-flag { font-size: .72rem; }
+      .status-line { margin-top: 10px; padding: 8px 10px; }
+      .hero { padding: 18px 15px; border-radius: 18px; }
+      .hero h2 { font-size: 1.05rem; }
+      .hero-price strong { font-size: 2.05rem; }
+      .card { padding: 13px; min-height: 108px; }
+      .card-label { font-size: .88rem; }
+      .card-value { margin-top: 18px; font-size: 1.25rem; }
     }
