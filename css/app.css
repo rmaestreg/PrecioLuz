@@ -918,6 +918,13 @@
       .toolbar #theme-button { display: inline-flex !important; }
     }
 
+    @media screen and (max-width: 640px) {
+      .status-message { display: block; line-height: 1.35; }
+      .status-message .indicator { display: inline-block; margin-right: 7px; vertical-align: middle; }
+      .status-message #status-text { display: inline; overflow-wrap: normal; }
+      .status-message .status-version { display: inline; margin-left: 4px; white-space: nowrap; }
+    }
+
     /* PWA views: the bottom navigation switches screens instead of scrolling. */
     body[data-app-view="home"] .dashboard-grid,
     body[data-app-view="home"] .planner-grid,
