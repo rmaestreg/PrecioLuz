@@ -590,7 +590,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
     }
 
-    .shell { width: min(1160px, calc(100% - 40px)); padding-top: 92px; padding-bottom: 112px; }
+    .shell { width: min(1160px, calc(100% - 40px)); padding-top: 66px; padding-bottom: 112px; }
     .topbar { align-items: center; margin-bottom: 22px; }
     .brand-heading { gap: 12px; }
     .brand-icon { width: 52px; height: 52px; border-radius: 15px; box-shadow: 0 7px 17px rgba(22,133,108,.2); }
@@ -730,7 +730,15 @@
     :root:not([data-theme="dark"]) .toolbar .control,
     :root:not([data-theme="dark"]) .toolbar .language-button { background: var(--surface-soft); border-color: var(--border); color: var(--text); }
     :root:not([data-theme="dark"]) .toolbar .language-menu { background: var(--surface); color: var(--text); border-color: var(--border); }
-    #chart-section { scroll-margin-top: 104px; }
+    #chart-section { scroll-margin-top: 68px; }
+    #planner-section { scroll-margin-top: 68px; }
+    #history-section { scroll-margin-top: 68px; }
+    .status-line { margin-bottom: 12px; }
+    .hero { margin-bottom: 12px; }
+    .metrics { margin-bottom: 12px; }
+    .dashboard-grid, .planner-grid { gap: 12px; margin-bottom: 12px; }
+    .history-panel { margin-top: 12px; margin-bottom: 12px; }
+    .table-panel { margin-bottom: 12px; }
     @media (min-width: 641px) {
       .ios-tabbar { display: none !important; }
       .shell { padding-bottom: 30px; }
@@ -761,7 +769,7 @@
     :root:not([data-theme="dark"]) .toolbar .control:focus-visible { box-shadow: 0 0 0 3px rgba(85, 205, 169, .35); }
 
     @media (max-width: 640px) {
-      .shell { width: calc(100% - 24px); padding-top: 88px; padding-bottom: 118px; }
+      .shell { width: calc(100% - 24px); padding-top: 66px; padding-bottom: 118px; }
       .topbar { align-items: flex-start; }
       .topbar { padding: 7px 6px; }
       .toolbar { gap: 4px; justify-content: center; overflow: hidden; }
@@ -821,7 +829,7 @@
     }
 
     @media screen and (max-width: 430px) {
-      .shell { width: calc(100% - 16px); padding-top: 80px; }
+      .shell { width: calc(100% - 16px); padding-top: 56px; }
       .topbar { min-height: 58px; padding: 6px 5px; }
       .toolbar { gap: 2px; }
       .toolbar .button,
@@ -831,7 +839,7 @@
       .toolbar #today-button, .toolbar #dryer-button, .toolbar #theme-button { display: none !important; }
       .toolbar .language-button { width: 30px; min-width: 30px; }
       .toolbar .language-flag { font-size: .72rem; }
-      .status-line { margin-top: 10px; padding: 8px 10px; }
+      .status-line { margin-top: 0; padding: 8px 10px; }
       .hero { padding: 18px 15px; border-radius: 18px; }
       .hero h2 { font-size: 1.05rem; }
       .hero-price strong { font-size: 2.05rem; }
