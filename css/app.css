@@ -914,3 +914,40 @@
     @media screen and (max-width: 430px) {
       .toolbar #theme-button { display: inline-flex !important; }
     }
+
+    /* PWA views: the bottom navigation switches screens instead of scrolling. */
+    body[data-app-view="home"] .dashboard-grid,
+    body[data-app-view="home"] .planner-grid,
+    body[data-app-view="home"] #hourly-details,
+    body[data-app-view="home"] #history-section,
+    body[data-app-view="home"] .footer,
+    body[data-app-view="chart"] .hero,
+    body[data-app-view="chart"] .metrics,
+    body[data-app-view="chart"] .planner-grid,
+    body[data-app-view="chart"] #hourly-details,
+    body[data-app-view="chart"] #history-section,
+    body[data-app-view="chart"] .footer,
+    body[data-app-view="planner"] .hero,
+    body[data-app-view="planner"] .metrics,
+    body[data-app-view="planner"] .dashboard-grid,
+    body[data-app-view="planner"] #hourly-details,
+    body[data-app-view="planner"] #history-section,
+    body[data-app-view="planner"] .footer,
+    body[data-app-view="history"] .hero,
+    body[data-app-view="history"] .metrics,
+    body[data-app-view="history"] .dashboard-grid,
+    body[data-app-view="history"] .planner-grid,
+    body[data-app-view="history"] #hourly-details,
+    body[data-app-view="history"] .footer,
+    body[data-app-view="queue"] .hero,
+    body[data-app-view="queue"] .metrics,
+    body[data-app-view="queue"] .dashboard-grid,
+    body[data-app-view="queue"] .planner-panel,
+    body[data-app-view="queue"] #hourly-details,
+    body[data-app-view="queue"] #history-section,
+    body[data-app-view="queue"] .footer { display: none !important; }
+
+    body[data-app-view="chart"] #chart-section,
+    body[data-app-view="planner"] #planner-section,
+    body[data-app-view="history"] #history-section,
+    body[data-app-view="queue"] #smart-queue-section { margin-top: 4px; }

@@ -910,3 +910,26 @@
         });
       });
     }
+
+    const appViewLinks = document.querySelectorAll(".ios-tab[data-app-view]");
+    const setAppView = view => {
+      const nextView = ["home", "chart", "planner", "queue", "history"].includes(view) ? view : "home";
+      document.body.dataset.appView = nextView;
+      appViewLinks.forEach(link => {
+        const active = link.dataset.appView === nextView;
+        link.classList.toggle("active", active);
+        link.setAttribute("aria-current", active ? "page" : "false");
+      });
+      if (nextView === "chart") requestAnimationFrame(() => typeof renderChart === "function" && renderChart());
+      if (nextView === "planner" || nextView === "queue") requestAnimationFrame(() => {
+        if (typeof updateSimulator === "function") updateSimulator();
+        if (typeof updateSmartQueue === "function") updateSmartQueue();
+      });
+    };
+    appViewLinks.forEach(link => link.addEventListener("click", event => {
+      event.preventDefault();
+      setAppView(link.dataset.appView);
+      history.replaceState(null, "", link.getAttribute("href"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }));
+    setAppView("home");

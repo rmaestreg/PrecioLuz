@@ -168,7 +168,7 @@
         </div>
       </article>
 
-      <article class="panel smart-queue-panel">
+      <article class="panel smart-queue-panel" id="smart-queue-section">
         <section class="smart-queue" aria-labelledby="smart-queue-title">
           <div class="smart-queue-heading">
             <div>
@@ -287,10 +287,11 @@
   </main>
 
   <nav class="ios-tabbar" aria-label="Navegación principal">
-    <a class="ios-tab active" href="#app-top"><span class="ios-tab-icon">⌂</span><span>Hoy</span></a>
-    <a class="ios-tab" href="#chart-section"><span class="ios-tab-icon">▥</span><span>Gráfico</span></a>
-    <a class="ios-tab" href="#planner-section"><span class="ios-tab-icon">✓</span><span>Planificador</span></a>
-    <a class="ios-tab" href="#history-section"><span class="ios-tab-icon">☰</span><span>Histórico</span></a>
+    <a class="ios-tab active" href="#app-top" data-app-view="home"><span class="ios-tab-icon">⌂</span><span>Hoy</span></a>
+    <a class="ios-tab" href="#chart-section" data-app-view="chart"><span class="ios-tab-icon">▥</span><span>Gráfico</span></a>
+    <a class="ios-tab" href="#planner-section" data-app-view="planner"><span class="ios-tab-icon">✓</span><span>Planificador</span></a>
+    <a class="ios-tab" href="#smart-queue-section" data-app-view="queue"><span class="ios-tab-icon">☷</span><span>Cola</span></a>
+    <a class="ios-tab" href="#history-section" data-app-view="history"><span class="ios-tab-icon">☰</span><span>Histórico</span></a>
   </nav>
 
   <div class="tooltip" id="tooltip" role="tooltip"></div>
