@@ -114,7 +114,7 @@
       setStatus(tr(key, values), type, meta);
     }
 
-    const runningVersion = $("app-version").textContent.trim().replace(/^v/i, "");
+    const runningVersion = $("app-version").textContent.trim().replace(/[()]/g, "").replace(/^v/i, "");
     let availableVersion = runningVersion;
     let serviceWorkerRegistration = null;
     let updateActivationStarted = false;
@@ -124,7 +124,11 @@
         const response = await fetch(`./version.json?check=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) throw new Error("No se pudo cargar la versión");
         const { version } = await response.json();
-        if (version) availableVersion = String(version).replace(/^v/i, "");
+        if (version) {
+          availableVersion = String(version).replace(/^v/i, "");
+          const versionElement = $("app-version");
+          if (versionElement) versionElement.textContent = `(v${availableVersion})`;
+        }
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
       }
