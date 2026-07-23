@@ -127,7 +127,10 @@
         if (version) {
           availableVersion = String(version).replace(/^v/i, "");
           const versionElement = $("app-version");
-          if (versionElement) versionElement.textContent = `(v${availableVersion})`;
+          if (versionElement) {
+            versionElement.textContent = `(v${availableVersion})`;
+            versionElement.classList.remove("version-pending");
+          }
         }
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
@@ -150,6 +153,8 @@
       elements.updateButton.disabled = false;
       elements.updateButton.removeAttribute("aria-busy");
     }
+
+    loadAppVersion();
 
     function activateWaitingWorker(registration, worker = registration?.waiting) {
       const waiting = registration?.waiting || worker;
