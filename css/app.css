@@ -882,12 +882,12 @@
         font-weight: 500;
       }
       body > nav.ios-tabbar .ios-tab-icon { color: #18181c; font-size: 1.35rem; }
-      body > nav.ios-tabbar .ios-tab.active { background: #e2e2e7; color: #1264c4; }
+      body > nav.ios-tabbar .ios-tab.active { background: #dfe8ff; color: #1264c4; border: 1px solid #c5d6ff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.65); }
       body > nav.ios-tabbar .ios-tab.active .ios-tab-icon { color: #1264c4; }
       :root[data-theme="dark"] body > nav.ios-tabbar { background: rgba(38,43,47,.94) !important; border-color: rgba(255,255,255,.18) !important; }
       :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab { color: #f4f6f7; }
       :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab-icon { color: #f4f6f7; }
-      :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab.active { background: #51565b; color: #68a9ff; }
+      :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab.active { background: #244a70; color: #68a9ff; border-color: #3979b3; }
       :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab.active .ios-tab-icon { color: #68a9ff; }
     }
 
