@@ -22,7 +22,6 @@
 <body>
   <main class="shell" id="app-top">
     <header class="topbar">
-      <span id="app-version" class="topbar-version">v1.0.29</span>
       <div class="toolbar" aria-label="Controles de la página" data-i18n-aria-label="controls.page">
         <label class="sr-only" for="date-input" data-i18n="controls.date">Fecha</label>
         <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior" data-i18n-aria-label="controls.previousDayTitle" data-i18n-title="controls.previousDayTitle">‹</button>
@@ -47,7 +46,7 @@
     </header>
 
     <section class="status-line loading" id="status-line" role="status" aria-live="polite">
-      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span></div>
+      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span> <span id="app-version" class="status-version">(v1.0.29)</span></div>
       <div class="status-meta" id="status-meta">—</div>
     </section>
 
@@ -313,6 +312,7 @@
   <script src="./js/app.js"></script>
 </body>
 </html>
+
 
 
 

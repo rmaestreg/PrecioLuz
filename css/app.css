@@ -724,7 +724,7 @@
     .toolbar .language-menu { top: calc(100% + 8px); background: #12231f; color: #f2faf7; }
     .version-update-button { position: absolute; top: 10px; right: 12px; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin: 0; padding: 0; border: 1px solid #55cda9; border-radius: 50%; background: #55cda9; color: #08231c; cursor: pointer; font-size: 1.25rem; font-weight: 800; line-height: 1; }
     .version-update-button[hidden] { display: none; }
-    .topbar-version { position: absolute; left: 10px; bottom: 4px; color: var(--muted); font-size: .56rem; font-weight: 650; letter-spacing: .04em; line-height: 1; pointer-events: none; }
+    .status-version { color: inherit; font-size: .72rem; font-weight: 650; letter-spacing: .02em; white-space: nowrap; }
     #refresh-button { display: none !important; }
     .toolbar #today-button { display: none !important; }
     :root:not([data-theme="dark"]) .topbar { background: var(--surface); border-bottom-color: var(--border); box-shadow: 0 8px 22px rgba(34, 58, 73, .08); }
