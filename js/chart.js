@@ -15,7 +15,7 @@ function colourForLevel(level) {
       // Mantener la misma proporción que el alto definido en CSS evita que
       // preserveAspectRatio deje bandas vacías dentro del panel.
       const height = isMobile ? 320 : 360;
-      const margin = { top: 10, right: 58, bottom: 52, left: 48 };
+      const margin = { top: 10, right: 54, bottom: 52, left: 42 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const ns = "http://www.w3.org/2000/svg";
@@ -49,7 +49,10 @@ function colourForLevel(level) {
       const range = maxY - minY || 1;
       const ticks = 5;
       const slot = plotWidth / state.data.length;
-      const barWidth = Math.max(8, slot * .68);
+      const barWidth = Math.max(
+        isMobile ? 6 : 12,
+        Math.min(isMobile ? 18 : 30, slot * (isMobile ? .76 : .84))
+      );
       const currentIndex = currentDataIndex();
       const yFor = value => margin.top + plotHeight - ((value - minY) / range) * plotHeight;
       const zeroY = yFor(0);

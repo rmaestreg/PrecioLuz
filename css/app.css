@@ -772,7 +772,7 @@
       .shell { width: calc(100% - 24px); padding-top: 66px; padding-bottom: 118px; }
       .topbar { align-items: flex-start; }
       .topbar { padding: 7px 6px; }
-      .toolbar { gap: 4px; justify-content: center; overflow: hidden; }
+      .toolbar { gap: 4px; justify-content: center; overflow: visible; }
       .toolbar .button,
       .toolbar .control,
       .toolbar .language-button {
@@ -826,6 +826,7 @@
       .toolbar .language-picker { display: block !important; position: relative; }
       .toolbar .language-button { position: relative; z-index: 52; display: inline-flex !important; align-items: center; justify-content: center; width: 38px; min-width: 38px; height: 38px; padding: 0; border-radius: 50%; background: #f5f4f8; border: 1px solid #e5e3ea; pointer-events: auto; }
       .toolbar .language-menu { top: calc(100% + 8px); right: 0; left: auto; z-index: 60; transform: none; min-width: 150px; background: #ffffff; color: #111116; pointer-events: auto; }
+      .topbar, .toolbar, .language-picker { overflow: visible; }
     }
 
     @media screen and (max-width: 430px) {
@@ -878,7 +879,7 @@
         border: 0;
         border-radius: 32px;
         color: #18181c;
-        font-size: .72rem;
+        font-size: .64rem;
         font-weight: 500;
       }
       body > nav.ios-tabbar .ios-tab-icon { color: #18181c; font-size: 1.35rem; }
