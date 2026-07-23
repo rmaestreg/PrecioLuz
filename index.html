@@ -20,22 +20,9 @@
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
-  <main class="shell">
+  <main class="shell" id="app-top">
     <header class="topbar">
-      <div class="brand-heading">
-        <img class="brand-icon" src="./icons/icon-192.png" alt="" width="68" height="68">
-        <div class="brand-copy">
-          <p class="eyebrow">Tarifa regulada · España</p>
-          <h1>Precio de la luz</h1>
-          <span class="app-version" id="app-version">1.0.15</span>
-        <button class="version-update-button" id="update-button" type="button" hidden>Actualizar</button>
-          <div class="world-cup-tribute" aria-label="España campeona del mundo 2026" data-i18n-aria-label="tribute.worldCup">
-            <span class="world-cup-stars" aria-hidden="true">★ ★</span>
-            <span data-i18n="tribute.worldCup">España · Campeona del Mundo 2026</span>
-          </div>
-        </div>
-      </div>
-
+      <span id="app-version" hidden>1.0.20</span>
       <div class="toolbar" aria-label="Controles de la página" data-i18n-aria-label="controls.page">
         <label class="sr-only" for="date-input" data-i18n="controls.date">Fecha</label>
         <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior" data-i18n-aria-label="controls.previousDayTitle" data-i18n-title="controls.previousDayTitle">‹</button>
@@ -65,6 +52,7 @@
 
     <section class="hero" aria-labelledby="current-title">
       <div class="hero-copy">
+        <strong class="hero-kicker">Precio en este momento</strong>
         <p class="hero-label">Precio en este momento</p>
         <h2 id="current-title" data-i18n="hero.initial">Consultando la franja actual…</h2>
         <p class="hero-advice" id="current-advice">La recomendación se calcula a partir del precio horario publicado.</p>
@@ -99,7 +87,7 @@
     </section>
 
     <section class="dashboard-grid">
-      <article class="panel">
+      <article class="panel" id="chart-section">
         <div class="panel-header">
           <div>
             <h2>Precio por hora</h2>
@@ -124,7 +112,7 @@
     </section>
 
     <section class="planner-grid">
-      <article class="panel planner-panel">
+      <article class="panel planner-panel" id="planner-section">
         <div class="panel-header">
           <div>
             <h3>Planificador de consumo</h3>
@@ -297,6 +285,13 @@
       </nav>
     </footer>
   </main>
+
+  <nav class="ios-tabbar" aria-label="Navegación principal">
+    <a class="ios-tab active" href="#app-top"><span class="ios-tab-icon">⌂</span><span>Hoy</span></a>
+    <a class="ios-tab" href="#chart-section"><span class="ios-tab-icon">▥</span><span>Gráfico</span></a>
+    <a class="ios-tab" href="#planner-section"><span class="ios-tab-icon">✓</span><span>Planificar</span></a>
+    <a class="ios-tab" href="#hourly-details"><span class="ios-tab-icon">☰</span><span>Detalle</span></a>
+  </nav>
 
   <div class="tooltip" id="tooltip" role="tooltip"></div>
   <div class="dialog-backdrop" id="light-dialog" hidden>

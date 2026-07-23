@@ -1,6 +1,6 @@
 {
   "id": "./",
-  "name": "Precio de la luz · PVPC horario",
+  "name": "Precio Luz · Ahorra en tu factura",
   "short_name": "Precio Luz",
   "description": "Precio horario PVPC de la electricidad en España con datos oficiales de Red Eléctrica.",
   "lang": "es",
@@ -9,7 +9,7 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#f5f7fb",
-  "theme_color": "#315ee7",
+  "theme_color": "#16856c",
   "categories": [
     "utilities",
     "finance"

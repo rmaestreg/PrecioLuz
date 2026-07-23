@@ -96,7 +96,12 @@
       historyMinimum: $("history-minimum"),
       historyMaximum: $("history-maximum"),
       historySpread: $("history-spread"),
-      updateButton: $("update-button")
+      updateButton: $("update-button") || {
+        hidden: true,
+        disabled: true,
+        setAttribute() {},
+        removeAttribute() {}
+      }
     };
 
     const tr = (key, values = {}) => window.i18n?.t(key, values) || key;
@@ -702,7 +707,7 @@
       document.documentElement.dataset.theme = theme;
       safeStorageSet("pvpc-theme", theme);
       const themeMeta = document.getElementById("theme-color-meta");
-      if (themeMeta) themeMeta.content = theme === "dark" ? "#0c111b" : "#315ee7";
+      if (themeMeta) themeMeta.content = theme === "dark" ? "#101816" : "#16856c";
       elements.themeButton.textContent = theme === "dark" ? "☀" : "◐";
       elements.themeButton.setAttribute("aria-label", theme === "dark" ? tr("theme.light") : tr("theme.dark"));
       if (state.data.length) renderChart();
@@ -866,7 +871,7 @@
     checkTomorrowAvailability();
     loadData(state.selectedDate);
     loadHistory();
-    elements.updateButton.addEventListener("click", async () => {
+    elements.updateButton.addEventListener?.("click", async () => {
       const registration = serviceWorkerRegistration;
       if (!registration || updateActivationStarted) return;
 

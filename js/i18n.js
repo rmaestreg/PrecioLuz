@@ -128,7 +128,7 @@
     window.dispatchEvent(new CustomEvent("languagechange", { detail: { language } }));
   }
   window.i18n = { t, setLanguage, applyTranslations, get language() { return language; } };
-  document.addEventListener("DOMContentLoaded", () => {
+  const initialiseLanguagePicker = () => {
     applyTranslations();
     const languageName = document.getElementById("language-name");
     if (languageName) languageName.textContent = t(`language.${language}`);
@@ -155,5 +155,7 @@
     document.addEventListener("click", event => {
       if (picker && !picker.contains(event.target)) closeMenu();
     });
-  });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialiseLanguagePicker, { once: true });
+  else initialiseLanguagePicker();
 })();
