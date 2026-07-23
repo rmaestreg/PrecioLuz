@@ -133,7 +133,8 @@
     function showUpdateNotice(version = "") {
       if (updateActivationStarted) return;
       elements.updateButton.hidden = false;
-      elements.updateButton.textContent = version ? tr("update.to", { version }) : tr("update.generic");
+      elements.updateButton.textContent = "↻";
+      elements.updateButton.title = version ? tr("update.to", { version }) : tr("update.generic");
       elements.updateButton.setAttribute("aria-label", tr("controls.installUpdate"));
       elements.updateButton.disabled = false;
       elements.updateButton.removeAttribute("aria-busy");

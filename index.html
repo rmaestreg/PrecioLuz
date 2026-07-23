@@ -22,7 +22,7 @@
 <body>
   <main class="shell" id="app-top">
     <header class="topbar">
-      <span id="app-version" hidden>1.0.20</span>
+      <span id="app-version" hidden>1.0.22</span>
       <div class="toolbar" aria-label="Controles de la página" data-i18n-aria-label="controls.page">
         <label class="sr-only" for="date-input" data-i18n="controls.date">Fecha</label>
         <button class="button icon-button" id="previous-day-button" type="button" aria-label="Día anterior" title="Día anterior" data-i18n-aria-label="controls.previousDayTitle" data-i18n-title="controls.previousDayTitle">‹</button>
@@ -43,6 +43,7 @@
         </div>
         <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema" data-i18n-aria-label="controls.theme" data-i18n-title="controls.theme">◐</button>
       </div>
+      <button class="version-update-button" id="update-button" type="button" hidden aria-label="Actualizar aplicación" title="Actualizar aplicación">↻</button>
     </header>
 
     <section class="status-line loading" id="status-line" role="status" aria-live="polite">
@@ -312,6 +313,7 @@
   <script src="./js/app.js"></script>
 </body>
 </html>
+
 
 
 
