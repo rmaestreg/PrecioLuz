@@ -726,6 +726,10 @@
     #refresh-button { display: none !important; }
     #chart-section { scroll-margin-top: 104px; }
     @media (min-width: 641px) {
+      .ios-tabbar { display: none !important; }
+      .shell { padding-bottom: 30px; }
+    }
+    @media (min-width: 641px) {
       .hero-copy::before { display: none; }
       .hero .hero-label { display: none !important; }
       .hero-kicker { display: none; }
