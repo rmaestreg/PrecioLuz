@@ -966,9 +966,8 @@
     body[data-app-view="planner"] #planner-section,
     body[data-app-view="history"] #history-section { margin-top: 5px !important; }
 
-    body[data-app-view="queue"] #smart-queue-section { margin-top: 0 !important; }
+    body[data-app-view="queue"] #smart-queue-section { margin-top: 5px !important; }
 
     body[data-app-view="chart"] #chart-section,
     body[data-app-view="planner"] #planner-section,
     body[data-app-view="history"] #history-section,
-    body[data-app-view="queue"] #smart-queue-section { margin-top: -14px; }
