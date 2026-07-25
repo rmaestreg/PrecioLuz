@@ -1,72 +1,70 @@
 # Precio Luz
 
-WebApp estática para consultar el precio horario del PVPC en España, planificar consumos y consultar un histórico reciente.
+PWA estática para consultar el precio horario del PVPC en España con datos de Red Eléctrica, comparar franjas de consumo y revisar el histórico reciente.
+
+## Funcionalidades
+
+- Vista **Hoy** con precio actual, recomendación y resumen diario.
+- **Gráfico** horario con filtros por nivel de precio y detalle exportable a CSV.
+- **Plan** para calcular la mejor ventana consecutiva de consumo, con límites de inicio y final.
+- **Cola** para añadir varias tareas domésticas y calcular un calendario de menor coste considerando duración, potencia, límite horario e interrupciones.
+- **Histórico** con medias, mínimos y máximos de una semana, un mes o un año.
+- Idiomas español, inglés y francés.
+- Tema claro/oscuro, diseño responsive y navegación inferior con composición móvil también en pantallas grandes.
+- Funcionamiento offline mediante service worker y caché local de los datos consultados.
 
 ## Estructura
 
 ```text
-index.html                  Estructura HTML y punto de entrada
-css/app.css                 Estilos, temas y diseño responsive
-js/api.js                   API de Red Eléctrica, normalización y caché
-js/chart.js                 Gráfico de precios por hora y tabla horaria
-js/planner.js               Cálculo de la mejor ventana de consumo
-js/i18n.js                  Idiomas ESP/ENG y preferencias locales
+index.html                  Punto de entrada y estructura de la interfaz
+css/app.css                 Estilos, temas, vistas y diseño responsive
+js/api.js                   API de Red Eléctrica, normalización y caché local
+js/chart.js                 Gráfico horario, filtros y tabla de detalle
+js/planner.js               Planificador y cola inteligente de tareas
+js/i18n.js                  Traducciones y preferencia de idioma
 js/app.js                   Estado, eventos, histórico e inicialización
 manifest.webmanifest        Configuración de la PWA
-sw.js                       Caché del shell y funcionamiento offline
-version.json                Versión visible de la aplicación
-scripts/bump-version.ps1    Incremento de versión y caché
+sw.js                       Caché del shell y estrategia offline
+version.json                Versión actual de la aplicación
+scripts/bump-version.ps1    Actualización de versión y caché
 icons/                      Iconos de la PWA
 ```
 
-## Funcionamiento
+## Datos y funcionamiento offline
 
-Al iniciar, `app.js` carga la fecha actual y solicita los datos a la API oficial de Red Eléctrica. `api.js` convierte la respuesta en franjas horarias normalizadas y guarda una copia local por fecha.
+Al iniciar, `app.js` selecciona la fecha actual y solicita los datos a la API pública de Red Eléctrica. `api.js` normaliza las franjas horarias, convierte los precios a €/kWh y guarda copias locales por fecha.
 
-La aplicación muestra:
+El service worker almacena los recursos estáticos y sirve la aplicación desde caché cuando no hay conexión. Los datos previamente consultados pueden seguir mostrándose, identificados como datos guardados. Al recuperar la conexión, la aplicación reintenta actualizar la fecha seleccionada y el histórico.
 
-- precio actual y recomendación de consumo;
-- gráfico horario con filtros por nivel;
-- planificador de consumo;
-- histórico de una semana, un mes o un año;
-- detalle horario exportable a CSV.
-
-El histórico consulta los días disponibles y, para el periodo anual, agrupa los resultados por meses (`ENE`, `FEB`, `MAR`, etc.).
-
-## Modo offline
-
-El service worker almacena el shell de la aplicación, los recursos estáticos y los datos consultados. Si falla la red:
-
-- la interfaz sigue cargando si ya se visitó anteriormente;
-- se muestran los datos guardados indicando que pueden estar desactualizados;
-- las nuevas consultas sin copia local muestran la aplicación sin datos;
-- al recuperar la conexión se reintenta automáticamente la fecha seleccionada y el histórico.
-
-La primera visita necesita conexión para guardar estos recursos.
+La primera visita necesita conexión para descargar los recursos y los datos iniciales. El modo instalable requiere `https://` o `localhost`.
 
 ## Desarrollo y publicación
 
-No hay proceso de compilación ni dependencias externas. Se puede servir la carpeta con cualquier servidor HTTP local. Para GitHub Pages, publica todo el contenido en la raíz del repositorio y activa Pages desde `Settings → Pages`.
+No hay proceso de compilación ni dependencias externas. Para ejecutar la aplicación localmente, sirve la carpeta raíz con cualquier servidor HTTP estático. Por ejemplo, con Python:
 
-Es necesario usar `https://` o `localhost` para que el service worker funcione.
+```powershell
+python -m http.server 8000
+```
+
+Después, abre `http://localhost:8000` en el navegador. Para GitHub Pages, publica el contenido del repositorio y activa Pages desde `Settings → Pages`.
 
 ## Versionado
 
-La versión se define en `version.json` y se muestra junto al título. Para incrementar el parche:
+La versión se define en `version.json`. Para incrementar el parche:
 
 ```powershell
 .\scripts\bump-version.ps1
 ```
 
-También se puede incrementar una versión mayor o menor:
+También se puede incrementar una versión menor o mayor:
 
 ```powershell
 .\scripts\bump-version.ps1 -Part minor
 .\scripts\bump-version.ps1 -Part major
 ```
 
-El script actualiza `version.json`, `index.html` y el nombre de caché del service worker.
+El script actualiza `version.json`, el número mostrado en la interfaz y el nombre de caché del service worker.
 
-## Fuentes
+## Fuentes y alcance de los precios
 
-Los precios proceden de la API pública de datos de Red Eléctrica. La aplicación muestra el término horario de energía; la factura final incluye además otros conceptos regulados e impuestos.
+Los precios proceden de la API pública de datos de Red Eléctrica. La aplicación muestra el término horario de energía en €/kWh; una factura real puede incluir potencia contratada, cargos regulados, alquiler, impuestos y otros conceptos.
