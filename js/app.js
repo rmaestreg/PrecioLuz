@@ -114,7 +114,8 @@
       setStatus(tr(key, values), type, meta);
     }
 
-    const runningVersion = $("app-version").textContent.trim().replace(/[()]/g, "").replace(/^v/i, "");
+    const versionElement = $("app-version");
+    const runningVersion = versionElement ? versionElement.textContent.trim().replace(/[()]/g, "").replace(/^v/i, "") : "—";
     let availableVersion = runningVersion;
     let serviceWorkerRegistration = null;
     let updateActivationStarted = false;
@@ -126,11 +127,6 @@
         const { version } = await response.json();
         if (version) {
           availableVersion = String(version).replace(/^v/i, "");
-          const versionElement = $("app-version");
-          if (versionElement) {
-            versionElement.textContent = `(v${availableVersion})`;
-            versionElement.classList.remove("version-pending");
-          }
         }
       } catch (error) {
         console.warn("No se pudo cargar la versión de la App", error);
