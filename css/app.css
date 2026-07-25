@@ -1064,3 +1064,9 @@
       #smart-queue-section .smart-queue-form { gap: 8px; }
       #smart-queue-section .field-row { grid-template-columns: 1fr 1fr; gap: 8px; }
     }
+
+    body[data-app-view="home"] .status-line { min-height: 36px; margin-bottom: 8px; padding: 7px 10px; }
+    body[data-app-view="home"] .hero { margin-bottom: 8px; padding: 16px; }
+    body[data-app-view="home"] .metrics { gap: 7px; margin-bottom: 8px; }
+    body[data-app-view="home"] .metrics .card { padding: 10px; border-radius: 13px; }
+    body[data-app-view="home"] .metrics .card-value { margin-top: 4px; }
