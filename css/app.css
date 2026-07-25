@@ -733,7 +733,7 @@
     :root:not([data-theme="dark"]) .toolbar .control,
     :root:not([data-theme="dark"]) .toolbar .language-button { background: var(--surface-soft); border-color: var(--border); color: var(--text); }
     :root:not([data-theme="dark"]) .toolbar .language-menu { background: var(--surface); color: var(--text); border-color: var(--border); }
-    #chart-section { scroll-margin-top: 68px; }
+    #chart-section { margin-top: -18px; scroll-margin-top: 68px; }
     #planner-section { scroll-margin-top: 68px; }
     #history-section { scroll-margin-top: 68px; }
     .status-line { margin-bottom: 12px; }
@@ -958,7 +958,16 @@
     body[data-app-view="queue"] #history-section,
     body[data-app-view="queue"] .footer { display: none !important; }
 
+    body:not([data-app-view="queue"]) #smart-queue-section { display: none !important; }
+    body:not([data-app-view="home"]) .status-line { display: none !important; }
+
+    body[data-app-view="home"] .status-line,
+    body[data-app-view="chart"] #chart-section,
+    body[data-app-view="planner"] #planner-section,
+    body[data-app-view="queue"] #smart-queue-section,
+    body[data-app-view="history"] #history-section { margin-top: 5px !important; }
+
     body[data-app-view="chart"] #chart-section,
     body[data-app-view="planner"] #planner-section,
     body[data-app-view="history"] #history-section,
-    body[data-app-view="queue"] #smart-queue-section { margin-top: 4px; }
+    body[data-app-view="queue"] #smart-queue-section { margin-top: -14px; }
