@@ -776,6 +776,15 @@
       .panel-header { flex-direction: column; }
       .dashboard-grid, .planner-grid { grid-template-columns: 1fr; gap: 12px; }
       .field-row { grid-template-columns: 1fr; }
+      #planner-section { padding: 14px; }
+      #planner-section .panel-header { margin-bottom: 8px; }
+      #planner-section .simulator { gap: 8px; }
+      #planner-section .field-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+      #planner-section .sim-results { gap: 6px; padding-top: 9px; }
+      #smart-queue-section { padding: 14px; }
+      #smart-queue-section .smart-queue { gap: 8px; }
+      #smart-queue-section .smart-queue-form { gap: 8px; }
+      #smart-queue-section .field-row { grid-template-columns: 1fr 1fr; gap: 8px; }
       .footer { grid-template-columns: 1fr; }
       .footer-links { justify-content: flex-start; }
       body > .ios-tabbar {
@@ -1043,3 +1052,15 @@
     }
 
     nav.ios-tabbar { display: flex !important; visibility: visible !important; opacity: 1 !important; }
+
+    @media (max-width: 640px) {
+      #planner-section { padding: 14px; }
+      #planner-section .panel-header { margin-bottom: 8px; }
+      #planner-section .simulator { gap: 8px; }
+      #planner-section .field-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+      #planner-section .sim-results { gap: 6px; padding-top: 9px; }
+      #smart-queue-section { padding: 14px; }
+      #smart-queue-section .smart-queue { gap: 8px; }
+      #smart-queue-section .smart-queue-form { gap: 8px; }
+      #smart-queue-section .field-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+    }
