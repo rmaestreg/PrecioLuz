@@ -194,6 +194,7 @@
 
     .status-message { display: flex; align-items: center; gap: 9px; min-width: 0; }
     .status-message span:last-child { overflow-wrap: anywhere; }
+    .status-version { margin-left: 4px; color: inherit; font-size: .72rem; font-weight: 650; letter-spacing: .02em; white-space: nowrap; }
     .status-meta { text-align: right; white-space: nowrap; }
 
     .indicator {
