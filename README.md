@@ -1,6 +1,6 @@
 # Precio Luz
 
-PWA estática para consultar el precio horario del PVPC en España con datos de Red Eléctrica, comparar franjas de consumo y revisar el histórico reciente.
+PWA estática para consultar el precio horario del PVPC en España con datos de Red Eléctrica, comparar franjas de consumo, calcular costes y revisar el histórico reciente.
 
 ## Funcionalidades
 
@@ -8,6 +8,7 @@ PWA estática para consultar el precio horario del PVPC en España con datos de 
 - **Gráfico** horario con filtros por nivel de precio y detalle exportable a CSV.
 - **Plan** para calcular la mejor ventana consecutiva de consumo, con límites de inicio y final.
 - **Cola** para añadir varias tareas domésticas y calcular un calendario de menor coste considerando duración, potencia, límite horario e interrupciones.
+- **Cálculos** con simulador de factura, potencia recomendada, inventario de electrodomésticos y planificador de vehículo eléctrico.
 - **Histórico** con medias, mínimos y máximos de una semana, un mes o un año.
 - Idiomas español, inglés y francés.
 - Tema claro/oscuro, diseño responsive y navegación inferior con composición móvil también en pantallas grandes.
@@ -22,7 +23,7 @@ js/api.js                   API de Red Eléctrica, normalización y caché local
 js/chart.js                 Gráfico horario, filtros y tabla de detalle
 js/planner.js               Planificador y cola inteligente de tareas
 js/i18n.js                  Traducciones y preferencia de idioma
-js/tools.js                 Calculadoras de factura, potencia, consumo y vehículo eléctrico
+js/tools.js                 Calculadoras de factura, potencia, electrodomésticos y vehículo eléctrico
 js/app.js                   Estado, eventos, histórico e inicialización
 manifest.webmanifest        Configuración de la PWA
 sw.js                       Caché del shell y estrategia offline
@@ -51,7 +52,7 @@ Después, abre `http://localhost:8000` en el navegador. Para GitHub Pages, publi
 
 ## Versionado
 
-La versión se define en `version.json`. Para incrementar el parche:
+La versión se define en `version.json` y se muestra en la línea de estado de la aplicación. Para incrementar el parche:
 
 ```powershell
 .\scripts\bump-version.ps1
