@@ -1269,9 +1269,10 @@ body[data-app-view="home"] .region-field { gap: 2px; padding: 5px 9px; }
 body[data-app-view="home"] .region-field select { min-height: 28px; }
 
 body[data-app-view="home"] .status-line { min-height: 32px; margin-bottom: 6px; padding: 5px 9px; }
-body[data-app-view="home"] .hero { gap: 10px; margin-bottom: 6px; padding: 12px 14px; }
-body[data-app-view="home"] .hero-label { margin-bottom: 5px; }
-body[data-app-view="home"] .hero-advice { margin-top: 5px; line-height: 1.25; }
+body[data-app-view="home"] .hero { min-height: 0; gap: 8px; margin-bottom: 6px; padding: 9px 12px; }
+body[data-app-view="home"] .hero-label { margin-bottom: 4px; }
+body[data-app-view="home"] .hero h2 { line-height: 1.05; }
+body[data-app-view="home"] .hero-advice { margin-top: 4px; line-height: 1.18; }
 body[data-app-view="home"] .hero-price { margin-top: 3px; }
 body[data-app-view="home"] .hero-price small { margin-top: 4px; }
 
