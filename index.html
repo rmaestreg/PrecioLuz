@@ -45,8 +45,32 @@
       <button class="version-update-button" id="update-button" type="button" hidden aria-label="Actualizar aplicación" title="Actualizar aplicación">↻</button>
     </header>
 
+
+
+    <section class="day-context" aria-label="Día y región" data-i18n-aria-label="day.context">
+      <div class="day-switch" role="tablist" aria-label="Seleccionar hoy o mañana" data-i18n-aria-label="day.selector">
+        <button class="day-tab active" id="today-tab" type="button" role="tab" aria-selected="true">
+          <span data-i18n="day.today">Hoy</span>
+          <small id="today-tab-date">—</small>
+        </button>
+        <button class="day-tab" id="tomorrow-tab" type="button" role="tab" aria-selected="false" disabled>
+          <span data-i18n="day.tomorrow">Mañana</span>
+          <small id="tomorrow-tab-status" data-i18n="day.checking">Comprobando…</small>
+        </button>
+      </div>
+      <label class="region-field" for="region-select">
+        <span data-i18n="region.label">Región</span>
+        <select id="region-select">
+          <option value="peninsula" data-i18n="region.peninsula">Península y Baleares</option>
+          <option value="canarias" data-i18n="region.canarias">Canarias</option>
+          <option value="ceuta" data-i18n="region.ceuta">Ceuta</option>
+          <option value="melilla" data-i18n="region.melilla">Melilla</option>
+        </select>
+      </label>
+    </section>
+
     <section class="status-line loading" id="status-line" role="status" aria-live="polite">
-      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.0.40)</span></div>
+      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.1.0)</span></div>
       <div class="status-meta" id="status-meta">—</div>
     </section>
 
@@ -86,6 +110,26 @@
       </article>
     </section>
 
+
+
+    <section class="insights" aria-label="Comparaciones y recomendaciones" data-i18n-aria-label="insights.label">
+      <article class="insight-card">
+        <span class="insight-label" data-i18n="insights.yesterday">Frente a ayer</span>
+        <strong id="comparison-yesterday-value">—</strong>
+        <small id="comparison-yesterday-detail" data-i18n="insights.loading">Calculando comparación…</small>
+      </article>
+      <article class="insight-card">
+        <span class="insight-label" data-i18n="insights.week">Frente a la semana anterior</span>
+        <strong id="comparison-week-value">—</strong>
+        <small id="comparison-week-detail" data-i18n="insights.loading">Calculando comparación…</small>
+      </article>
+      <article class="insight-card practical-card">
+        <span class="insight-label" data-i18n="insights.practical">Mejor tramo práctico</span>
+        <strong id="practical-window-value">—</strong>
+        <small id="practical-window-detail" data-i18n="insights.practicalHint">Entre las 08:00 y las 24:00</small>
+      </article>
+    </section>
+
     <section class="dashboard-grid">
       <article class="panel" id="chart-section">
         <div class="panel-header">
@@ -107,6 +151,9 @@
           <span class="legend-item"><i class="legend-dot" style="background:var(--low)"></i><span data-i18n="chart.lowLegend">Bajo: menos de 0,10 €/kWh</span></span>
           <span class="legend-item"><i class="legend-dot" style="background:var(--medium)"></i><span data-i18n="chart.mediumLegend">Medio: 0,10–0,15 €/kWh</span></span>
           <span class="legend-item"><i class="legend-dot" style="background:var(--high)"></i><span data-i18n="chart.highLegend">Alto: más de 0,15 €/kWh</span></span>
+          <span class="legend-item tariff-legend"><span class="tariff-badge p1">P1</span><span data-i18n="tariff.peak">Punta</span></span>
+          <span class="legend-item tariff-legend"><span class="tariff-badge p2">P2</span><span data-i18n="tariff.flat">Llano</span></span>
+          <span class="legend-item tariff-legend"><span class="tariff-badge p3">P3</span><span data-i18n="tariff.valley">Valle</span></span>
         </div>
       </article>
     </section>
@@ -122,7 +169,7 @@
 
         <div class="simulator">
           <div class="field">
-            <label for="appliance-select" data-i18n="planner.typicalUse">Uso</label>
+            <label for="appliance-select" data-i18n="planner.typicalUse">Uso habitual</label>
             <select id="appliance-select">
               <option value="0.25,1" data-i18n="planner.computer">Ordenador · 1 h · 0,25 kWh</option>
               <option value="0.75,2" selected data-i18n="planner.washer">Lavadora eco · 0,75 kWh</option>
@@ -130,9 +177,13 @@
               <option value="1.5,2" data-i18n="planner.dryer">Secadora · 2 h · 1,50 kWh</option>
               <option value="2,1" data-i18n="planner.oven">Horno · 1 h · 2,00 kWh</option>
               <option value="1.2,1" data-i18n="planner.airConditioner">Aire acondicionado · 1 h · 1,20 kWh</option>
-              <option value="20,6" data-i18n="planner.vehicle">Vehículo eléctrico · 20 kWh</option>
+              <option value="20,6" data-i18n="planner.vehicle">Carga de vehículo · 20 kWh</option>
               <option value="custom" data-i18n="planner.custom">Personalizado</option>
             </select>
+          </div>
+          <div class="profile-actions" aria-label="Perfiles de consumo" data-i18n-aria-label="profiles.label">
+            <button class="button" id="profile-save-button" type="button" data-i18n="profiles.save">Guardar perfil actual</button>
+            <button class="button" id="profile-delete-button" type="button" data-i18n="profiles.delete" disabled>Eliminar perfil</button>
           </div>
 
           <div class="field-row">
@@ -180,16 +231,8 @@
           </div>
           <form class="smart-queue-form" id="smart-task-form">
             <div class="field">
-              <label for="smart-task-name" data-i18n="planner.queue.taskName">Uso</label>
-              <select id="smart-task-name">
-                <option value="Ordenador" data-energy="0.25" data-duration="1" data-i18n="planner.computer">Ordenador · 1 h · 0,25 kWh</option>
-                <option value="Lavadora" data-energy="0.75" data-duration="2" selected data-i18n="planner.washer">Lavadora eco · 0,75 kWh</option>
-                <option value="Lavavajillas" data-energy="0.85" data-duration="3" data-i18n="planner.dishwasher">Lavavajillas eco · 0,85 kWh</option>
-                <option value="Secadora" data-energy="1.5" data-duration="2" data-i18n="planner.dryer">Secadora · 2 h · 1,50 kWh</option>
-                <option value="Horno" data-energy="2" data-duration="1" data-i18n="planner.oven">Horno · 1 h · 2,00 kWh</option>
-                <option value="Aire acondicionado" data-energy="1.2" data-duration="1" data-i18n="planner.airConditioner">Aire acondicionado · 1 h · 1,20 kWh</option>
-                <option value="Vehículo eléctrico" data-energy="20" data-duration="6" data-i18n="planner.vehicle">Vehículo eléctrico · 20 kWh</option>
-              </select>
+              <label for="smart-task-name" data-i18n="planner.queue.taskName">Tarea</label>
+              <input id="smart-task-name" type="text" value="Lavadora" maxlength="40" autocomplete="off">
             </div>
             <div class="field-row">
               <div class="field">
@@ -249,11 +292,12 @@
               <th data-i18n="detail.headers.slot">Franja</th>
               <th data-i18n="detail.headers.price">€/kWh</th>
               <th data-i18n="detail.headers.level">Nivel</th>
+              <th data-i18n="detail.headers.period">Periodo</th>
               <th data-i18n="detail.headers.comparison">Respecto a la media</th>
             </tr>
           </thead>
           <tbody id="price-rows">
-            <tr><td colspan="4" data-i18n="detail.loading">Cargando datos…</td></tr>
+            <tr><td colspan="5" data-i18n="detail.loading">Cargando datos…</td></tr>
           </tbody>
         </table>
       </div>
@@ -321,3 +365,30 @@
   <script src="./js/app.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

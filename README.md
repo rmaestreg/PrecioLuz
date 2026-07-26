@@ -68,3 +68,13 @@ El script actualiza `version.json`, el número mostrado en la interfaz y el nomb
 ## Fuentes y alcance de los precios
 
 Los precios proceden de la API pública de datos de Red Eléctrica. La aplicación muestra el término horario de energía en €/kWh; una factura real puede incluir potencia contratada, cargos regulados, alquiler, impuestos y otros conceptos.
+
+
+## Versión 1.1.0
+
+- Acceso directo a Hoy y Mañana con detección automática de publicación.
+- Comparación con ayer y con la media de los siete días anteriores.
+- Recomendación del mejor tramo práctico diurno de 2–3 horas.
+- Selector para Península/Baleares, Canarias, Ceuta y Melilla, con zona horaria y caché separadas.
+- Identificación visual de periodos P1, P2 y P3.
+- Perfiles personalizados de consumo guardados en el dispositivo.

@@ -68,6 +68,18 @@ function colourForLevel(level) {
       add("line", { x1: margin.left, y1: averageY, x2: width - margin.right, y2: averageY, class: "average-line" });
 
       state.data.forEach((item, index) => {
+        const period = item.tariffPeriod || tariffPeriodFor(state.selectedDate, item.hour);
+        add("rect", {
+          x: margin.left + index * slot,
+          y: margin.top + plotHeight + 31,
+          width: Math.max(1, slot),
+          height: 7,
+          class: `tariff-strip ${period}`,
+          "aria-hidden": "true"
+        });
+      });
+
+      state.data.forEach((item, index) => {
         const x = margin.left + index * slot + (slot - barWidth) / 2;
         const valueY = yFor(item.priceKWh);
         const y = Math.min(valueY, zeroY);
@@ -99,7 +111,8 @@ function colourForLevel(level) {
         const showTooltip = event => {
           const box = rect.getBoundingClientRect();
           const relative = ((item.priceKWh / daySummary.average) - 1) * 100;
-          elements.tooltip.innerHTML = `<strong>${item.label}</strong><br>${formatPrice(item.priceKWh)} €/kWh<br>${relative >= 0 ? "+" : ""}${relative.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 })} % ${chartText("chart.relativeAverage")}`;
+          const period = item.tariffPeriod || tariffPeriodFor(state.selectedDate, item.hour);
+          elements.tooltip.innerHTML = `<strong>${item.label}</strong><br>${formatPrice(item.priceKWh)} €/kWh · ${tariffPeriodLabel(period)}<br>${relative >= 0 ? "+" : ""}${relative.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 })} % ${chartText("chart.relativeAverage")}`;
           elements.tooltip.style.left = `${event.clientX || box.left + box.width / 2}px`;
           elements.tooltip.style.top = `${event.clientY || box.top}px`;
           elements.tooltip.style.opacity = "1";
@@ -123,7 +136,7 @@ function colourForLevel(level) {
     function renderTable() {
       const daySummary = summary();
       if (!daySummary) {
-        elements.rows.innerHTML = `<tr><td colspan="4">${chartText("detail.noData")}</td></tr>`;
+        elements.rows.innerHTML = `<tr><td colspan="5">${chartText("detail.noData")}</td></tr>`;
         return;
       }
 
@@ -134,6 +147,7 @@ function colourForLevel(level) {
           <td><strong>${item.label}</strong>${index === currentIndex ? ` ${chartText("detail.currentNow")}` : ""}</td>
           <td><strong>${formatPrice(item.priceKWh)}</strong></td>
           <td><span class="badge ${item.level}">${levelLabel(item.level)}</span></td>
+          <td><span class="tariff-badge ${item.tariffPeriod || tariffPeriodFor(state.selectedDate, item.hour)}">${(item.tariffPeriod || tariffPeriodFor(state.selectedDate, item.hour)).toUpperCase()}</span></td>
           <td>${difference >= 0 ? "+" : ""}${difference.toLocaleString(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", { maximumFractionDigits: 1 })} %</td>
         </tr>`;
       }).join("");

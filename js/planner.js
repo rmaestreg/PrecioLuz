@@ -348,3 +348,73 @@ function initialiseSmartQueue() {
   elements.smartContractedPower.addEventListener("input", updateSmartQueue);
   updateSmartQueue();
 }
+
+
+/* Perfiles de consumo personalizados guardados localmente. */
+const PLANNER_PROFILES_KEY = "pvpc-dashboard-planner-profiles-v1";
+let plannerProfiles = [];
+function readPlannerProfiles() {
+  try {
+    const value = JSON.parse(localStorage.getItem(PLANNER_PROFILES_KEY) || "[]");
+    return Array.isArray(value) ? value.filter(profile => profile && profile.id && profile.name) : [];
+  } catch { return []; }
+}
+function writePlannerProfiles() {
+  try { localStorage.setItem(PLANNER_PROFILES_KEY, JSON.stringify(plannerProfiles)); } catch {}
+}
+function refreshPlannerProfileOptions(selectedId = "") {
+  if (!elements.applianceSelect) return;
+  elements.applianceSelect.querySelectorAll('option[data-saved-profile="true"]').forEach(option => option.remove());
+  plannerProfiles.forEach(profile => {
+    const option = document.createElement("option");
+    option.value = `saved:${profile.id}`;
+    option.dataset.savedProfile = "true";
+    option.textContent = `${profile.name} · ${formatPrice(profile.energy, 2)} kWh · ${profile.duration} h`;
+    elements.applianceSelect.appendChild(option);
+  });
+  if (selectedId && plannerProfiles.some(profile => profile.id === selectedId)) elements.applianceSelect.value = `saved:${selectedId}`;
+  if (elements.profileDeleteButton) elements.profileDeleteButton.disabled = !elements.applianceSelect.value.startsWith("saved:");
+}
+function applyPlannerProfile(id) {
+  const profile = plannerProfiles.find(item => item.id === id);
+  if (!profile) return;
+  elements.energyInput.value = profile.energy;
+  elements.durationInput.value = profile.duration;
+  elements.plannerStartTime.value = profile.start || "00:00";
+  elements.plannerEndTime.value = profile.end || "23:59";
+  if (elements.profileDeleteButton) elements.profileDeleteButton.disabled = false;
+  updateSimulator();
+}
+function savePlannerProfile() {
+  const energy = Number(elements.energyInput.value);
+  const duration = Math.round(Number(elements.durationInput.value));
+  if (!Number.isFinite(energy) || energy <= 0 || !Number.isInteger(duration) || duration < 1) return;
+  const name = window.prompt(plannerText("profiles.namePrompt"), plannerText("profiles.defaultName"));
+  if (!name?.trim()) return;
+  const profile = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    name: name.trim().slice(0, 40),
+    energy,
+    duration,
+    start: elements.plannerStartTime.value || "00:00",
+    end: elements.plannerEndTime.value || "23:59"
+  };
+  plannerProfiles.push(profile);
+  writePlannerProfiles();
+  refreshPlannerProfileOptions(profile.id);
+}
+function deletePlannerProfile() {
+  const value = elements.applianceSelect?.value || "";
+  if (!value.startsWith("saved:")) return;
+  const id = value.slice(6);
+  plannerProfiles = plannerProfiles.filter(profile => profile.id !== id);
+  writePlannerProfiles();
+  elements.applianceSelect.value = "custom";
+  refreshPlannerProfileOptions();
+}
+function initialisePlannerProfiles() {
+  plannerProfiles = readPlannerProfiles();
+  refreshPlannerProfileOptions();
+  elements.profileSaveButton?.addEventListener("click", savePlannerProfile);
+  elements.profileDeleteButton?.addEventListener("click", deletePlannerProfile);
+}

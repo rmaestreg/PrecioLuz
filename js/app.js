@@ -3,11 +3,10 @@
 /* Estado de la interfaz, eventos, modo offline, histórico e inicialización. */
 
     const CONFIG = Object.freeze({
-      timezone: "Europe/Madrid",
       apiBase: "https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real",
       refreshMs: 15 * 60 * 1000,
       requestTimeoutMs: 16000,
-      cachePrefix: "pvpc-dashboard-v3:",
+      cachePrefix: "pvpc-dashboard-v4:",
       lowThreshold: 0.10,
       highThreshold: 0.15
     });
@@ -32,12 +31,19 @@
       statusKey: "status.loading",
       statusType: "loading",
       statusValues: {},
-      statusMeta: ""
+      statusMeta: "",
+      comparisonLoadSequence: 0,
+      comparisons: { loading: true, yesterday: null, weeklyAverage: null, weeklyCount: 0 }
     };
 
     const $ = id => document.getElementById(id);
     const elements = {
       dateInput: $("date-input"),
+      todayTab: $("today-tab"),
+      tomorrowTab: $("tomorrow-tab"),
+      todayTabDate: $("today-tab-date"),
+      tomorrowTabStatus: $("tomorrow-tab-status"),
+      regionSelect: $("region-select"),
       previousDayButton: $("previous-day-button"),
       nextDayButton: $("next-day-button"),
       todayButton: $("today-button"),
@@ -62,11 +68,19 @@
       maximumHour: $("maximum-hour"),
       priceSpread: $("price-spread"),
       spreadDetail: $("spread-detail"),
+      comparisonYesterdayValue: $("comparison-yesterday-value"),
+      comparisonYesterdayDetail: $("comparison-yesterday-detail"),
+      comparisonWeekValue: $("comparison-week-value"),
+      comparisonWeekDetail: $("comparison-week-detail"),
+      practicalWindowValue: $("practical-window-value"),
+      practicalWindowDetail: $("practical-window-detail"),
       chart: $("price-chart"),
       tooltip: $("tooltip"),
       rows: $("price-rows"),
       tableDescription: $("table-description"),
       applianceSelect: $("appliance-select"),
+      profileSaveButton: $("profile-save-button"),
+      profileDeleteButton: $("profile-delete-button"),
       plannerStartTime: $("planner-start-time"),
       plannerEndTime: $("planner-end-time"),
       energyInput: $("energy-input"),
@@ -249,16 +263,41 @@
       return state.data.findIndex(item => now >= item.startMs && now < item.endMs);
     }
 
+    function updateDaySwitch() {
+      const today = todayKey();
+      const tomorrow = shiftDate(today, 1);
+      const isToday = state.selectedDate === today;
+      const isTomorrow = state.selectedDate === tomorrow;
+      elements.todayTab?.classList.toggle("active", isToday);
+      elements.tomorrowTab?.classList.toggle("active", isTomorrow);
+      elements.todayTab?.setAttribute("aria-selected", String(isToday));
+      elements.tomorrowTab?.setAttribute("aria-selected", String(isTomorrow));
+      if (elements.todayTabDate) elements.todayTabDate.textContent = formatDateLong(today).replace(/^[^,]+,?\s*/u, "");
+      if (elements.tomorrowTabStatus) elements.tomorrowTabStatus.textContent = state.tomorrowAvailable
+        ? formatDateLong(tomorrow).replace(/^[^,]+,?\s*/u, "")
+        : tr("day.notPublished");
+      if (elements.tomorrowTab) elements.tomorrowTab.disabled = !state.tomorrowAvailable;
+      if (elements.regionSelect) elements.regionSelect.value = getRegionKey();
+    }
+
     function updateDateNavigation() {
       const today = todayKey();
       const tomorrow = shiftDate(today, 1);
       const selectedDate = elements.dateInput.value || state.selectedDate;
       elements.nextDayButton.disabled = selectedDate >= tomorrow || (selectedDate === today && !state.tomorrowAvailable);
+      updateDaySwitch();
     }
 
     async function checkTomorrowAvailability() {
+      const tomorrow = shiftDate(todayKey(), 1);
+      const cached = loadCache(tomorrow);
+      if (cached?.rows?.length) {
+        state.tomorrowAvailable = true;
+        state.plannerNextDayKey = tomorrow;
+        state.plannerNextDayRows = cached.rows;
+        updateDateNavigation();
+      }
       try {
-        const tomorrow = shiftDate(todayKey(), 1);
         const { payload } = await fetchOfficialData(tomorrow);
         const normalised = normaliseApiResponse(payload, tomorrow);
         state.tomorrowAvailable = normalised.rows.length > 0;
@@ -268,7 +307,7 @@
           state.plannerNextDayRows = normalised.rows;
         }
       } catch (error) {
-        state.tomorrowAvailable = false;
+        if (!cached?.rows?.length) state.tomorrowAvailable = false;
       }
       updateDateNavigation();
       if (typeof updateSimulator === "function") updateSimulator();
@@ -449,9 +488,92 @@
 
     
 
+    function practicalWindow(duration = 3) {
+      if (!state.data.length) return null;
+      let best = null;
+      for (let index = 0; index <= state.data.length - duration; index += 1) {
+        const rows = state.data.slice(index, index + duration);
+        const first = rows[0];
+        const last = rows.at(-1);
+        if (first.hour < 8 || first.hour + duration > 24) continue;
+        let contiguous = true;
+        for (let i = 0; i < rows.length - 1; i += 1) if (rows[i + 1].startMs > rows[i].endMs + 5 * 60 * 1000) contiguous = false;
+        if (!contiguous) continue;
+        const average = rows.reduce((sum, row) => sum + row.priceKWh, 0) / rows.length;
+        if (!best || average < best.average) best = { rows, average, duration };
+      }
+      return best;
+    }
+
+    function renderComparison(valueElement, detailElement, comparison, referenceKey) {
+      if (!valueElement || !detailElement) return;
+      if (!Number.isFinite(comparison)) {
+        valueElement.textContent = "—";
+        detailElement.textContent = state.comparisons.loading ? tr("insights.loading") : tr("insights.noComparison");
+        valueElement.classList.remove("good-comparison", "bad-comparison");
+        return;
+      }
+      valueElement.textContent = `${formatSignedPercent(comparison, 1)} %`;
+      valueElement.classList.toggle("good-comparison", comparison < 0);
+      valueElement.classList.toggle("bad-comparison", comparison > 0);
+      detailElement.textContent = tr(comparison < 0 ? "insights.cheaper" : comparison > 0 ? "insights.moreExpensive" : "insights.same", {
+        reference: tr(referenceKey)
+      });
+    }
+
+    function renderInsights() {
+      const daySummary = summary();
+      const yesterdayComparison = daySummary && Number.isFinite(state.comparisons.yesterday) && state.comparisons.yesterday !== 0
+        ? (daySummary.average / state.comparisons.yesterday - 1) * 100 : null;
+      const weekComparison = daySummary && Number.isFinite(state.comparisons.weeklyAverage) && state.comparisons.weeklyAverage !== 0
+        ? (daySummary.average / state.comparisons.weeklyAverage - 1) * 100 : null;
+      renderComparison(elements.comparisonYesterdayValue, elements.comparisonYesterdayDetail, yesterdayComparison, "insights.referenceYesterday");
+      renderComparison(elements.comparisonWeekValue, elements.comparisonWeekDetail, weekComparison, "insights.referenceWeek");
+      const practical = practicalWindow(3) || practicalWindow(2);
+      if (practical && elements.practicalWindowValue && elements.practicalWindowDetail) {
+        elements.practicalWindowValue.textContent = windowLabel(practical.rows);
+        elements.practicalWindowDetail.textContent = tr("insights.practicalDetail", { hours: practical.duration, price: formatPrice(practical.average) });
+      } else if (elements.practicalWindowValue && elements.practicalWindowDetail) {
+        elements.practicalWindowValue.textContent = "—";
+        elements.practicalWindowDetail.textContent = tr("insights.noPractical");
+      }
+    }
+
+    async function loadComparisons(dateKey) {
+      const sequence = ++state.comparisonLoadSequence;
+      state.comparisons = { loading: true, yesterday: null, weeklyAverage: null, weeklyCount: 0 };
+      renderInsights();
+      const start = shiftDate(dateKey, -7);
+      const end = shiftDate(dateKey, -1);
+      let daily = [];
+      try {
+        const { payload } = await fetchOfficialRange(start, end);
+        daily = normaliseHistoricalPayload(payload, start, end);
+      } catch (error) {
+        for (let offset = 1; offset <= 7; offset += 1) {
+          const key = shiftDate(dateKey, -offset);
+          const cached = loadCache(key);
+          if (!cached?.rows?.length) continue;
+          const prices = cached.rows.map(row => row.priceKWh);
+          daily.push({ dateKey: key, average: prices.reduce((sum, price) => sum + price, 0) / prices.length });
+        }
+      }
+      if (sequence !== state.comparisonLoadSequence) return;
+      const yesterday = daily.find(item => item.dateKey === end)?.average ?? null;
+      const averages = daily.map(item => item.average).filter(Number.isFinite);
+      state.comparisons = {
+        loading: false,
+        yesterday,
+        weeklyAverage: averages.length ? averages.reduce((sum, value) => sum + value, 0) / averages.length : null,
+        weeklyCount: averages.length
+      };
+      renderInsights();
+    }
+
     function renderAll() {
       updateHero();
       updateMetricCards();
+      renderInsights();
       renderChart();
       renderTable();
       updateSimulator();
@@ -619,7 +741,9 @@
       elements.maximumHour.textContent = "—";
       elements.priceSpread.textContent = "—";
       elements.spreadDetail.textContent = "—";
-      elements.rows.innerHTML = `<tr><td colspan="4">${message}</td></tr>`;
+      state.comparisons = { loading: false, yesterday: null, weeklyAverage: null, weeklyCount: 0 };
+      renderInsights();
+      elements.rows.innerHTML = `<tr><td colspan="5">${message}</td></tr>`;
       elements.csvButton.disabled = true;
       elements.dryerButton.disabled = true;
       updateSimulator();
@@ -659,6 +783,7 @@
         const publication = state.sourceUpdatedAt ? tr("status.publication", { date: formatDateTime(state.sourceUpdatedAt) }) : "";
         setLocalizedStatus("status.loaded", "ready", `${publication}${tr("status.consultation", { date: formatDateTime(state.fetchedAt), source })}`);
         renderAll();
+        loadComparisons(dateKey);
       } catch (error) {
         console.error(error);
         if (sequence !== state.loadSequence) return;
@@ -675,6 +800,7 @@
           state.currentSource = "copia local";
           setLocalizedStatus("status.cached", "cached", tr("status.savedAt", { date: formatDateTime(cached.savedAt) }));
           renderAll();
+          loadComparisons(dateKey);
         } else {
           setLocalizedStatus("status.loadError", "error");
           clearViewForMissingData(tr("status.loadDataError"));
@@ -686,9 +812,18 @@
 
     function downloadCsv() {
       if (!state.data.length) return;
+      const region = activeRegionConfig();
       const lines = [
-        ["fecha", "franja", "precio_EUR_MWh", "precio_EUR_kWh", "nivel"],
-        ...state.data.map(item => [state.selectedDate, item.label, item.priceMWh.toFixed(5), item.priceKWh.toFixed(8), levelLabel(item.level)])
+        ["fecha", "region", "franja", "periodo", "precio_EUR_MWh", "precio_EUR_kWh", "nivel"],
+        ...state.data.map(item => [
+          state.selectedDate,
+          region.key,
+          item.label,
+          tariffPeriodLabel(item.tariffPeriod),
+          item.priceMWh.toFixed(5),
+          item.priceKWh.toFixed(8),
+          levelLabel(item.level)
+        ])
       ];
       const csv = lines.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n");
       const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
@@ -730,6 +865,31 @@
     elements.todayButton.addEventListener("click", () => {
       state.followingToday = true;
       loadData(todayKey(), { manual: true });
+    });
+    elements.todayTab?.addEventListener("click", () => {
+      state.followingToday = true;
+      loadData(todayKey(), { manual: true });
+    });
+    elements.tomorrowTab?.addEventListener("click", () => {
+      if (!state.tomorrowAvailable) return;
+      state.followingToday = false;
+      loadData(shiftDate(todayKey(), 1), { manual: true });
+    });
+    elements.regionSelect?.addEventListener("change", () => {
+      setRegionKey(elements.regionSelect.value);
+      state.tomorrowAvailable = false;
+      state.plannerNextDayKey = "";
+      state.plannerNextDayRows = [];
+      state.history = [];
+      state.comparisons = { loading: true, yesterday: null, weeklyAverage: null, weeklyCount: 0 };
+      state.followingToday = true;
+      const regionalToday = todayKey();
+      state.selectedDate = regionalToday;
+      elements.dateInput.value = regionalToday;
+      updateDateNavigation();
+      checkTomorrowAvailability();
+      loadData(regionalToday, { manual: true });
+      loadHistory();
     });
     elements.previousDayButton.addEventListener("click", () => {
       if (!elements.dateInput.value) return;
@@ -786,6 +946,8 @@
 
     window.addEventListener("languagechange", () => {
       syncHourlyDetails();
+      if (typeof refreshPlannerProfileOptions === "function") refreshPlannerProfileOptions((elements.applianceSelect.value || "").replace(/^saved:/, ""));
+      updateDaySwitch();
       if (state.data.length) renderAll();
       else clearViewForMissingData();
       renderHistory();
@@ -802,29 +964,25 @@
     });
 
     elements.applianceSelect.addEventListener("change", () => {
-      if (elements.applianceSelect.value !== "custom") {
-        const [energy, duration] = elements.applianceSelect.value.split(",");
+      const selected = elements.applianceSelect.value;
+      if (selected.startsWith("saved:")) {
+        applyPlannerProfile(selected.slice(6));
+      } else if (selected !== "custom") {
+        const [energy, duration] = selected.split(",");
         elements.energyInput.value = energy;
         elements.durationInput.value = duration;
+        if (elements.profileDeleteButton) elements.profileDeleteButton.disabled = true;
+        updateSimulator();
+      } else {
+        if (elements.profileDeleteButton) elements.profileDeleteButton.disabled = true;
+        updateSimulator();
       }
-      updateSimulator();
     });
-    const syncSmartTaskPreset = () => {
-      const option = elements.smartTaskName.options[elements.smartTaskName.selectedIndex];
-      if (!option) return;
-      const energy = Number(option.dataset.energy);
-      const duration = Number(option.dataset.duration);
-      if (!Number.isFinite(energy) || !Number.isFinite(duration) || duration <= 0) return;
-      elements.smartTaskEnergy.value = String(energy);
-      elements.smartTaskDuration.value = String(duration);
-      elements.smartTaskPower.value = (energy / duration).toFixed(2);
-    };
-    elements.smartTaskName.addEventListener("change", syncSmartTaskPreset);
-    syncSmartTaskPreset();
     elements.plannerStartTime.addEventListener("change", updateSimulator);
     elements.plannerEndTime.addEventListener("change", updateSimulator);
     elements.energyInput.addEventListener("input", updateSimulator);
     elements.durationInput.addEventListener("input", updateSimulator);
+    if (typeof initialisePlannerProfiles === "function") initialisePlannerProfiles();
     if (typeof initialiseSmartQueue === "function") initialiseSmartQueue();
 
     let resizeTimer;
@@ -866,6 +1024,7 @@
         loadData(newToday);
         return;
       }
+      updateDaySwitch();
       updateHero();
       renderChart();
       renderTable();
@@ -877,6 +1036,10 @@
     }, CONFIG.refreshMs);
 
     window.setInterval(() => {
+      if (!document.hidden && navigator.onLine) checkTomorrowAvailability();
+    }, 10 * 60 * 1000);
+
+    window.setInterval(() => {
       if (!document.hidden && navigator.onLine && state.currentSource === "copia local") retryAfterConnection();
     }, 15 * 1000);
 
@@ -884,6 +1047,7 @@
     syncHourlyDetails();
     document.getElementById("hourly-details")?.addEventListener("toggle", event => updateHourlyDetailsLabel(event.currentTarget));
     window.matchMedia("(max-width: 640px)").addEventListener("change", syncHourlyDetails);
+    if (elements.regionSelect) elements.regionSelect.value = getRegionKey();
     state.selectedDate = todayKey();
     elements.dateInput.value = state.selectedDate;
     updateDateNavigation();

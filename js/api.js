@@ -1,7 +1,27 @@
+/* Regiones eléctricas y zonas horarias compatibles con la API oficial. */
+const REGION_STORAGE_KEY = "pvpc-dashboard-region-v1";
+const REGION_CONFIG = Object.freeze({
+  peninsula: Object.freeze({ key: "peninsula", geoLimit: "peninsular", geoId: 8741, timezone: "Europe/Madrid" }),
+  canarias: Object.freeze({ key: "canarias", geoLimit: "canarias", geoId: 8742, timezone: "Atlantic/Canary" }),
+  ceuta: Object.freeze({ key: "ceuta", geoLimit: "ceuta", geoId: 8744, timezone: "Europe/Madrid" }),
+  melilla: Object.freeze({ key: "melilla", geoLimit: "melilla", geoId: 8745, timezone: "Europe/Madrid" })
+});
+function getRegionKey() {
+  try { const value = localStorage.getItem(REGION_STORAGE_KEY); return REGION_CONFIG[value] ? value : "peninsula"; }
+  catch { return "peninsula"; }
+}
+function setRegionKey(value) {
+  const key = REGION_CONFIG[value] ? value : "peninsula";
+  try { localStorage.setItem(REGION_STORAGE_KEY, key); } catch {}
+  return key;
+}
+function activeRegionConfig() { return REGION_CONFIG[getRegionKey()]; }
+function activeTimezone() { return activeRegionConfig().timezone; }
+
 /* API, normalización de franjas horarias y caché local por fecha. */
 function partsInSpain(date = new Date()) {
       const parts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: CONFIG.timezone,
+        timeZone: activeTimezone(),
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -53,7 +73,7 @@ function partsInSpain(date = new Date()) {
     function formatDateTime(date) {
       if (!date || Number.isNaN(new Date(date).getTime())) return "—";
       return new Intl.DateTimeFormat(window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES", {
-        timeZone: CONFIG.timezone,
+        timeZone: activeTimezone(),
         dateStyle: "short",
         timeStyle: "short"
       }).format(new Date(date));
@@ -92,7 +112,7 @@ function partsInSpain(date = new Date()) {
       const date = new Date(datetime);
       if (Number.isNaN(date.getTime())) throw new Error("La API devolvió una fecha no válida.");
       const parts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: CONFIG.timezone,
+        timeZone: activeTimezone(),
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -142,8 +162,8 @@ function partsInSpain(date = new Date()) {
           const end = next ? next.start : new Date(bucket.start.getTime() + 60 * 60 * 1000);
           const priceMWh = bucket.values.reduce((sum, number) => sum + number, 0) / bucket.values.length;
           const locale = window.i18n?.language === "en" ? "en-US" : window.i18n?.language === "fr" ? "fr-FR" : "es-ES";
-          const startHour = new Intl.DateTimeFormat(locale, { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(bucket.start);
-          const endHour = new Intl.DateTimeFormat(locale, { timeZone: CONFIG.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(end);
+          const startHour = new Intl.DateTimeFormat(locale, { timeZone: activeTimezone(), hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(bucket.start);
+          const endHour = new Intl.DateTimeFormat(locale, { timeZone: activeTimezone(), hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(end);
           return {
             index,
             startIso: bucket.start.toISOString(),
@@ -155,7 +175,8 @@ function partsInSpain(date = new Date()) {
             shortLabel: startHour,
             priceMWh,
             priceKWh: priceMWh / 1000,
-            level: getLevel(priceMWh / 1000)
+            level: getLevel(priceMWh / 1000),
+            tariffPeriod: tariffPeriodFor(dateKey, bucket.hour)
           };
         }),
         sourceUpdatedAt: series.attributes["last-update"] || payload?.data?.attributes?.["last-update"] || null
@@ -165,7 +186,16 @@ function partsInSpain(date = new Date()) {
     function buildApiUrl(dateKey, endDateKey = dateKey) {
       const start = `${dateKey}T00:00`;
       const end = `${endDateKey}T23:59`;
-      const query = new URLSearchParams({ start_date: start, end_date: end, time_trunc: "hour", cached: "false" });
+      const region = activeRegionConfig();
+      const query = new URLSearchParams({
+        start_date: start,
+        end_date: end,
+        time_trunc: "hour",
+        geo_trunc: "electric_system",
+        geo_limit: region.geoLimit,
+        geo_ids: String(region.geoId),
+        cached: "false"
+      });
       return `${CONFIG.apiBase}?${query.toString()}`;
     }
 
@@ -222,7 +252,7 @@ function partsInSpain(date = new Date()) {
       }));
     }
 
-    function cacheKey(dateKey) { return `${CONFIG.cachePrefix}${dateKey}`; }
+    function cacheKey(dateKey) { return `${CONFIG.cachePrefix}${getRegionKey()}:${dateKey}`; }
 
     function saveCache(dateKey, normalised) {
       try {
@@ -249,7 +279,7 @@ function partsInSpain(date = new Date()) {
       }
     }
 
-    function historicalMonthCacheKey(monthKey) { return `${CONFIG.cachePrefix}history-month:${monthKey}`; }
+    function historicalMonthCacheKey(monthKey) { return `${CONFIG.cachePrefix}${getRegionKey()}:history-month:${monthKey}`; }
 
     function saveHistoricalMonthCache(monthKey, summary) {
       try {
@@ -275,3 +305,31 @@ function partsInSpain(date = new Date()) {
       }
     }
 
+
+
+/* Periodos 2.0TD: laborables P1/P2/P3; fines de semana y festivos nacionales, P3. */
+function easterSundayDateKey(year) {
+  const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+function isNationalHoliday(dateKey) {
+  const fixed = new Set(["01-01", "01-06", "08-15", "10-12", "11-01", "12-06", "12-08", "12-25"]);
+  if (fixed.has(dateKey.slice(5))) return true;
+  const year = Number(dateKey.slice(0, 4));
+  return dateKey === shiftDate(easterSundayDateKey(year), -2);
+}
+function tariffPeriodFor(dateKey, hour) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day, 12)).getUTCDay();
+  if (weekday === 0 || weekday === 6 || isNationalHoliday(dateKey)) return "p3";
+  if ((hour >= 10 && hour < 14) || (hour >= 18 && hour < 22)) return "p1";
+  if ((hour >= 8 && hour < 10) || (hour >= 14 && hour < 18) || (hour >= 22 && hour < 24)) return "p2";
+  return "p3";
+}
+function tariffPeriodLabel(period) { return window.i18n?.t(`tariff.${period}`) || period.toUpperCase(); }
