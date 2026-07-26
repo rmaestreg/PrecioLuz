@@ -204,7 +204,7 @@ function partsInSpain(date = new Date()) {
 
     async function requestJson(url) {
       return withTimeout(async signal => {
-        const response = await fetch(url, { cache: "no-store", signal, headers: { Accept: "application/json", "Content-Type": "application/json" } });
+        const response = await fetch(url, { cache: "no-store", signal, headers: { Accept: "application/json" } });
         if (!response.ok) {
           let detail = "";
           try { detail = (await response.json())?.errors?.[0]?.detail || ""; } catch {}
