@@ -46,7 +46,7 @@
     </header>
 
     <section class="status-line loading" id="status-line" role="status" aria-live="polite">
-      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.0.39)</span></div>
+      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.0.40)</span></div>
       <div class="status-meta" id="status-meta">—</div>
     </section>
 
@@ -122,7 +122,7 @@
 
         <div class="simulator">
           <div class="field">
-            <label for="appliance-select" data-i18n="planner.typicalUse">Uso habitual</label>
+            <label for="appliance-select" data-i18n="planner.typicalUse">Uso</label>
             <select id="appliance-select">
               <option value="0.25,1" data-i18n="planner.computer">Ordenador · 1 h · 0,25 kWh</option>
               <option value="0.75,2" selected data-i18n="planner.washer">Lavadora eco · 0,75 kWh</option>
@@ -130,7 +130,7 @@
               <option value="1.5,2" data-i18n="planner.dryer">Secadora · 2 h · 1,50 kWh</option>
               <option value="2,1" data-i18n="planner.oven">Horno · 1 h · 2,00 kWh</option>
               <option value="1.2,1" data-i18n="planner.airConditioner">Aire acondicionado · 1 h · 1,20 kWh</option>
-              <option value="20,6" data-i18n="planner.vehicle">Carga de vehículo · 20 kWh</option>
+              <option value="20,6" data-i18n="planner.vehicle">Vehículo eléctrico · 20 kWh</option>
               <option value="custom" data-i18n="planner.custom">Personalizado</option>
             </select>
           </div>
@@ -180,8 +180,16 @@
           </div>
           <form class="smart-queue-form" id="smart-task-form">
             <div class="field">
-              <label for="smart-task-name" data-i18n="planner.queue.taskName">Tarea</label>
-              <input id="smart-task-name" type="text" value="Lavadora" maxlength="40" autocomplete="off">
+              <label for="smart-task-name" data-i18n="planner.queue.taskName">Uso</label>
+              <select id="smart-task-name">
+                <option value="Ordenador" data-energy="0.25" data-duration="1" data-i18n="planner.computer">Ordenador · 1 h · 0,25 kWh</option>
+                <option value="Lavadora" data-energy="0.75" data-duration="2" selected data-i18n="planner.washer">Lavadora eco · 0,75 kWh</option>
+                <option value="Lavavajillas" data-energy="0.85" data-duration="3" data-i18n="planner.dishwasher">Lavavajillas eco · 0,85 kWh</option>
+                <option value="Secadora" data-energy="1.5" data-duration="2" data-i18n="planner.dryer">Secadora · 2 h · 1,50 kWh</option>
+                <option value="Horno" data-energy="2" data-duration="1" data-i18n="planner.oven">Horno · 1 h · 2,00 kWh</option>
+                <option value="Aire acondicionado" data-energy="1.2" data-duration="1" data-i18n="planner.airConditioner">Aire acondicionado · 1 h · 1,20 kWh</option>
+                <option value="Vehículo eléctrico" data-energy="20" data-duration="6" data-i18n="planner.vehicle">Vehículo eléctrico · 20 kWh</option>
+              </select>
             </div>
             <div class="field-row">
               <div class="field">
@@ -313,30 +321,3 @@
   <script src="./js/app.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

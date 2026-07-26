@@ -809,6 +809,18 @@
       }
       updateSimulator();
     });
+    const syncSmartTaskPreset = () => {
+      const option = elements.smartTaskName.options[elements.smartTaskName.selectedIndex];
+      if (!option) return;
+      const energy = Number(option.dataset.energy);
+      const duration = Number(option.dataset.duration);
+      if (!Number.isFinite(energy) || !Number.isFinite(duration) || duration <= 0) return;
+      elements.smartTaskEnergy.value = String(energy);
+      elements.smartTaskDuration.value = String(duration);
+      elements.smartTaskPower.value = (energy / duration).toFixed(2);
+    };
+    elements.smartTaskName.addEventListener("change", syncSmartTaskPreset);
+    syncSmartTaskPreset();
     elements.plannerStartTime.addEventListener("change", updateSimulator);
     elements.plannerEndTime.addEventListener("change", updateSimulator);
     elements.energyInput.addEventListener("input", updateSimulator);
