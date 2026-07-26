@@ -32,12 +32,12 @@
         <button class="button icon-button light-status-button" id="dryer-button" type="button" aria-label="¿Cómo está la luz?" title="¿Cómo está la luz?" data-i18n-aria-label="controls.lightStatus" data-i18n-title="controls.lightStatus" disabled><span aria-hidden="true">?</span></button>
         <div class="language-picker" id="language-picker">
           <button class="control language-button" id="language-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Idioma" title="Idioma" data-i18n-aria-label="controls.language" data-i18n-title="controls.language">
-            <span class="language-flag" id="language-flag">🇪🇸</span><span class="sr-only" id="language-name">Español</span>
+            <span class="language-flag flag-es" id="language-flag" aria-hidden="true"></span><span class="sr-only" id="language-name">Español</span>
           </button>
           <div class="language-menu" id="language-menu" role="listbox" aria-label="Idioma" data-i18n-aria-label="controls.language" hidden>
-            <button type="button" role="option" data-language="es"><span>🇪🇸</span><span data-i18n="language.es">Español</span></button>
-            <button type="button" role="option" data-language="en"><span>🇬🇧</span><span data-i18n="language.en">English</span></button>
-            <button type="button" role="option" data-language="fr"><span>🇫🇷</span><span data-i18n="language.fr">Français</span></button>
+            <button type="button" role="option" data-language="es"><span class="language-flag flag-es" aria-hidden="true"></span><span data-i18n="language.es">Español</span></button>
+            <button type="button" role="option" data-language="en"><span class="language-flag flag-en" aria-hidden="true"></span><span data-i18n="language.en">English</span></button>
+            <button type="button" role="option" data-language="fr"><span class="language-flag flag-fr" aria-hidden="true"></span><span data-i18n="language.fr">Français</span></button>
           </div>
         </div>
         <button class="button icon-button" id="theme-button" type="button" aria-label="Cambiar tema" title="Cambiar tema" data-i18n-aria-label="controls.theme" data-i18n-title="controls.theme">◐</button>
@@ -71,7 +71,7 @@
     </section>
 
     <section class="status-line loading" id="status-line" role="status" aria-live="polite">
-      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.2.7)</span></div>
+      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.2.8)</span></div>
       <div class="status-meta" id="status-meta">—</div>
     </section>
 
@@ -521,8 +521,6 @@
   <script src="./js/tools.js"></script>
 </body>
 </html>
-
-
 
 
 

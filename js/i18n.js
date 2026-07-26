@@ -188,7 +188,7 @@
     const languageName = document.getElementById("language-name");
     if (languageName) languageName.textContent = t(`language.${language}`);
     const languageFlag = document.getElementById("language-flag");
-    if (languageFlag) languageFlag.textContent = { es: "🇪🇸", en: "🇬🇧", fr: "🇫🇷" }[language];
+    if (languageFlag) languageFlag.className = `language-flag flag-${language}`;
     window.dispatchEvent(new CustomEvent("languagechange", { detail: { language } }));
   }
   window.i18n = { t, setLanguage, applyTranslations, get language() { return language; } };
@@ -197,7 +197,7 @@
     const languageName = document.getElementById("language-name");
     if (languageName) languageName.textContent = t(`language.${language}`);
     const languageFlag = document.getElementById("language-flag");
-    if (languageFlag) languageFlag.textContent = { es: "🇪🇸", en: "🇬🇧", fr: "🇫🇷" }[language];
+    if (languageFlag) languageFlag.className = `language-flag flag-${language}`;
     const picker = document.getElementById("language-picker");
     const button = document.getElementById("language-button");
     const menu = document.getElementById("language-menu");

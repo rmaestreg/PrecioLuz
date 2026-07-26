@@ -147,7 +147,10 @@
 
     .language-picker { position: relative; }
     .language-button { display: inline-flex; align-items: center; justify-content: center; width: 42px; min-width: 42px; height: 42px; padding: 0; cursor: pointer; }
-    .language-flag, .language-menu button span { font-size: 1.15rem; line-height: 1; }
+    .language-flag { display: inline-block; flex: 0 0 auto; width: 1.35em; height: .9em; border: 1px solid rgba(0,0,0,.14); border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.12); vertical-align: middle; }
+    .flag-es { background: linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75%); }
+    .flag-fr { background: linear-gradient(to right, #0055a4 0 33.333%, #fff 33.333% 66.666%, #ef4135 66.666%); }
+    .flag-en { background: linear-gradient(to right, transparent 42%, #fff 42% 58%, transparent 58%), linear-gradient(to bottom, transparent 36%, #fff 36% 64%, transparent 64%), linear-gradient(to right, transparent 46%, #c8102e 46% 54%, transparent 54%), linear-gradient(to bottom, transparent 42%, #c8102e 42% 58%, transparent 58%), #012169; }
     .language-menu { position: absolute; top: calc(100% + 6px); left: 50%; right: auto; transform: translateX(-50%); z-index: 25; display: none; min-width: 166px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
     .language-menu[hidden] { display: none; }
     .language-picker.open .language-menu[hidden] { display: none; }
