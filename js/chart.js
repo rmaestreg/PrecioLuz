@@ -15,7 +15,11 @@ function colourForLevel(level) {
       // Mantener la misma proporción que el alto definido en CSS evita que
       // preserveAspectRatio deje bandas vacías dentro del panel.
       const height = isMobile ? 320 : 360;
-      const margin = { top: 10, right: 54, bottom: 52, left: 42 };
+      const margin = width < 280
+        ? { top: 8, right: 26, bottom: 46, left: 24 }
+        : width < 640
+          ? { top: 10, right: 34, bottom: 50, left: 28 }
+          : { top: 10, right: 54, bottom: 52, left: 42 };
       const plotWidth = width - margin.left - margin.right;
       const plotHeight = height - margin.top - margin.bottom;
       const ns = "http://www.w3.org/2000/svg";
@@ -50,8 +54,8 @@ function colourForLevel(level) {
       const ticks = 5;
       const slot = plotWidth / state.data.length;
       const barWidth = Math.max(
-        isMobile ? 6 : 12,
-        Math.min(isMobile ? 18 : 30, slot * (isMobile ? .76 : .84))
+        isMobile ? 8 : 12,
+        Math.min(isMobile ? 22 : 30, slot * (isMobile ? .92 : .84))
       );
       const currentIndex = currentDataIndex();
       const yFor = value => margin.top + plotHeight - ((value - minY) / range) * plotHeight;
@@ -98,7 +102,7 @@ function colourForLevel(level) {
           add("rect", { x: x - 3, y: y - 3, width: barWidth + 6, height: barHeight + 6, rx: Math.min(7, barWidth / 3 + 2), class: "now-outline" });
         }
 
-        const showEvery = width >= 1000 ? 1 : width >= 800 ? 2 : 3;
+        const showEvery = width < 280 ? 6 : width >= 1000 ? 1 : width >= 800 ? 2 : 3;
         if (index % showEvery === 0) {
           const labelX = x + barWidth / 2;
           const labelY = margin.top + plotHeight + 21;
