@@ -204,8 +204,12 @@ function partsInSpain(date = new Date()) {
 
     async function requestJson(url) {
       return withTimeout(async signal => {
-        const response = await fetch(url, { cache: "no-store", signal, headers: { Accept: "application/json" } });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const response = await fetch(url, { cache: "no-store", signal, headers: { Accept: "application/json", "Content-Type": "application/json" } });
+        if (!response.ok) {
+          let detail = "";
+          try { detail = (await response.json())?.errors?.[0]?.detail || ""; } catch {}
+          throw new Error(`HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
+        }
         return response.json();
       });
     }

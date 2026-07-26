@@ -1257,3 +1257,26 @@ body[data-app-view="tools"] #tools-section { margin-top: 5px !important; }
   body > nav.ios-tabbar .ios-tab { font-size: .57rem; padding-inline: 1px; }
   body > nav.ios-tabbar .ios-tab-icon { font-size: 1.12rem; }
 }
+
+/* Inicio compacto: reduce el espacio vertical sin alterar las demás fichas. */
+body[data-app-view="home"] .day-context { gap: 8px; margin-bottom: 6px; }
+body[data-app-view="home"] .day-switch { gap: 4px; padding: 3px; }
+body[data-app-view="home"] .day-tab { min-height: 43px; padding: 5px 12px; }
+body[data-app-view="home"] .region-field { gap: 2px; padding: 5px 9px; }
+body[data-app-view="home"] .region-field select { min-height: 28px; }
+
+body[data-app-view="home"] .status-line { min-height: 32px; margin-bottom: 6px; padding: 5px 9px; }
+body[data-app-view="home"] .hero { gap: 10px; margin-bottom: 6px; padding: 12px 14px; }
+body[data-app-view="home"] .hero-label { margin-bottom: 5px; }
+body[data-app-view="home"] .hero-advice { margin-top: 5px; line-height: 1.25; }
+body[data-app-view="home"] .hero-price { margin-top: 3px; }
+body[data-app-view="home"] .hero-price small { margin-top: 4px; }
+
+body[data-app-view="home"] .metrics { gap: 5px; margin-bottom: 6px; }
+body[data-app-view="home"] .metrics .card { min-height: 0; padding: 8px; border-radius: 12px; }
+body[data-app-view="home"] .metrics .card-value { margin-top: 3px; line-height: 1.05; }
+body[data-app-view="home"] .metrics .card-detail { min-height: 1em; margin-top: 2px; line-height: 1.1; }
+
+body[data-app-view="home"] .insights { gap: 6px; margin-bottom: 10px; }
+body[data-app-view="home"] .insight-card { min-height: 0; padding: 9px 10px; gap: 3px; }
+body[data-app-view="home"] .insight-card strong { line-height: 1.05; }
