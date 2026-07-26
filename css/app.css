@@ -1280,3 +1280,4 @@ body[data-app-view="home"] .metrics .card-detail { min-height: 1em; margin-top: 
 body[data-app-view="home"] .insights { gap: 6px; margin-bottom: 10px; }
 body[data-app-view="home"] .insight-card { min-height: 0; padding: 9px 10px; gap: 3px; }
 body[data-app-view="home"] .insight-card strong { line-height: 1.05; }
+body[data-app-view="home"] #hourly-details { display: block !important; margin-bottom: 12px; }

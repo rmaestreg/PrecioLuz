@@ -237,7 +237,10 @@
     function syncHourlyDetails() {
       const details = document.getElementById("hourly-details");
       if (!details) return;
-      details.open = !window.matchMedia("(max-width: 640px)").matches;
+      if (!details.dataset.initialized) {
+        details.open = false;
+        details.dataset.initialized = "true";
+      }
       updateHourlyDetailsLabel(details);
     }
 
