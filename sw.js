@@ -1,4 +1,4 @@
-const CACHE_NAME = "precio-luz-shell-v1.2.0";
+const CACHE_NAME = "precio-luz-shell-v1.2.2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -83,6 +83,4 @@ self.addEventListener("fetch", event => {
 self.addEventListener("message", event => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });
-
-
 

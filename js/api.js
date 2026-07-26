@@ -3,6 +3,7 @@ const REGION_STORAGE_KEY = "pvpc-dashboard-region-v1";
 const REGION_CONFIG = Object.freeze({
   peninsula: Object.freeze({ key: "peninsula", geoLimit: "peninsular", geoId: 8741, timezone: "Europe/Madrid" }),
   canarias: Object.freeze({ key: "canarias", geoLimit: "canarias", geoId: 8742, timezone: "Atlantic/Canary" }),
+  baleares: Object.freeze({ key: "baleares", geoLimit: "baleares", geoId: 8743, timezone: "Europe/Madrid" }),
   ceuta: Object.freeze({ key: "ceuta", geoLimit: "ceuta", geoId: 8744, timezone: "Europe/Madrid" }),
   melilla: Object.freeze({ key: "melilla", geoLimit: "melilla", geoId: 8745, timezone: "Europe/Madrid" })
 });
@@ -133,8 +134,10 @@ function partsInSpain(date = new Date()) {
     function normaliseApiResponse(payload, dateKey) {
       if (!payload || !Array.isArray(payload.included)) throw new Error("Formato inesperado en la respuesta de Red Eléctrica.");
 
-      const series = payload.included.find(item => String(item.id) === "1001") ||
-        payload.included.find(item => /PVPC/i.test(item?.attributes?.title || item?.type || ""));
+      const candidates = payload.included.filter(item => Array.isArray(item?.attributes?.values));
+      const series = candidates.find(item => /PVPC/i.test(item?.attributes?.title || item?.type || "")) ||
+        candidates.find(item => String(item.id) === "1001") ||
+        candidates.sort((a, b) => b.attributes.values.length - a.attributes.values.length)[0];
 
       if (!series || !Array.isArray(series?.attributes?.values)) throw new Error("No se encontró la serie PVPC en la respuesta.");
 

@@ -77,7 +77,7 @@ Los precios proceden de la API pública de datos de Red Eléctrica. La aplicaci�
 - Acceso directo a Hoy y Mañana con detección automática de publicación.
 - Comparación con ayer y con la media de los siete días anteriores.
 - Recomendación del mejor tramo práctico diurno de 2–3 horas.
-- Selector para Península/Baleares, Canarias, Ceuta y Melilla, con zona horaria y caché separadas.
+- Selector independiente para Península, Baleares, Canarias, Ceuta y Melilla, con zona horaria, consulta API y caché separadas por región.
 - Identificación visual de periodos P1, P2 y P3.
 - Perfiles personalizados de consumo guardados en el dispositivo.
 

@@ -757,6 +757,7 @@
 
     async function loadData(dateKey, { manual = false } = {}) {
       const sequence = ++state.loadSequence;
+      const requestRegion = getRegionKey();
       const previousDate = state.selectedDate;
       state.selectedDate = dateKey;
       if (previousDate && previousDate !== dateKey) {
@@ -770,7 +771,7 @@
 
       try {
         const { payload, source } = await fetchOfficialData(dateKey);
-        if (sequence !== state.loadSequence) return;
+        if (sequence !== state.loadSequence || requestRegion !== getRegionKey()) return;
         const normalised = normaliseApiResponse(payload, dateKey);
         if (!normalised.rows.length) {
           setLocalizedStatus("status.noPricesForDate", "error", formatDateLong(dateKey));
@@ -789,7 +790,7 @@
         loadComparisons(dateKey);
       } catch (error) {
         console.error(error);
-        if (sequence !== state.loadSequence) return;
+        if (sequence !== state.loadSequence || requestRegion !== getRegionKey()) return;
         const cached = loadCache(dateKey);
         if (cached) {
           if (!cached.rows.length) {
