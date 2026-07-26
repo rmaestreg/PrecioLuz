@@ -22,6 +22,7 @@ js/api.js                   API de Red Eléctrica, normalización y caché local
 js/chart.js                 Gráfico horario, filtros y tabla de detalle
 js/planner.js               Planificador y cola inteligente de tareas
 js/i18n.js                  Traducciones y preferencia de idioma
+js/tools.js                 Calculadoras de factura, potencia, consumo y vehículo eléctrico
 js/app.js                   Estado, eventos, histórico e inicialización
 manifest.webmanifest        Configuración de la PWA
 sw.js                       Caché del shell y estrategia offline
@@ -78,3 +79,12 @@ Los precios proceden de la API pública de datos de Red Eléctrica. La aplicaci�
 - Selector para Península/Baleares, Canarias, Ceuta y Melilla, con zona horaria y caché separadas.
 - Identificación visual de periodos P1, P2 y P3.
 - Perfiles personalizados de consumo guardados en el dispositivo.
+
+
+## Versión 1.2.0
+
+- Simulador completo de factura con energía, potencia, alquiler, servicios e impuestos editables.
+- Calculadora de potencia recomendada a partir de aparatos simultáneos y margen de seguridad.
+- Inventario mensual de electrodomésticos con consumo, coste, persistencia y exportación CSV.
+- Planificador de vehículo eléctrico con estado de carga, eficiencia, potencia disponible, horario e interrupción opcional.
+- Nueva vista de calculadoras, persistencia local y funcionamiento offline de los módulos.

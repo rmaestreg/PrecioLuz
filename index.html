@@ -70,7 +70,7 @@
     </section>
 
     <section class="status-line loading" id="status-line" role="status" aria-live="polite">
-      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.1.0)</span></div>
+      <div class="status-message"><span class="indicator" aria-hidden="true"></span><span id="status-text">Cargando datos oficiales…</span><span id="app-version" class="status-version">(v1.2.0)</span></div>
       <div class="status-meta" id="status-meta">—</div>
     </section>
 
@@ -274,6 +274,159 @@
         </section>
       </article>
 
+
+    <section class="panel tools-panel" id="tools-section" aria-labelledby="tools-title">
+      <div class="panel-header tools-heading">
+        <div>
+          <h2 id="tools-title" data-i18n="tools.title">Calculadoras de ahorro</h2>
+          <p class="panel-description" data-i18n="tools.description">Estima tu factura, potencia, consumo doméstico y carga del vehículo con parámetros editables.</p>
+        </div>
+      </div>
+
+      <div class="calculator-tabs" role="tablist" aria-label="Calculadoras" data-i18n-aria-label="tools.tabsLabel">
+        <button class="calculator-tab active" type="button" role="tab" aria-selected="true" data-tool-target="bill" data-i18n="tools.billTab">Factura</button>
+        <button class="calculator-tab" type="button" role="tab" aria-selected="false" data-tool-target="power" data-i18n="tools.powerTab">Potencia</button>
+        <button class="calculator-tab" type="button" role="tab" aria-selected="false" data-tool-target="consumption" data-i18n="tools.consumptionTab">Consumo</button>
+        <button class="calculator-tab" type="button" role="tab" aria-selected="false" data-tool-target="ev" data-i18n="tools.evTab">Vehículo</button>
+      </div>
+
+      <div class="calculator-pane active" data-tool-pane="bill" role="tabpanel">
+        <div class="tool-intro">
+          <div><h3 data-i18n="bill.title">Simulador completo de factura</h3><p data-i18n="bill.description">Desglosa energía, potencia, alquiler, servicios e impuestos. Copia de tu factura los valores regulados o comerciales.</p></div>
+          <button class="button compact" id="bill-reset" type="button" data-i18n="common.reset">Restablecer</button>
+        </div>
+        <div class="calculator-layout">
+          <form class="calculator-form" id="bill-form">
+            <div class="field-row three-columns">
+              <div class="field"><label for="bill-days" data-i18n="bill.days">Días facturados</label><input id="bill-days" type="number" min="1" max="366" step="1" value="30" inputmode="numeric"></div>
+              <div class="field"><label for="bill-consumption" data-i18n="bill.consumption">Consumo (kWh)</label><input id="bill-consumption" type="number" min="0" max="100000" step="0.1" value="250" inputmode="decimal"></div>
+              <div class="field"><label for="bill-energy-source" data-i18n="common.energyPrice">Precio de energía</label><select id="bill-energy-source"><option value="day" data-i18n="common.selectedDayAverage">Media del día seleccionado</option><option value="manual" data-i18n="common.manualPrice">Precio manual</option></select></div>
+            </div>
+            <div class="field"><label for="bill-energy-price" data-i18n="bill.energyPrice">Precio aplicado (€/kWh)</label><input id="bill-energy-price" type="number" min="0" max="10" step="0.00001" value="0.15000" inputmode="decimal"></div>
+            <fieldset class="calculator-fieldset"><legend data-i18n="bill.powerTerm">Término de potencia</legend>
+              <div class="field-row two-columns">
+                <div class="field"><label for="bill-power-peak" data-i18n="bill.powerPeak">Potencia punta (kW)</label><input id="bill-power-peak" type="number" min="0" max="100" step="0.1" value="4.6" inputmode="decimal"></div>
+                <div class="field"><label for="bill-power-valley" data-i18n="bill.powerValley">Potencia valle (kW)</label><input id="bill-power-valley" type="number" min="0" max="100" step="0.1" value="4.6" inputmode="decimal"></div>
+                <div class="field"><label for="bill-power-price-peak" data-i18n="bill.powerPricePeak">Precio punta (€/kW/día)</label><input id="bill-power-price-peak" type="number" min="0" max="10" step="0.000001" value="0.073773" inputmode="decimal"></div>
+                <div class="field"><label for="bill-power-price-valley" data-i18n="bill.powerPriceValley">Precio valle (€/kW/día)</label><input id="bill-power-price-valley" type="number" min="0" max="10" step="0.000001" value="0.001986" inputmode="decimal"></div>
+              </div>
+            </fieldset>
+            <fieldset class="calculator-fieldset"><legend data-i18n="bill.otherConcepts">Otros conceptos</legend>
+              <div class="field-row two-columns">
+                <div class="field"><label for="bill-meter-rental" data-i18n="bill.meterRental">Alquiler contador (€/día)</label><input id="bill-meter-rental" type="number" min="0" max="10" step="0.00001" value="0.02663" inputmode="decimal"></div>
+                <div class="field"><label for="bill-services" data-i18n="bill.services">Servicios y cuotas (€)</label><input id="bill-services" type="number" min="0" max="10000" step="0.01" value="0" inputmode="decimal"></div>
+                <div class="field"><label for="bill-electricity-tax" data-i18n="bill.electricityTax">Impuesto eléctrico (%)</label><input id="bill-electricity-tax" type="number" min="0" max="100" step="0.0001" value="5.1127" inputmode="decimal"></div>
+                <div class="field"><label for="bill-vat" data-i18n="bill.vat">IVA / impuesto indirecto (%)</label><input id="bill-vat" type="number" min="0" max="100" step="0.1" value="21" inputmode="decimal"></div>
+              </div>
+            </fieldset>
+            <p class="form-note" data-i18n="bill.editableNote">Valores iniciales orientativos y totalmente editables. Verifica precios e impuestos en tu factura.</p>
+          </form>
+          <div class="calculation-summary" aria-live="polite">
+            <div class="summary-total"><span data-i18n="bill.estimatedTotal">Factura estimada</span><strong id="bill-total">—</strong></div>
+            <div class="breakdown-list">
+              <div><span data-i18n="bill.energyCost">Energía</span><strong id="bill-energy-cost">—</strong></div>
+              <div><span data-i18n="bill.powerCost">Potencia</span><strong id="bill-power-cost">—</strong></div>
+              <div><span data-i18n="bill.electricityTaxCost">Impuesto eléctrico</span><strong id="bill-electricity-tax-cost">—</strong></div>
+              <div><span data-i18n="bill.rentalCost">Alquiler</span><strong id="bill-rental-cost">—</strong></div>
+              <div><span data-i18n="bill.servicesCost">Servicios</span><strong id="bill-services-cost">—</strong></div>
+              <div><span data-i18n="bill.vatCost">IVA / impuesto indirecto</span><strong id="bill-vat-cost">—</strong></div>
+            </div>
+            <div class="summary-secondary"><span data-i18n="bill.effectivePrice">Coste efectivo</span><strong id="bill-effective-price">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calculator-pane" data-tool-pane="power" role="tabpanel" hidden>
+        <div class="tool-intro">
+          <div><h3 data-i18n="power.title">Calculadora de potencia recomendada</h3><p data-i18n="power.description">Marca los aparatos que podrían funcionar simultáneamente y añade un margen de seguridad.</p></div>
+          <button class="button compact" id="power-reset" type="button" data-i18n="common.reset">Restablecer</button>
+        </div>
+        <div class="calculator-layout">
+          <div>
+            <div class="field-row two-columns">
+              <div class="field"><label for="power-base-load" data-i18n="power.baseLoad">Consumo base (kW)</label><input id="power-base-load" type="number" min="0" max="100" step="0.1" value="0.4" inputmode="decimal"></div>
+              <div class="field"><label for="power-margin" data-i18n="power.margin">Margen de seguridad (%)</label><input id="power-margin" type="number" min="0" max="100" step="1" value="10" inputmode="numeric"></div>
+              <div class="field"><label for="power-current" data-i18n="power.current">Potencia contratada actual (kW)</label><input id="power-current" type="number" min="0" max="100" step="0.1" value="4.6" inputmode="decimal"></div>
+              <div class="field"><label for="power-fixed-price" data-i18n="power.fixedPrice">Coste fijo conjunto (€/kW/día)</label><input id="power-fixed-price" type="number" min="0" max="10" step="0.000001" value="0.075759" inputmode="decimal"></div>
+            </div>
+            <div class="appliance-picker" id="power-appliances" aria-label="Aparatos simultáneos" data-i18n-aria-label="power.appliancesLabel"></div>
+            <div class="custom-appliance-row">
+              <div class="field"><label for="power-custom-name" data-i18n="power.customName">Otro aparato</label><input id="power-custom-name" type="text" maxlength="40" placeholder="Spa, bomba, servidor…"></div>
+              <div class="field"><label for="power-custom-kw" data-i18n="power.customKw">Potencia (kW)</label><input id="power-custom-kw" type="number" min="0.01" max="100" step="0.01" value="1" inputmode="decimal"></div>
+              <button class="button" id="power-add-custom" type="button" data-i18n="common.add">Añadir</button>
+            </div>
+          </div>
+          <div class="calculation-summary" aria-live="polite">
+            <div class="summary-total"><span data-i18n="power.recommended">Potencia recomendada</span><strong id="power-recommended">—</strong></div>
+            <div class="breakdown-list">
+              <div><span data-i18n="power.selectedLoad">Carga simultánea</span><strong id="power-selected-load">—</strong></div>
+              <div><span data-i18n="power.withMargin">Carga con margen</span><strong id="power-with-margin">—</strong></div>
+              <div><span data-i18n="power.currentDifference">Diferencia frente a la actual</span><strong id="power-difference">—</strong></div>
+            </div>
+            <div class="recommendation-box" id="power-advice">—</div>
+            <div class="summary-secondary"><span data-i18n="power.annualDifference">Diferencia fija anual estimada</span><strong id="power-annual-saving">—</strong></div>
+            <p class="form-note" data-i18n="power.note">Estimación orientativa: comprueba tu potencia máxima demandada antes de modificar el contrato.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="calculator-pane" data-tool-pane="consumption" role="tabpanel" hidden>
+        <div class="tool-intro">
+          <div><h3 data-i18n="consumption.title">Calculadora mensual de consumo</h3><p data-i18n="consumption.description">Construye un inventario doméstico y estima qué aparatos concentran más consumo y coste.</p></div>
+          <button class="button compact" id="consumption-reset" type="button" data-i18n="common.reset">Restablecer</button>
+        </div>
+        <div class="consumption-toolbar">
+          <div class="field"><label for="consumption-price-source" data-i18n="common.energyPrice">Precio de energía</label><select id="consumption-price-source"><option value="day" data-i18n="common.selectedDayAverage">Media del día seleccionado</option><option value="manual" data-i18n="common.manualPrice">Precio manual</option></select></div>
+          <div class="field"><label for="consumption-price" data-i18n="consumption.appliedPrice">Precio aplicado (€/kWh)</label><input id="consumption-price" type="number" min="0" max="10" step="0.00001" value="0.15000" inputmode="decimal"></div>
+          <div class="field"><label for="consumption-preset" data-i18n="consumption.addAppliance">Añadir aparato</label><select id="consumption-preset"></select></div>
+          <button class="button" id="consumption-add" type="button" data-i18n="common.add">Añadir</button>
+          <button class="button" id="consumption-export" type="button" data-i18n="consumption.export">Exportar CSV</button>
+        </div>
+        <div class="consumption-header" aria-hidden="true"><span data-i18n="consumption.appliance">Aparato</span><span data-i18n="consumption.powerW">W</span><span data-i18n="consumption.hoursDay">h/día</span><span data-i18n="consumption.daysMonth">días/mes</span><span data-i18n="consumption.quantity">uds.</span><span data-i18n="consumption.monthlyKwh">kWh/mes</span><span data-i18n="consumption.cost">Coste</span><span></span></div>
+        <div class="consumption-list" id="consumption-list"></div>
+        <div class="consumption-totals" aria-live="polite">
+          <div><span data-i18n="consumption.totalKwh">Consumo mensual</span><strong id="consumption-total-kwh">—</strong></div>
+          <div><span data-i18n="consumption.totalCost">Coste mensual de energía</span><strong id="consumption-total-cost">—</strong></div>
+          <div><span data-i18n="consumption.topAppliance">Mayor consumidor</span><strong id="consumption-top">—</strong></div>
+        </div>
+      </div>
+
+      <div class="calculator-pane" data-tool-pane="ev" role="tabpanel" hidden>
+        <div class="tool-intro">
+          <div><h3 data-i18n="ev.title">Planificador de carga de vehículo eléctrico</h3><p data-i18n="ev.description">Calcula la energía necesaria y busca las horas publicadas de menor coste antes de la salida.</p></div>
+          <button class="button compact" id="ev-reset" type="button" data-i18n="common.reset">Restablecer</button>
+        </div>
+        <div class="calculator-layout">
+          <form class="calculator-form" id="ev-form">
+            <div class="field-row two-columns">
+              <div class="field"><label for="ev-capacity" data-i18n="ev.capacity">Batería útil (kWh)</label><input id="ev-capacity" type="number" min="1" max="300" step="0.1" value="60" inputmode="decimal"></div>
+              <div class="field"><label for="ev-current-soc" data-i18n="ev.currentSoc">Carga actual (%)</label><input id="ev-current-soc" type="number" min="0" max="100" step="1" value="25" inputmode="numeric"></div>
+              <div class="field"><label for="ev-target-soc" data-i18n="ev.targetSoc">Carga objetivo (%)</label><input id="ev-target-soc" type="number" min="0" max="100" step="1" value="80" inputmode="numeric"></div>
+              <div class="field"><label for="ev-efficiency" data-i18n="ev.efficiency">Eficiencia de carga (%)</label><input id="ev-efficiency" type="number" min="50" max="100" step="1" value="90" inputmode="numeric"></div>
+              <div class="field"><label for="ev-charger-power" data-i18n="ev.chargerPower">Potencia del cargador (kW)</label><select id="ev-charger-power"><option value="2.3">2,3 kW</option><option value="3.7">3,7 kW</option><option value="7.4" selected>7,4 kW</option><option value="11">11 kW</option><option value="22">22 kW</option></select></div>
+              <div class="field"><label for="ev-contracted-power" data-i18n="ev.contractedPower">Potencia contratada (kW)</label><input id="ev-contracted-power" type="number" min="0.1" max="100" step="0.1" value="9.2" inputmode="decimal"></div>
+              <div class="field"><label for="ev-reserve-power" data-i18n="ev.reservePower">Reserva para vivienda (kW)</label><input id="ev-reserve-power" type="number" min="0" max="100" step="0.1" value="1.5" inputmode="decimal"></div>
+              <div class="field"><label for="ev-start-time" data-i18n="ev.startTime">Puede empezar desde</label><input id="ev-start-time" type="time" value="20:00"></div>
+              <div class="field"><label for="ev-departure-time" data-i18n="ev.departureTime">Debe terminar antes de</label><input id="ev-departure-time" type="time" value="08:00"></div>
+            </div>
+            <label class="checkbox-field" for="ev-interruptible"><input id="ev-interruptible" type="checkbox"><span data-i18n="ev.interruptible">Permitir carga interrumpida para usar las horas más baratas</span></label>
+            <p class="form-note" data-i18n="ev.selectedDateNote">La planificación empieza en el día seleccionado y puede continuar al día siguiente si sus precios están publicados.</p>
+          </form>
+          <div class="calculation-summary" aria-live="polite">
+            <div class="summary-total"><span data-i18n="ev.estimatedCost">Coste estimado</span><strong id="ev-cost">—</strong></div>
+            <div class="breakdown-list">
+              <div><span data-i18n="ev.batteryEnergy">Energía añadida a batería</span><strong id="ev-battery-energy">—</strong></div>
+              <div><span data-i18n="ev.gridEnergy">Energía tomada de la red</span><strong id="ev-grid-energy">—</strong></div>
+              <div><span data-i18n="ev.effectivePower">Potencia efectiva</span><strong id="ev-effective-power">—</strong></div>
+              <div><span data-i18n="ev.duration">Duración estimada</span><strong id="ev-duration">—</strong></div>
+            </div>
+            <div class="ev-schedule" id="ev-schedule">—</div>
+            <div class="recommendation-box" id="ev-status">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <details class="panel table-panel" id="hourly-details">
       <summary class="table-heading">
         <div>
@@ -343,8 +496,9 @@
     <a class="ios-tab active" href="#app-top" data-app-view="home"><span class="ios-tab-icon">⌂</span><span>Hoy</span></a>
     <a class="ios-tab" href="#chart-section" data-app-view="chart"><span class="ios-tab-icon">▥</span><span>Gráfico</span></a>
     <a class="ios-tab" href="#planner-section" data-app-view="planner"><span class="ios-tab-icon">✓</span><span>Plan</span></a>
-    <a class="ios-tab" href="#smart-queue-section" data-app-view="queue"><span class="ios-tab-icon">☷</span><span>Cola</span></a>
-    <a class="ios-tab" href="#history-section" data-app-view="history"><span class="ios-tab-icon">☰</span><span>Histórico</span></a>
+    <a class="ios-tab" href="#smart-queue-section" data-app-view="queue"><span class="ios-tab-icon">☷</span><span data-i18n="nav.queue">Cola</span></a>
+    <a class="ios-tab" href="#tools-section" data-app-view="tools"><span class="ios-tab-icon">∑</span><span data-i18n="nav.tools">Cálculos</span></a>
+    <a class="ios-tab" href="#history-section" data-app-view="history"><span class="ios-tab-icon">☰</span><span data-i18n="nav.history">Histórico</span></a>
   </nav>
 
   <div class="tooltip" id="tooltip" role="tooltip"></div>
@@ -363,6 +517,7 @@
   <script src="./js/planner.js"></script>
   <script src="./js/i18n.js"></script>
   <script src="./js/app.js"></script>
+  <script src="./js/tools.js"></script>
 </body>
 </html>
 

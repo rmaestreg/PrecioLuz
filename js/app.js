@@ -312,6 +312,7 @@
       updateDateNavigation();
       if (typeof updateSimulator === "function") updateSimulator();
       if (typeof updateSmartQueue === "function") updateSmartQueue();
+      window.PriceLuzTools?.refreshPriceData?.();
     }
 
     async function ensurePlannerFollowingDay(nextDate) {
@@ -337,6 +338,7 @@
       } finally {
         state.plannerNextDayLoading = false;
         updateSimulator();
+        window.PriceLuzTools?.refreshPriceData?.();
       }
     }
 
@@ -578,6 +580,7 @@
       renderTable();
       updateSimulator();
       if (typeof updateSmartQueue === "function") updateSmartQueue();
+      window.PriceLuzTools?.refreshPriceData?.();
       elements.csvButton.disabled = !state.data.length;
       elements.dryerButton.disabled = currentDataIndex() < 0;
       updateDateNavigation();
@@ -1097,7 +1100,7 @@
 
     const appViewLinks = document.querySelectorAll(".ios-tab[data-app-view]");
     const setAppView = view => {
-      const nextView = ["home", "chart", "planner", "queue", "history"].includes(view) ? view : "home";
+      const nextView = ["home", "chart", "planner", "queue", "tools", "history"].includes(view) ? view : "home";
       document.body.dataset.appView = nextView;
       appViewLinks.forEach(link => {
         const active = link.dataset.appView === nextView;
@@ -1109,6 +1112,7 @@
         if (typeof updateSimulator === "function") updateSimulator();
         if (typeof updateSmartQueue === "function") updateSmartQueue();
       });
+      if (nextView === "tools") requestAnimationFrame(() => window.PriceLuzTools?.refresh?.());
     };
     appViewLinks.forEach(link => link.addEventListener("click", event => {
       event.preventDefault();

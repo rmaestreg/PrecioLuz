@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Precio Luz · Ahorra en tu factura",
   "short_name": "Precio Luz",
-  "description": "Precio horario PVPC de la electricidad en España con datos oficiales de Red Eléctrica.",
+  "description": "Precio horario PVPC, planificación de consumo y calculadoras de factura, potencia, electrodomésticos y vehículo eléctrico.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",

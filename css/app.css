@@ -1144,3 +1144,116 @@ body[data-app-view="history"] .insights { display: none !important; }
   .day-tab small { font-size: .65rem; }
   .profile-actions .button { flex-basis: 100%; }
 }
+
+
+/* Version 1.2: calculadoras de factura, potencia, consumo y vehículo eléctrico. */
+body:not([data-app-view="tools"]) #tools-section { display: none !important; }
+body[data-app-view="tools"] .status-line,
+body[data-app-view="tools"] .hero,
+body[data-app-view="tools"] .metrics,
+body[data-app-view="tools"] .insights,
+body[data-app-view="tools"] .dashboard-grid,
+body[data-app-view="tools"] .planner-grid,
+body[data-app-view="tools"] #smart-queue-section,
+body[data-app-view="tools"] #hourly-details,
+body[data-app-view="tools"] #history-section,
+body[data-app-view="tools"] .footer { display: none !important; }
+body[data-app-view="tools"] #tools-section { margin-top: 5px !important; }
+
+.tools-panel { display: grid; gap: 16px; }
+.tools-heading { margin-bottom: 0; }
+.calculator-tabs {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 5px;
+  border: 1px solid var(--border); border-radius: 16px; background: var(--surface-soft, rgba(100,120,140,.06));
+}
+.calculator-tab {
+  min-height: 42px; padding: 8px 12px; border: 0; border-radius: 11px; background: transparent;
+  color: var(--muted); font: inherit; font-weight: 800; cursor: pointer;
+}
+.calculator-tab.active { background: var(--primary); color: #fff; box-shadow: 0 7px 18px rgba(42,82,130,.18); }
+.calculator-pane { display: none; }
+.calculator-pane.active { display: block; }
+.tool-intro { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin: 3px 0 16px; }
+.tool-intro h3 { margin: 0 0 4px; font-size: 1.2rem; }
+.tool-intro p { margin: 0; color: var(--muted); max-width: 760px; }
+.button.compact { min-height: 36px; padding: 7px 11px; white-space: nowrap; }
+.calculator-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .85fr); gap: 18px; align-items: start; }
+.calculator-form { display: grid; gap: 13px; }
+.field-row.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.field-row.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.calculator-fieldset { margin: 0; padding: 13px; border: 1px solid var(--border); border-radius: 14px; }
+.calculator-fieldset legend { padding: 0 6px; color: var(--muted); font-size: .78rem; font-weight: 850; text-transform: uppercase; letter-spacing: .045em; }
+.form-note { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.45; }
+.calculation-summary {
+  position: sticky; top: 84px; display: grid; gap: 11px; padding: 17px;
+  border: 1px solid var(--border); border-radius: 17px; background: var(--surface-soft, rgba(100,120,140,.05));
+}
+.summary-total { display: grid; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.summary-total span, .summary-secondary span { color: var(--muted); font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.summary-total strong { font-size: clamp(1.8rem, 4vw, 2.65rem); letter-spacing: -.045em; color: var(--primary); }
+.breakdown-list { display: grid; gap: 7px; }
+.breakdown-list > div, .summary-secondary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.breakdown-list span { color: var(--muted); }
+.breakdown-list strong, .summary-secondary strong { text-align: right; }
+.summary-secondary { padding-top: 10px; border-top: 1px solid var(--border); }
+.recommendation-box, .ev-schedule { padding: 11px 12px; border-radius: 12px; background: var(--primary-soft); color: var(--text); line-height: 1.45; }
+.recommendation-box.good { background: color-mix(in srgb, var(--low) 15%, transparent); }
+.recommendation-box.warning { background: color-mix(in srgb, var(--high) 13%, transparent); }
+
+.appliance-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.power-appliance {
+  display: grid; grid-template-columns: auto 1fr 80px auto; align-items: center; gap: 8px; padding: 9px 10px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+}
+.power-appliance input[type="number"] { width: 100%; min-height: 34px; }
+.power-appliance .remove-mini { border: 0; background: transparent; color: var(--high); cursor: pointer; font-size: 1.05rem; }
+.custom-appliance-row { display: grid; grid-template-columns: minmax(0, 1fr) 130px auto; gap: 8px; align-items: end; margin-top: 12px; }
+
+.consumption-toolbar { display: grid; grid-template-columns: minmax(170px, 1fr) minmax(150px, .8fr) minmax(180px, 1fr) auto auto; gap: 9px; align-items: end; margin-bottom: 13px; }
+.consumption-header, .consumption-row {
+  display: grid; grid-template-columns: minmax(150px, 1.5fr) repeat(4, minmax(70px, .65fr)) minmax(90px, .75fr) minmax(90px, .75fr) 36px;
+  gap: 7px; align-items: center;
+}
+.consumption-header { padding: 0 8px 6px; color: var(--muted); font-size: .72rem; font-weight: 800; }
+.consumption-list { display: grid; gap: 7px; }
+.consumption-row { padding: 8px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.consumption-row input { width: 100%; min-width: 0; min-height: 35px; }
+.consumption-row output { font-weight: 800; text-align: right; }
+.consumption-row .remove-consumption { min-height: 35px; padding: 0; border: 0; background: transparent; color: var(--high); font-size: 1.15rem; cursor: pointer; }
+.consumption-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.consumption-totals > div { display: grid; gap: 4px; padding: 13px; border: 1px solid var(--border); border-radius: 13px; background: var(--surface-soft, rgba(100,120,140,.05)); }
+.consumption-totals span { color: var(--muted); font-size: .78rem; }
+.consumption-totals strong { font-size: 1.1rem; }
+.ev-schedule { display: grid; gap: 5px; font-size: .88rem; }
+.ev-slot { display: flex; justify-content: space-between; gap: 10px; }
+.ev-slot span:last-child { font-weight: 800; text-align: right; }
+
+@media (max-width: 900px) {
+  .calculator-layout { grid-template-columns: 1fr; }
+  .calculation-summary { position: static; }
+  .consumption-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .consumption-header { display: none; }
+  .consumption-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .consumption-row input:first-child { grid-column: 1 / -1; }
+  .consumption-row output { text-align: left; }
+}
+@media (max-width: 640px) {
+  .tools-panel { padding: 14px; gap: 11px; }
+  .calculator-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .calculator-tab { padding: 7px 3px; font-size: .78rem; }
+  .tool-intro { display: grid; gap: 9px; }
+  .tool-intro .button { justify-self: start; }
+  .field-row.three-columns, .field-row.two-columns, .appliance-picker, .consumption-totals { grid-template-columns: 1fr 1fr; }
+  .custom-appliance-row { grid-template-columns: 1fr 105px; }
+  .custom-appliance-row .button { grid-column: 1 / -1; }
+  .consumption-toolbar { grid-template-columns: 1fr 1fr; }
+  .consumption-row { grid-template-columns: 1fr 1fr; }
+  .consumption-row input:first-child { grid-column: 1 / -1; }
+  .consumption-row .remove-consumption { justify-self: end; }
+}
+@media (max-width: 430px) {
+  .field-row.three-columns, .field-row.two-columns, .appliance-picker, .consumption-totals, .consumption-toolbar { grid-template-columns: 1fr; }
+  .power-appliance { grid-template-columns: auto 1fr 74px auto; }
+  body > nav.ios-tabbar .ios-tab { font-size: .57rem; padding-inline: 1px; }
+  body > nav.ios-tabbar .ios-tab-icon { font-size: 1.12rem; }
+}
