@@ -1,43 +1,52 @@
 :root {
       color-scheme: light;
-      --bg: #eef4fb;
+      --bg: #f6f8fb;
       --surface: #ffffff;
-      --surface-soft: #f1f6fd;
-      --text: #172b45;
-      --muted: #60738d;
-      --border: #d5e1ef;
-      --primary: #2e63c6;
-      --primary-soft: #e4efff;
-      --low: #16865a;
-      --low-soft: #e7f7ef;
-      --medium: #a96900;
+      --surface-soft: #f1f5f8;
+      --text: #142333;
+      --muted: #738393;
+      --border: #e3e9ee;
+      --primary: #16856c;
+      --primary-soft: #e5f5ef;
+      --low: #16856c;
+      --low-soft: #e4f5ef;
+      --medium: #c68717;
       --medium-soft: #fff4d6;
-      --high: #c43737;
+      --high: #db5360;
       --high-soft: #ffecec;
-      --shadow: 0 16px 44px rgba(42, 82, 130, .10);
-      --grid: #dce7f3;
-      --focus: 0 0 0 3px rgba(46, 99, 198, .22);
+      --shadow: 0 10px 30px rgba(34, 58, 73, .07);
+      --grid: #e5ecef;
+      --focus: 0 0 0 3px rgba(22, 133, 108, .25);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --radius-sm: 9px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --control-size: 42px;
     }
 
     :root[data-theme="dark"] {
       color-scheme: dark;
-      --bg: #0c111b;
-      --surface: #151d2b;
-      --surface-soft: #111826;
-      --text: #f2f5fa;
-      --muted: #a3adbd;
-      --border: #293448;
-      --primary: #7f9cff;
-      --primary-soft: #202f61;
+      --bg: #101816;
+      --surface: #18231f;
+      --surface-soft: #1d2b26;
+      --text: #f3faf7;
+      --muted: #a8bdb7;
+      --border: #2a3d35;
+      --primary: #55cda9;
+      --primary-soft: #183e33;
       --low: #52cc91;
       --low-soft: #16392d;
       --medium: #f2bf55;
       --medium-soft: #453513;
       --high: #ff7b7b;
       --high-soft: #482323;
-      --shadow: 0 18px 48px rgba(0, 0, 0, .30);
-      --grid: #2a3548;
-      --focus: 0 0 0 3px rgba(127, 156, 255, .25);
+      --shadow: 0 12px 30px rgba(0, 0, 0, .20);
+      --grid: #2a3d35;
+      --focus: 0 0 0 3px rgba(85, 205, 169, .30);
     }
 
     * { box-sizing: border-box; }
@@ -570,26 +579,8 @@
       }
     }
 
-    /* AhorraLuz iOS-inspired refresh */
-    :root {
-      --bg: #f6f8fb;
-      --surface: #ffffff;
-      --surface-soft: #f1f5f8;
-      --text: #142333;
-      --muted: #738393;
-      --border: #e3e9ee;
-      --primary: #16856c;
-      --primary-soft: #e5f5ef;
-      --low: #16856c;
-      --low-soft: #e4f5ef;
-      --medium: #c68717;
-      --high: #db5360;
-      --shadow: 0 10px 30px rgba(34, 58, 73, .07);
-      --grid: #e5ecef;
-    }
-
     body {
-      background: #f6f8fb;
+      background: var(--bg);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
     }
 
@@ -665,7 +656,6 @@
     .ios-tab:hover, .ios-tab.active { background: var(--primary-soft); color: var(--primary); }
     .ios-tab-icon { font-size: 1.1rem; line-height: 1; }
 
-    :root[data-theme="dark"] { --bg: #101816; --surface: #18231f; --surface-soft: #1d2b26; --text: #f3faf7; --border: #2a3d35; --primary: #55cda9; --primary-soft: #183e33; --shadow: 0 12px 30px rgba(0,0,0,.2); }
     :root[data-theme="dark"] body { background: var(--bg); }
     :root[data-theme="dark"] .status-line { background: #18342d; color: #a8d8c8; }
 
@@ -1314,6 +1304,19 @@ body[data-app-view] #hourly-details,
 body[data-app-view] #history-section,
 body[data-app-view] #smart-queue-section,
 body[data-app-view] #tools-section { margin-bottom: var(--panel-gap) !important; }
+
+/* Elementos compartidos: misma geometría en todas las pantallas. */
+body[data-app-view] .day-context { gap: 8px; margin-bottom: 5px !important; }
+body[data-app-view] .day-switch { gap: 4px; padding: 3px; }
+body[data-app-view] .day-tab { min-height: 43px; padding: 5px 12px; }
+body[data-app-view] .region-field { gap: 2px; padding: 5px 9px; }
+body[data-app-view] .region-field select { min-height: 28px; }
+body[data-app-view="home"] .status-line,
+body[data-app-view="chart"] #chart-section,
+body[data-app-view="planner"] #planner-section,
+body[data-app-view="queue"] #smart-queue-section,
+body[data-app-view="tools"] #tools-section,
+body[data-app-view="history"] #history-section { margin-top: 0 !important; }
 body[data-app-view="home"] #hourly-details { margin-top: var(--panel-gap) !important; }
 body[data-app-view="chart"] #chart-section,
 body[data-app-view="planner"] #planner-section,
@@ -1356,3 +1359,67 @@ body[data-app-view] #tools-section { gap: 12px; }
 body > nav.ios-tabbar .ios-tab { position: relative; z-index: 1; }
 body > nav.ios-tabbar .ios-tab.active,
 body > nav.ios-tabbar .ios-tab.active:hover { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+
+/* Capa común de robustez y accesibilidad. */
+[hidden] { display: none !important; }
+img, svg, canvas { max-width: 100%; }
+.card, .panel, .panel-header, .field, .calculator-pane, .table-panel { min-width: 0; }
+.panel-description, .field label, .status-meta, .result-row span { overflow-wrap: anywhere; }
+.button, .control, .tab, .calculator-tab, .ios-tab, .language-menu button,
+input, select, textarea { touch-action: manipulation; }
+.button:active, .tab:active, .calculator-tab:active, .language-menu button:active { transform: translateY(1px); }
+.button:disabled, button:disabled, input:disabled, select:disabled { cursor: not-allowed; }
+.field input:disabled, .field select:disabled { opacity: .65; }
+.field input[aria-invalid="true"], .field select[aria-invalid="true"] { border-color: var(--high); box-shadow: 0 0 0 2px color-mix(in srgb, var(--high) 18%, transparent); }
+.table-scroll, .history-chart, .calculator-layout { min-width: 0; }
+
+@media (max-width: 640px) {
+  .topbar { gap: var(--space-3); }
+  .panel-header, .tool-intro { gap: var(--space-3); }
+  .panel-header > *, .tool-intro > * { min-width: 0; max-width: 100%; }
+  .tabs, .history-range { max-width: 100%; overflow-x: auto; }
+}
+
+@media (max-width: 360px) {
+  .shell { width: calc(100% - 12px); }
+  .panel, .tools-panel { padding: var(--space-3) !important; }
+  .button, .control { padding-inline: 9px; }
+  .table-heading { padding-inline: var(--space-3); }
+}
+
+@supports not (color: color-mix(in srgb, white, black)) {
+  .button:hover { border-color: var(--primary); }
+  .field input[aria-invalid="true"], .field select[aria-invalid="true"] { box-shadow: 0 0 0 2px var(--high); }
+  .ios-tab-selection { border-color: var(--primary); box-shadow: 0 4px 12px rgba(22, 133, 108, .16); }
+}
+
+/* Normalización final de las rejillas visibles de cada ficha. */
+body[data-app-view] .day-context,
+body[data-app-view] .status-line,
+body[data-app-view] .hero,
+body[data-app-view] .metrics,
+body[data-app-view] .insights,
+body[data-app-view] .dashboard-grid,
+body[data-app-view] .planner-grid,
+body[data-app-view] #hourly-details,
+body[data-app-view] #history-section,
+body[data-app-view] #smart-queue-section,
+body[data-app-view] #tools-section { width: 100%; max-width: 100%; }
+body[data-app-view] .day-context,
+body[data-app-view] .metrics,
+body[data-app-view] .dashboard-grid,
+body[data-app-view] .planner-grid,
+body[data-app-view] .insights,
+body[data-app-view] .history-stats,
+body[data-app-view] .calculator-layout,
+body[data-app-view] .tools-panel { gap: var(--panel-gap) !important; }
+body[data-app-view] .status-line,
+body[data-app-view] .hero,
+body[data-app-view] .metrics,
+body[data-app-view] .insights,
+body[data-app-view] .dashboard-grid,
+body[data-app-view] .planner-grid,
+body[data-app-view] #hourly-details,
+body[data-app-view] #history-section,
+body[data-app-view] #smart-queue-section,
+body[data-app-view] #tools-section { margin-bottom: var(--panel-gap) !important; }
