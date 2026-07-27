@@ -1103,6 +1103,18 @@
     }
 
     const appViewLinks = document.querySelectorAll(".ios-tab[data-app-view]");
+    const tabSelection = document.querySelector(".ios-tab-selection");
+    let currentAppView = "home";
+    const moveTabSelection = () => {
+      const activeLink = [...appViewLinks].find(link => link.classList.contains("active"));
+      if (!activeLink || !tabSelection) return;
+      const navRect = tabSelection.parentElement.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      const size = Math.max(38, Math.min(linkRect.width - 8, linkRect.height));
+      tabSelection.style.setProperty("--tab-size", `${size}px`);
+      tabSelection.style.setProperty("--tab-x", `${linkRect.left - navRect.left + (linkRect.width - size) / 2}px`);
+      tabSelection.style.setProperty("--tab-y", `${linkRect.top - navRect.top + (linkRect.height - size) / 2}px`);
+    };
     const setAppView = view => {
       const nextView = ["home", "chart", "planner", "queue", "tools", "history"].includes(view) ? view : "home";
       document.body.dataset.appView = nextView;
@@ -1111,6 +1123,8 @@
         link.classList.toggle("active", active);
         link.setAttribute("aria-current", active ? "page" : "false");
       });
+      if (currentAppView !== nextView) currentAppView = nextView;
+      requestAnimationFrame(moveTabSelection);
       if (nextView === "chart") requestAnimationFrame(() => typeof renderChart === "function" && renderChart());
       if (nextView === "planner" || nextView === "queue") requestAnimationFrame(() => {
         if (typeof updateSimulator === "function") updateSimulator();
@@ -1125,3 +1139,4 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }));
     setAppView("home");
+    window.addEventListener("resize", moveTabSelection);

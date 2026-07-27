@@ -54,8 +54,8 @@ function colourForLevel(level) {
       const ticks = 5;
       const slot = plotWidth / state.data.length;
       const barWidth = Math.max(
-        isMobile ? 8 : 12,
-        Math.min(isMobile ? 22 : 30, slot * (isMobile ? .92 : .84))
+        isMobile ? 7 : 12,
+        Math.min(isMobile ? 19 : 30, slot * (isMobile ? .82 : .84))
       );
       const currentIndex = currentDataIndex();
       const yFor = value => margin.top + plotHeight - ((value - minY) / range) * plotHeight;

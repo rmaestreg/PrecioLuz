@@ -1285,3 +1285,74 @@ body[data-app-view="home"] .insights { gap: 6px; margin-bottom: 10px; }
 body[data-app-view="home"] .insight-card { min-height: 0; padding: 9px 10px; gap: 3px; }
 body[data-app-view="home"] .insight-card strong { line-height: 1.05; }
 body[data-app-view="home"] #hourly-details { display: block !important; margin-bottom: 12px; }
+
+/* Separación uniforme entre paneles y tarjetas de las distintas secciones. */
+.metrics,
+.dashboard-grid,
+.planner-grid,
+.insights,
+.calculator-layout { gap: 12px; }
+.dashboard-grid,
+.planner-grid,
+.history-panel,
+#hourly-details { margin-bottom: 12px; }
+.history-panel,
+#hourly-details { margin-top: 12px; }
+
+/* Alineación común de todas las fichas: 12 px entre paneles y 5 px al iniciar una vista. */
+:root { --panel-gap: 12px; }
+body[data-app-view] .metrics,
+body[data-app-view] .dashboard-grid,
+body[data-app-view] .planner-grid,
+body[data-app-view] .insights,
+body[data-app-view] .calculator-layout { gap: var(--panel-gap) !important; }
+body[data-app-view] .metrics,
+body[data-app-view] .dashboard-grid,
+body[data-app-view] .planner-grid,
+body[data-app-view] .insights,
+body[data-app-view] #hourly-details,
+body[data-app-view] #history-section,
+body[data-app-view] #smart-queue-section,
+body[data-app-view] #tools-section { margin-bottom: var(--panel-gap) !important; }
+body[data-app-view="home"] #hourly-details { margin-top: var(--panel-gap) !important; }
+body[data-app-view="chart"] #chart-section,
+body[data-app-view="planner"] #planner-section,
+body[data-app-view="queue"] #smart-queue-section,
+body[data-app-view="tools"] #tools-section,
+body[data-app-view="history"] #history-section { margin-top: 5px !important; }
+
+/* Todos los paneles principales comparten el mismo borde interior. */
+body[data-app-view] #chart-section,
+body[data-app-view] #planner-section,
+body[data-app-view] #smart-queue-section,
+body[data-app-view] #tools-section,
+body[data-app-view] #history-section { padding: 18px !important; }
+body[data-app-view] #hourly-details { padding: 0 !important; }
+body[data-app-view] #smart-queue-section .smart-queue,
+body[data-app-view] #tools-section { gap: 12px; }
+@media (max-width: 640px) {
+  body[data-app-view] #chart-section,
+  body[data-app-view] #planner-section,
+  body[data-app-view] #smart-queue-section,
+  body[data-app-view] #tools-section,
+  body[data-app-view] #history-section { padding: 14px !important; }
+}
+
+.ios-tab-selection {
+  position: absolute;
+  top: var(--tab-y, 8px);
+  left: 0;
+  width: var(--tab-size, 42px);
+  height: var(--tab-size, 42px);
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  border-radius: 50%;
+  background: var(--primary-soft);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 12%, transparent);
+  pointer-events: none;
+  transform: translate3d(var(--tab-x, 0px), 0, 0);
+  transition: transform .36s cubic-bezier(.2,.8,.2,1), width .25s ease, height .25s ease;
+  z-index: 0;
+}
+body > nav.ios-tabbar .ios-tab { position: relative; z-index: 1; }
+body > nav.ios-tabbar .ios-tab.active,
+body > nav.ios-tabbar .ios-tab.active:hover { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
