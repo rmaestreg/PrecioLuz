@@ -26,6 +26,7 @@
       --radius-md: 12px;
       --radius-lg: 18px;
       --control-size: 42px;
+      --panel-gap: 12px;
     }
 
     :root[data-theme="dark"] {
@@ -57,28 +58,26 @@
       margin: 0;
       min-width: 320px;
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 8% 0%, rgba(49, 94, 231, .12), transparent 30rem),
-        radial-gradient(circle at 100% 100%, rgba(22, 134, 90, .08), transparent 28rem),
-        var(--bg);
+      background: var(--bg);
       color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       line-height: 1.45;
     }
 
-    button, input, select { font: inherit; }
-    button, select, input { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    button, select, input, textarea { color: inherit; }
     a { color: var(--primary); }
 
     button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
       outline: none;
       box-shadow: var(--focus);
     }
+    summary:focus-visible, [tabindex]:focus-visible { outline: none; box-shadow: var(--focus); }
 
     .shell {
-      width: min(1240px, calc(100% - 32px));
+      width: min(1160px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 34px 0 30px;
+      padding: 66px 0 112px;
     }
 
     .topbar {
@@ -86,9 +85,9 @@
       z-index: 40;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 24px;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .eyebrow {
@@ -553,7 +552,7 @@
         inset-inline: 0 !important;
         inset-block-end: 0 !important;
         display: grid !important;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         align-items: center;
         width: 100% !important;
         height: 82px;
@@ -563,8 +562,8 @@
         border: 0;
         border-top: 1px solid var(--border);
         border-radius: 0;
-        background: #0d1b19 !important;
-        box-shadow: 0 -8px 24px rgba(20, 35, 51, .14);
+        background: var(--surface) !important;
+        box-shadow: 0 -8px 24px color-mix(in srgb, var(--text) 12%, transparent);
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
@@ -579,13 +578,6 @@
       }
     }
 
-    body {
-      background: var(--bg);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-    }
-
-    .shell { width: min(1160px, calc(100% - 40px)); padding-top: 66px; padding-bottom: 112px; }
-    .topbar { align-items: center; margin-bottom: 22px; }
     .brand-heading { gap: 12px; }
     .brand-icon { width: 52px; height: 52px; border-radius: 15px; box-shadow: 0 7px 17px rgba(22,133,108,.2); }
     .eyebrow { color: var(--primary); font-size: .68rem; letter-spacing: .12em; }
@@ -796,10 +788,10 @@
         min-height: 70px !important;
         max-height: 70px !important;
         padding: 5px !important;
-        border: 1px solid rgba(255,255,255,.9) !important;
+        border: 1px solid var(--border) !important;
         border-radius: 38px !important;
-        background: rgba(255,255,255,.92) !important;
-        box-shadow: 0 5px 22px rgba(35, 31, 58, .18), 0 0 0 1px rgba(210,208,218,.7);
+        background: var(--surface) !important;
+        box-shadow: var(--shadow);
         backdrop-filter: blur(18px);
         visibility: visible !important;
         opacity: 1 !important;
@@ -812,7 +804,7 @@
         padding: 6px 3px;
         border: 0;
         border-radius: 32px;
-        color: #18181c;
+        color: var(--text);
         font-size: .64rem;
         font-weight: 500;
       }
@@ -827,24 +819,23 @@
     }
 
     .ios-tabbar {
-      border-top-color: #203a35;
-      background: #0d1b19 !important;
-      box-shadow: 0 -10px 24px rgba(7, 28, 24, .2);
+      border-top-color: var(--border);
+      background: var(--surface) !important;
+      box-shadow: 0 -10px 24px color-mix(in srgb, var(--text) 12%, transparent);
     }
     .ios-tab {
-      color: #a8bdb7;
+      color: var(--muted);
       border: 1px solid transparent;
     }
-    .ios-tab:hover { background: #18352e; color: #f2faf7; }
-    .ios-tab.active { background: #55cda9; color: #08231c; border-color: #55cda9; }
+    .ios-tab:hover { background: var(--primary-soft); color: var(--primary); }
+    .ios-tab.active { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
 
     :root:not([data-theme="dark"]) .toolbar .button:focus-visible,
     :root:not([data-theme="dark"]) .toolbar .control:focus-visible { box-shadow: 0 0 0 3px rgba(85, 205, 169, .35); }
 
     @media (max-width: 640px) {
       .shell { width: calc(100% - 24px); padding-top: 66px; padding-bottom: 118px; }
-      .topbar { align-items: flex-start; }
-      .topbar { padding: 7px 6px; }
+      .topbar { align-items: flex-start; padding: 7px 6px; }
       .toolbar { gap: 4px; justify-content: center; overflow: visible; }
       .toolbar .button,
       .toolbar .control,
@@ -869,30 +860,6 @@
       .ios-tabbar { position: fixed !important; left: 0; right: 0; bottom: 0 !important; display: flex !important; visibility: visible !important; width: 100%; justify-content: space-around; min-height: 72px; padding: 8px 4px max(8px, env(safe-area-inset-bottom)); }
       .ios-tab { min-width: 0; flex: 1 1 0; padding-inline: 5px; }
       .footer { padding-bottom: 8px; }
-    }
-
-    @media screen and (max-width: 640px) {
-      body > nav.ios-tabbar {
-        position: fixed !important;
-        top: auto !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        display: grid !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        width: 100vw !important;
-        height: 78px !important;
-        min-height: 78px !important;
-        max-height: 78px !important;
-        margin: 0 !important;
-        padding: 6px !important;
-        overflow: visible !important;
-        background: #0d1b19 !important;
-        border-top: 1px solid #203a35 !important;
-        border-radius: 0 !important;
-        transform: none !important;
-      }
     }
 
     @media screen and (max-width: 640px) {
@@ -955,9 +922,9 @@
         font-size: .64rem;
         font-weight: 500;
       }
-      body > nav.ios-tabbar .ios-tab-icon { color: #18181c; font-size: 1.35rem; }
-      body > nav.ios-tabbar .ios-tab.active { background: #dfe8ff; color: #1264c4; border: 1px solid #c5d6ff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.65); }
-      body > nav.ios-tabbar .ios-tab.active .ios-tab-icon { color: #1264c4; }
+      body > nav.ios-tabbar .ios-tab-icon { color: var(--text); font-size: 1.35rem; }
+      body > nav.ios-tabbar .ios-tab.active { background: var(--primary-soft); color: var(--primary); border: 1px solid var(--border); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface) 65%, transparent); }
+      body > nav.ios-tabbar .ios-tab.active .ios-tab-icon { color: var(--primary); }
       :root[data-theme="dark"] body > nav.ios-tabbar { background: rgba(38,43,47,.94) !important; border-color: rgba(255,255,255,.18) !important; }
       :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab { color: #f4f6f7; }
       :root[data-theme="dark"] body > nav.ios-tabbar .ios-tab-icon { color: #f4f6f7; }
@@ -1290,7 +1257,6 @@ body[data-app-view="home"] #hourly-details { display: block !important; margin-b
 #hourly-details { margin-top: 12px; }
 
 /* Alineación común de todas las fichas: 12 px entre paneles y 5 px al iniciar una vista. */
-:root { --panel-gap: 12px; }
 body[data-app-view] .metrics,
 body[data-app-view] .dashboard-grid,
 body[data-app-view] .planner-grid,
@@ -1304,6 +1270,22 @@ body[data-app-view] #hourly-details,
 body[data-app-view] #history-section,
 body[data-app-view] #smart-queue-section,
 body[data-app-view] #tools-section { margin-bottom: var(--panel-gap) !important; }
+
+/* Compatibilidad y medios alternativos. */
+@media (forced-colors: active) {
+  .button, .control, .tab, .calculator-tab, .ios-tab,
+  .field input, .field select, .language-menu button { forced-color-adjust: auto; }
+  .ios-tab-selection { background: Highlight; border-color: Highlight; box-shadow: none; }
+  .button:focus-visible, .control:focus-visible, .tab:focus-visible,
+  .calculator-tab:focus-visible, .ios-tab:focus-visible { outline: 2px solid HighlightText; outline-offset: 2px; }
+}
+
+@media print {
+  .topbar, .ios-tabbar, .version-update-button, .toolbar, .footer-links { display: none !important; }
+  .shell { width: 100%; padding: 0; }
+  .panel, .card { break-inside: avoid; box-shadow: none; }
+  .hero { color: #000; background: #fff; border: 1px solid #000; }
+}
 
 /* Elementos compartidos: misma geometría en todas las pantallas. */
 body[data-app-view] .day-context { gap: 8px; margin-bottom: 5px !important; }
