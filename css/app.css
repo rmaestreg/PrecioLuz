@@ -833,35 +833,6 @@
     :root:not([data-theme="dark"]) .toolbar .button:focus-visible,
     :root:not([data-theme="dark"]) .toolbar .control:focus-visible { box-shadow: 0 0 0 3px rgba(85, 205, 169, .35); }
 
-    @media (max-width: 640px) {
-      .shell { width: calc(100% - 24px); padding-top: 66px; padding-bottom: 118px; }
-      .topbar { align-items: flex-start; padding: 7px 6px; }
-      .toolbar { gap: 4px; justify-content: center; overflow: visible; }
-      .toolbar .button,
-      .toolbar .control,
-      .toolbar .language-button {
-        flex-basis: 34px;
-        width: 34px;
-        min-width: 34px;
-        height: 38px;
-        min-height: 38px;
-        border-radius: 11px;
-      }
-      .toolbar #date-input { flex-basis: 132px; width: 132px; padding-inline: 8px; font-size: .9rem; }
-      .toolbar #today-button, .toolbar .refresh-button { font-size: 1rem; }
-      .toolbar .light-status-button { font-size: .9rem; }
-      .toolbar .language-flag { font-size: .82rem; }
-      .hero { grid-template-columns: 1fr; min-height: 0; padding: 24px 20px; border-radius: 22px; }
-      .hero-price { text-align: left; margin-top: 8px; }
-      .hero-price strong { font-size: 3rem; }
-      .panel { padding: 18px; }
-      .metrics { gap: 9px; }
-      .card { padding: 14px; }
-      .ios-tabbar { position: fixed !important; left: 0; right: 0; bottom: 0 !important; display: flex !important; visibility: visible !important; width: 100%; justify-content: space-around; min-height: 72px; padding: 8px 4px max(8px, env(safe-area-inset-bottom)); }
-      .ios-tab { min-width: 0; flex: 1 1 0; padding-inline: 5px; }
-      .footer { padding-bottom: 8px; }
-    }
-
     @media screen and (max-width: 640px) {
       .toolbar .language-picker { display: block !important; position: relative; }
       .toolbar .language-button { position: relative; z-index: 52; display: inline-flex !important; align-items: center; justify-content: center; width: 38px; min-width: 38px; height: 38px; padding: 0; border-radius: 50%; background: #f5f4f8; border: 1px solid #e5e3ea; pointer-events: auto; }
@@ -1271,6 +1242,15 @@ body[data-app-view] #history-section,
 body[data-app-view] #smart-queue-section,
 body[data-app-view] #tools-section { margin-bottom: var(--panel-gap) !important; }
 
+/* Alineación interior de los paneles que no usan padding directo. */
+body[data-app-view] .table-heading { padding: 18px; }
+body[data-app-view] .table-actions { padding-inline: 18px; }
+body[data-app-view] .history-stats { margin-top: var(--panel-gap); }
+@media (max-width: 640px) {
+  body[data-app-view] .table-heading { padding: 14px; }
+  body[data-app-view] .table-actions { padding-inline: 14px; }
+}
+
 /* Compatibilidad y medios alternativos. */
 @media (forced-colors: active) {
   .button, .control, .tab, .calculator-tab, .ios-tab,
@@ -1285,6 +1265,45 @@ body[data-app-view] #tools-section { margin-bottom: var(--panel-gap) !important;
   .shell { width: 100%; padding: 0; }
   .panel, .card { break-inside: avoid; box-shadow: none; }
   .hero { color: #000; background: #fff; border: 1px solid #000; }
+}
+
+/* Responsive móvil: un único bloque de ajustes compartidos. */
+@media (max-width: 640px) {
+  .shell { width: calc(100% - 24px); padding-top: 66px; padding-bottom: 118px; }
+  .topbar { align-items: flex-start; padding: 7px 6px; }
+  .toolbar { gap: 4px; justify-content: center; overflow: visible; }
+  .toolbar .button, .toolbar .control, .toolbar .language-button {
+    flex-basis: 34px; width: 34px; min-width: 34px; height: 38px; min-height: 38px; border-radius: 11px;
+  }
+  .toolbar #date-input { flex-basis: 132px; width: 132px; padding-inline: 8px; font-size: .9rem; }
+  .toolbar #today-button, .toolbar .refresh-button { font-size: 1rem; }
+  .toolbar .light-status-button { font-size: .9rem; }
+  .toolbar .language-flag { font-size: .82rem; }
+  .hero { grid-template-columns: 1fr; min-height: 0; padding: 24px 20px; border-radius: 22px; }
+  .hero-price { text-align: left; margin-top: 8px; }
+  .hero-price strong { font-size: 3rem; }
+  .panel { padding: 18px; }
+  .metrics { gap: 9px; }
+  .card { padding: 14px; }
+  .footer { padding-bottom: 8px; }
+}
+@media (max-width: 430px) {
+  .shell { width: calc(100% - 16px); padding-top: 56px; }
+  .topbar { min-height: 58px; padding: 6px 5px; }
+  .toolbar { gap: 2px; }
+  .toolbar .button, .toolbar .control, .toolbar .language-button {
+    width: 30px; min-width: 30px; flex-basis: 30px; height: 34px; min-height: 34px; border-radius: 9px;
+  }
+  .toolbar #date-input { width: 116px; flex-basis: 116px; font-size: .78rem; padding-inline: 5px; }
+  .toolbar #today-button, .toolbar #theme-button { display: none !important; }
+  .toolbar .language-button { width: 30px; min-width: 30px; }
+  .toolbar .language-flag { font-size: .72rem; }
+  .hero { padding: 18px 15px; border-radius: 18px; }
+  .hero h2 { font-size: 1.05rem; }
+  .hero-price strong { font-size: 2.05rem; }
+  .card { padding: 13px; min-height: 108px; }
+  .card-label { font-size: .88rem; }
+  .card-value { margin-top: 18px; font-size: 1.25rem; }
 }
 
 /* Elementos compartidos: misma geometría en todas las pantallas. */
