@@ -1,4 +1,4 @@
-const CACHE_NAME = "precio-luz-shell-v1.2.30";
+const CACHE_NAME = "precio-luz-shell-v1.2.32";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -17,7 +17,8 @@ const APP_SHELL = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-192.png",
-  "./icons/icon-maskable-512.png"
+  "./icons/icon-maskable-512.png",
+  "./icons/flag-en.svg"
 ];
 
 self.addEventListener("install", event => {
