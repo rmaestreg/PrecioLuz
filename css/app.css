@@ -1372,7 +1372,12 @@ img, svg, canvas { max-width: 100%; }
 .panel-description, .field label, .status-meta, .result-row span { overflow-wrap: anywhere; }
 .button, .control, .tab, .calculator-tab, .ios-tab, .language-menu button,
 input, select, textarea { touch-action: manipulation; }
-.shell { touch-action: pan-y; }
+.shell {
+  touch-action: pan-y;
+  transform: translate3d(var(--swipe-offset, 0px), 0, 0);
+}
+.shell.swipe-dragging { transition: none; }
+.shell.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
 .button:active, .tab:active, .calculator-tab:active, .language-menu button:active { transform: translateY(1px); }
 .button:disabled, button:disabled, input:disabled, select:disabled { cursor: not-allowed; }
 .field input:disabled, .field select:disabled { opacity: .65; }
@@ -1391,6 +1396,10 @@ input, select, textarea { touch-action: manipulation; }
   .panel, .tools-panel { padding: var(--space-3) !important; }
   .button, .control { padding-inline: 9px; }
   .table-heading { padding-inline: var(--space-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell.swipe-settling { transition-duration: .01ms; }
 }
 
 @supports not (color: color-mix(in srgb, white, black)) {

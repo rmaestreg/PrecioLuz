@@ -1152,23 +1152,68 @@
       ".history-chart", "[data-horizontal-scroll]"
     ].join(", ");
     let swipeStart = null;
-    const clearSwipe = () => { swipeStart = null; };
+    let swipeAnimating = false;
+    const swipeViewport = () => Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
+    const swipeDuration = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 240;
+    const setSwipeOffset = offset => swipeSurface?.style.setProperty("--swipe-offset", `${offset}px`);
+    const resetSwipe = () => {
+      if (!swipeSurface) return;
+      swipeSurface.classList.remove("swipe-dragging");
+      swipeSurface.classList.add("swipe-settling");
+      setSwipeOffset(0);
+      window.setTimeout(() => swipeSurface.classList.remove("swipe-settling"), swipeDuration());
+    };
+    const clearSwipe = () => {
+      swipeStart = null;
+      if (!swipeAnimating) resetSwipe();
+    };
     const isSwipeExcluded = target => target instanceof Element && Boolean(target.closest(swipeExcludedSelector));
     swipeSurface?.addEventListener("pointerdown", event => {
-      if ((event.pointerType !== "touch" && event.pointerType !== "pen") || isSwipeExcluded(event.target)) return;
+      if (swipeAnimating || (event.pointerType !== "touch" && event.pointerType !== "pen") || isSwipeExcluded(event.target)) return;
       swipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+    }, { passive: true });
+    swipeSurface?.addEventListener("pointermove", event => {
+      if (!swipeStart || swipeStart.pointerId !== event.pointerId || swipeAnimating) return;
+      const deltaX = event.clientX - swipeStart.x;
+      const deltaY = event.clientY - swipeStart.y;
+      if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+      swipeSurface.classList.add("swipe-dragging");
+      setSwipeOffset(Math.max(-swipeViewport() * .82, Math.min(swipeViewport() * .82, deltaX)));
     }, { passive: true });
     swipeSurface?.addEventListener("pointerup", event => {
       if (!swipeStart || swipeStart.pointerId !== event.pointerId) return;
       const { x, y } = swipeStart;
-      clearSwipe();
+      swipeStart = null;
       const deltaX = event.clientX - x;
       const deltaY = event.clientY - y;
-      if (Math.abs(deltaX) < 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.25) return;
+      if (Math.abs(deltaX) < 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.25) {
+        resetSwipe();
+        return;
+      }
       const currentIndex = appViewOrder.indexOf(currentAppView);
       const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
       const nextView = appViewOrder[nextIndex];
-      if (nextView) activateAppView(nextView);
+      if (!nextView || !swipeSurface) {
+        resetSwipe();
+        return;
+      }
+      swipeAnimating = true;
+      swipeSurface.classList.remove("swipe-dragging");
+      swipeSurface.classList.add("swipe-settling");
+      const direction = deltaX < 0 ? -1 : 1;
+      setSwipeOffset(direction * swipeViewport());
+      window.setTimeout(() => {
+        activateAppView(nextView);
+        setSwipeOffset(-direction * swipeViewport());
+        swipeSurface.classList.remove("swipe-settling");
+        void swipeSurface.offsetWidth;
+        swipeSurface.classList.add("swipe-settling");
+        setSwipeOffset(0);
+        window.setTimeout(() => {
+          swipeSurface.classList.remove("swipe-settling");
+          swipeAnimating = false;
+        }, swipeDuration());
+      }, swipeDuration());
     }, { passive: true });
     swipeSurface?.addEventListener("pointercancel", clearSwipe, { passive: true });
     setAppView("home");
