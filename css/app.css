@@ -1378,12 +1378,6 @@ input, select, textarea { touch-action: manipulation; }
 }
 .shell.swipe-dragging { transition: none; }
 .shell.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
-.shell.swipe-dragging > .topbar,
-.shell.swipe-dragging > .day-context,
-.shell.swipe-settling > .topbar,
-.shell.swipe-settling > .day-context {
-  transform: translate3d(calc(var(--swipe-offset, 0px) * -1), 0, 0);
-}
 .swipe-preview {
   position: fixed !important;
   z-index: 2;
@@ -1393,9 +1387,9 @@ input, select, textarea { touch-action: manipulation; }
 }
 .swipe-preview.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
 body.swipe-preview-active .swipe-preview > :not(.topbar):not(.day-context) { display: none !important; }
-/* La cabecera y Región son comunes: no se duplican en la vista previa. */
-body.swipe-preview-active .swipe-preview > .topbar,
-body.swipe-preview-active .swipe-preview > .day-context { display: none !important; }
+/* La ficha siguiente incluye también su cabecera y selector de Región. */
+body.swipe-preview-active .swipe-preview > .topbar { display: flex !important; }
+body.swipe-preview-active .swipe-preview > .day-context { display: flex !important; }
 body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .status-line,
 body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .hero,
 body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .metrics,
