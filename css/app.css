@@ -1426,6 +1426,42 @@ body.swipe-preview-active .swipe-preview[data-preview-view="history"] > #history
   .shell.swipe-settling, .swipe-preview.swipe-settling { transition-duration: .01ms; }
 }
 
+/* Geometría final común: las fichas comparten el mismo origen y separación. */
+body[data-app-view] > .day-context,
+body[data-app-view] > .status-line,
+body[data-app-view] > .hero,
+body[data-app-view] > .metrics,
+body[data-app-view] > .insights,
+body[data-app-view] > .dashboard-grid,
+body[data-app-view] > .planner-grid,
+body[data-app-view] > #tools-section,
+body[data-app-view] > #history-section {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+body[data-app-view="home"] > .status-line,
+body[data-app-view="chart"] > .dashboard-grid,
+body[data-app-view="planner"] > .planner-grid,
+body[data-app-view="queue"] > .planner-grid,
+body[data-app-view="tools"] > #tools-section,
+body[data-app-view="history"] > #history-section {
+  margin-top: 5px !important;
+}
+
+body[data-app-view] > .dashboard-grid,
+body[data-app-view] > .planner-grid,
+body[data-app-view] > #tools-section,
+body[data-app-view] > #history-section,
+body[data-app-view] #smart-queue-section {
+  margin-bottom: var(--panel-gap) !important;
+}
+
+body[data-app-view] > .dashboard-grid,
+body[data-app-view] > .planner-grid {
+  gap: var(--panel-gap) !important;
+}
+
 @supports not (color: color-mix(in srgb, white, black)) {
   .button:hover { border-color: var(--primary); }
   .field input[aria-invalid="true"], .field select[aria-invalid="true"] { box-shadow: 0 0 0 2px var(--high); }
