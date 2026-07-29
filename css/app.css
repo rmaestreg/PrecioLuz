@@ -1387,8 +1387,9 @@ input, select, textarea { touch-action: manipulation; }
 }
 .swipe-preview.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
 body.swipe-preview-active .swipe-preview > :not(.topbar):not(.day-context) { display: none !important; }
-body.swipe-preview-active .swipe-preview > .topbar { display: flex !important; }
-body.swipe-preview-active .swipe-preview > .day-context { display: flex !important; }
+/* La cabecera y Región son comunes: no se duplican en la vista previa. */
+body.swipe-preview-active .swipe-preview > .topbar,
+body.swipe-preview-active .swipe-preview > .day-context { display: none !important; }
 body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .status-line,
 body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .hero,
 body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .metrics,
