@@ -1153,10 +1153,33 @@
     ].join(", ");
     let swipeStart = null;
     let swipeAnimating = false;
+    let swipePreview = null;
     const swipeViewport = () => Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
     const swipeDuration = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 240;
     const setSwipeOffset = offset => swipeSurface?.style.setProperty("--swipe-offset", `${offset}px`);
+    const setPreviewOffset = offset => swipePreview?.style.setProperty("--swipe-preview-offset", `${offset}px`);
+    const removeSwipePreview = () => {
+      swipePreview?.remove();
+      swipePreview = null;
+      document.body.classList.remove("swipe-preview-active");
+    };
+    const createSwipePreview = (view, direction) => {
+      if (!swipeSurface || swipePreview) return;
+      const rect = swipeSurface.getBoundingClientRect();
+      swipePreview = swipeSurface.cloneNode(true);
+      swipePreview.classList.remove("swipe-dragging", "swipe-settling");
+      swipePreview.classList.add("swipe-preview");
+      swipePreview.dataset.previewView = view;
+      swipePreview.style.left = `${rect.left}px`;
+      swipePreview.style.top = `${rect.top}px`;
+      swipePreview.style.width = `${rect.width}px`;
+      swipePreview.style.setProperty("--swipe-preview-offset", `${-direction * swipeViewport()}px`);
+      swipePreview.style.setProperty("--swipe-offset", "0px");
+      document.body.classList.add("swipe-preview-active");
+      document.body.append(swipePreview);
+    };
     const resetSwipe = () => {
+      removeSwipePreview();
       if (!swipeSurface) return;
       swipeSurface.classList.remove("swipe-dragging");
       swipeSurface.classList.add("swipe-settling");
@@ -1177,8 +1200,15 @@
       const deltaX = event.clientX - swipeStart.x;
       const deltaY = event.clientY - swipeStart.y;
       if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+      const currentIndex = appViewOrder.indexOf(currentAppView);
+      const direction = deltaX < 0 ? -1 : 1;
+      const nextView = appViewOrder[currentIndex + (direction < 0 ? 1 : -1)];
       swipeSurface.classList.add("swipe-dragging");
       setSwipeOffset(Math.max(-swipeViewport() * .82, Math.min(swipeViewport() * .82, deltaX)));
+      if (nextView) {
+        createSwipePreview(nextView, direction);
+        setPreviewOffset(deltaX + (-direction * swipeViewport()));
+      }
     }, { passive: true });
     swipeSurface?.addEventListener("pointerup", event => {
       if (!swipeStart || swipeStart.pointerId !== event.pointerId) return;
@@ -1202,17 +1232,16 @@
       swipeSurface.classList.add("swipe-settling");
       const direction = deltaX < 0 ? -1 : 1;
       setSwipeOffset(direction * swipeViewport());
+      if (swipePreview) {
+        swipePreview.classList.add("swipe-settling");
+        setPreviewOffset(0);
+      }
       window.setTimeout(() => {
         activateAppView(nextView);
-        setSwipeOffset(-direction * swipeViewport());
-        swipeSurface.classList.remove("swipe-settling");
-        void swipeSurface.offsetWidth;
-        swipeSurface.classList.add("swipe-settling");
         setSwipeOffset(0);
-        window.setTimeout(() => {
-          swipeSurface.classList.remove("swipe-settling");
-          swipeAnimating = false;
-        }, swipeDuration());
+        swipeSurface.classList.remove("swipe-settling");
+        removeSwipePreview();
+        swipeAnimating = false;
       }, swipeDuration());
     }, { passive: true });
     swipeSurface?.addEventListener("pointercancel", clearSwipe, { passive: true });

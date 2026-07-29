@@ -1378,6 +1378,29 @@ input, select, textarea { touch-action: manipulation; }
 }
 .shell.swipe-dragging { transition: none; }
 .shell.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
+.swipe-preview {
+  position: fixed !important;
+  z-index: 2;
+  margin: 0 !important;
+  pointer-events: none;
+  transform: translate3d(var(--swipe-preview-offset, 0px), 0, 0);
+}
+.swipe-preview.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
+body.swipe-preview-active .swipe-preview > :not(.topbar):not(.day-context) { display: none !important; }
+body.swipe-preview-active .swipe-preview > .topbar { display: flex !important; }
+body.swipe-preview-active .swipe-preview > .day-context { display: flex !important; }
+body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .status-line,
+body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .hero,
+body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .metrics,
+body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .insights,
+body.swipe-preview-active .swipe-preview[data-preview-view="home"] > .dashboard-grid { display: block !important; }
+body.swipe-preview-active .swipe-preview[data-preview-view="chart"] > .dashboard-grid,
+body.swipe-preview-active .swipe-preview[data-preview-view="chart"] > #hourly-details { display: block !important; }
+body.swipe-preview-active .swipe-preview[data-preview-view="planner"] > .planner-grid,
+body.swipe-preview-active .swipe-preview[data-preview-view="queue"] > .planner-grid,
+body.swipe-preview-active .swipe-preview[data-preview-view="queue"] #smart-queue-section,
+body.swipe-preview-active .swipe-preview[data-preview-view="tools"] > #tools-section,
+body.swipe-preview-active .swipe-preview[data-preview-view="history"] > #history-section { display: block !important; }
 .button:active, .tab:active, .calculator-tab:active, .language-menu button:active { transform: translateY(1px); }
 .button:disabled, button:disabled, input:disabled, select:disabled { cursor: not-allowed; }
 .field input:disabled, .field select:disabled { opacity: .65; }
@@ -1399,7 +1422,7 @@ input, select, textarea { touch-action: manipulation; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shell.swipe-settling { transition-duration: .01ms; }
+  .shell.swipe-settling, .swipe-preview.swipe-settling { transition-duration: .01ms; }
 }
 
 @supports not (color: color-mix(in srgb, white, black)) {
