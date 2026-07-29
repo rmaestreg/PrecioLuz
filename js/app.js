@@ -1191,14 +1191,14 @@
       if (!swipeAnimating) resetSwipe();
     };
     const isSwipeExcluded = target => target instanceof Element && Boolean(target.closest(swipeExcludedSelector));
-    swipeSurface?.addEventListener("pointerdown", event => {
-      if (swipeAnimating || (event.pointerType !== "touch" && event.pointerType !== "pen") || isSwipeExcluded(event.target)) return;
-      swipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
-    }, { passive: true });
-    swipeSurface?.addEventListener("pointermove", event => {
-      if (!swipeStart || swipeStart.pointerId !== event.pointerId || swipeAnimating) return;
-      const deltaX = event.clientX - swipeStart.x;
-      const deltaY = event.clientY - swipeStart.y;
+    const startSwipe = (x, y, pointerId, target) => {
+      if (swipeAnimating || isSwipeExcluded(target)) return;
+      swipeStart = { x, y, pointerId };
+    };
+    const moveSwipe = (x, y, pointerId) => {
+      if (!swipeStart || swipeStart.pointerId !== pointerId || swipeAnimating) return;
+      const deltaX = x - swipeStart.x;
+      const deltaY = y - swipeStart.y;
       if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
       const currentIndex = appViewOrder.indexOf(currentAppView);
       const direction = deltaX < 0 ? -1 : 1;
@@ -1209,13 +1209,14 @@
         createSwipePreview(nextView, direction);
         setPreviewOffset(deltaX + (-direction * swipeViewport()));
       }
-    }, { passive: true });
-    swipeSurface?.addEventListener("pointerup", event => {
-      if (!swipeStart || swipeStart.pointerId !== event.pointerId) return;
-      const { x, y } = swipeStart;
+    };
+    const endSwipe = (x, y, pointerId) => {
+      if (!swipeStart || swipeStart.pointerId !== pointerId) return;
+      const startX = swipeStart.x;
+      const startY = swipeStart.y;
       swipeStart = null;
-      const deltaX = event.clientX - x;
-      const deltaY = event.clientY - y;
+      const deltaX = x - startX;
+      const deltaY = y - startY;
       if (Math.abs(deltaX) < 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.25) {
         resetSwipe();
         return;
@@ -1243,7 +1244,32 @@
         removeSwipePreview();
         swipeAnimating = false;
       }, swipeDuration());
+    };
+    swipeSurface?.addEventListener("pointerdown", event => {
+      if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+      startSwipe(event.clientX, event.clientY, event.pointerId, event.target);
     }, { passive: true });
+    swipeSurface?.addEventListener("pointermove", event => {
+      moveSwipe(event.clientX, event.clientY, event.pointerId);
+    }, { passive: true });
+    swipeSurface?.addEventListener("pointerup", event => {
+      endSwipe(event.clientX, event.clientY, event.pointerId);
+    }, { passive: true });
+    // Compatibilidad con navegadores táctiles que no exponen Pointer Events.
+    if (!window.PointerEvent) {
+      swipeSurface?.addEventListener("touchstart", event => {
+        const touch = event.changedTouches[0];
+        if (touch) startSwipe(touch.clientX, touch.clientY, touch.identifier, event.target);
+      }, { passive: true });
+      swipeSurface?.addEventListener("touchmove", event => {
+        const touch = event.changedTouches[0];
+        if (touch) moveSwipe(touch.clientX, touch.clientY, touch.identifier);
+      }, { passive: true });
+      swipeSurface?.addEventListener("touchend", event => {
+        const touch = event.changedTouches[0];
+        if (touch) endSwipe(touch.clientX, touch.clientY, touch.identifier);
+      }, { passive: true });
+    }
     swipeSurface?.addEventListener("pointercancel", clearSwipe, { passive: true });
     setAppView("home");
     window.addEventListener("resize", moveTabSelection);
