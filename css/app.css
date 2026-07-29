@@ -1372,6 +1372,7 @@ img, svg, canvas { max-width: 100%; }
 .panel-description, .field label, .status-meta, .result-row span { overflow-wrap: anywhere; }
 .button, .control, .tab, .calculator-tab, .ios-tab, .language-menu button,
 input, select, textarea { touch-action: manipulation; }
+.shell { touch-action: pan-y; }
 .button:active, .tab:active, .calculator-tab:active, .language-menu button:active { transform: translateY(1px); }
 .button:disabled, button:disabled, input:disabled, select:disabled { cursor: not-allowed; }
 .field input:disabled, .field select:disabled { opacity: .65; }

@@ -1104,6 +1104,7 @@
 
     const appViewLinks = document.querySelectorAll(".ios-tab[data-app-view]");
     const tabSelection = document.querySelector(".ios-tab-selection");
+    const appViewOrder = ["home", "chart", "planner", "queue", "tools", "history"];
     let currentAppView = "home";
     const moveTabSelection = () => {
       const activeLink = [...appViewLinks].find(link => link.classList.contains("active"));
@@ -1116,7 +1117,7 @@
       tabSelection.style.setProperty("--tab-y", `${linkRect.top - navRect.top + (linkRect.height - size) / 2}px`);
     };
     const setAppView = view => {
-      const nextView = ["home", "chart", "planner", "queue", "tools", "history"].includes(view) ? view : "home";
+      const nextView = appViewOrder.includes(view) ? view : "home";
       document.body.dataset.appView = nextView;
       appViewLinks.forEach(link => {
         const active = link.dataset.appView === nextView;
@@ -1132,11 +1133,43 @@
       });
       if (nextView === "tools") requestAnimationFrame(() => window.PriceLuzTools?.refresh?.());
     };
+    const activateAppView = view => {
+      setAppView(view);
+      const link = [...appViewLinks].find(item => item.dataset.appView === view);
+      history.replaceState(null, "", link?.getAttribute("href") || "#app-top");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
     appViewLinks.forEach(link => link.addEventListener("click", event => {
       event.preventDefault();
-      setAppView(link.dataset.appView);
-      history.replaceState(null, "", link.getAttribute("href"));
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      activateAppView(link.dataset.appView);
     }));
+
+    // Navegación táctil entre fichas: horizontal cambia de vista y vertical conserva el scroll.
+    const swipeSurface = document.querySelector(".shell");
+    const swipeExcludedSelector = [
+      "a", "button", "input", "select", "textarea", "summary", "[role='button']",
+      "canvas", "svg", "table", ".table-scroll", ".table-wrap", ".chart-container",
+      ".history-chart", "[data-horizontal-scroll]"
+    ].join(", ");
+    let swipeStart = null;
+    const clearSwipe = () => { swipeStart = null; };
+    const isSwipeExcluded = target => target instanceof Element && Boolean(target.closest(swipeExcludedSelector));
+    swipeSurface?.addEventListener("pointerdown", event => {
+      if ((event.pointerType !== "touch" && event.pointerType !== "pen") || isSwipeExcluded(event.target)) return;
+      swipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+    }, { passive: true });
+    swipeSurface?.addEventListener("pointerup", event => {
+      if (!swipeStart || swipeStart.pointerId !== event.pointerId) return;
+      const { x, y } = swipeStart;
+      clearSwipe();
+      const deltaX = event.clientX - x;
+      const deltaY = event.clientY - y;
+      if (Math.abs(deltaX) < 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.25) return;
+      const currentIndex = appViewOrder.indexOf(currentAppView);
+      const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
+      const nextView = appViewOrder[nextIndex];
+      if (nextView) activateAppView(nextView);
+    }, { passive: true });
+    swipeSurface?.addEventListener("pointercancel", clearSwipe, { passive: true });
     setAppView("home");
     window.addEventListener("resize", moveTabSelection);
