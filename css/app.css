@@ -139,11 +139,11 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
     }
 
     .control, .button {
-      min-height: 42px;
+      min-height: 46px;
       border: 1px solid var(--border);
       border-radius: 11px;
       background: var(--surface);
@@ -154,7 +154,7 @@
     }
 
     .language-picker { position: relative; }
-    .language-button { display: inline-flex; align-items: center; justify-content: center; width: 42px; min-width: 42px; height: 42px; padding: 0; cursor: pointer; }
+    .language-button { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-width: 46px; height: 46px; padding: 0; cursor: pointer; }
     .language-flag { display: inline-block; flex: 0 0 auto; width: 1.35em; height: .9em; border: 1px solid rgba(0,0,0,.14); border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.12); vertical-align: middle; }
     .flag-es { background: linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75%); }
     .flag-fr { background: linear-gradient(to right, #0055a4 0 33.333%, #fff 33.333% 66.666%, #ef4135 66.666%); }
@@ -182,11 +182,11 @@
     .button:disabled { cursor: progress; opacity: .55; transform: none; }
     .button.primary { border-color: var(--primary); background: var(--primary); color: white; }
     :root[data-theme="dark"] .button.primary { color: #0c111b; }
-    .icon-button { width: 42px; padding: 0; }
+    .icon-button { width: 46px; padding: 0; }
     .light-status-button { font-size: 1.15rem; font-weight: 800; }
     #today-button { font-size: 1.5rem; font-weight: 800; }
     .refresh-button { font-size: 1.35rem; font-weight: 800; }
-    .button.primary.refresh-button { flex: 0 0 42px; }
+    .button.primary.refresh-button { flex: 0 0 46px; }
 
     .status-line {
       display: flex;
@@ -1277,9 +1277,9 @@ body[data-app-view] .history-stats { margin-top: var(--panel-gap); }
   .topbar { align-items: flex-start; padding: 7px 6px; }
   .toolbar { gap: 4px; justify-content: center; overflow: visible; }
   .toolbar .button, .toolbar .control, .toolbar .language-button {
-    flex-basis: 34px; width: 34px; min-width: 34px; height: 38px; min-height: 38px; border-radius: 11px;
+    flex-basis: 38px; width: 38px; min-width: 38px; height: 42px; min-height: 42px; border-radius: 11px;
   }
-  .toolbar #date-input { flex-basis: 132px; width: 132px; padding-inline: 8px; font-size: .9rem; }
+  .toolbar #date-input { flex-basis: 136px; width: 136px; padding-inline: 8px; font-size: .9rem; }
   .toolbar #today-button, .toolbar .refresh-button { font-size: 1rem; }
   .toolbar .light-status-button { font-size: .9rem; }
   .toolbar .language-flag { font-size: .82rem; }
@@ -1296,11 +1296,11 @@ body[data-app-view] .history-stats { margin-top: var(--panel-gap); }
   .topbar { min-height: 58px; padding: 6px 5px; }
   .toolbar { gap: 2px; }
   .toolbar .button, .toolbar .control, .toolbar .language-button {
-    width: 30px; min-width: 30px; flex-basis: 30px; height: 34px; min-height: 34px; border-radius: 9px;
+    width: 34px; min-width: 34px; flex-basis: 34px; height: 38px; min-height: 38px; border-radius: 9px;
   }
-  .toolbar #date-input { width: 116px; flex-basis: 116px; font-size: .78rem; padding-inline: 5px; }
+  .toolbar #date-input { width: 120px; flex-basis: 120px; font-size: .78rem; padding-inline: 5px; }
   .toolbar #today-button, .toolbar #theme-button { display: none !important; }
-  .toolbar .language-button { width: 30px; min-width: 30px; }
+  .toolbar .language-button { width: 34px; min-width: 34px; }
   .toolbar .language-flag { font-size: .72rem; }
   .hero { padding: 18px 15px; border-radius: 18px; }
   .hero h2 { font-size: 1.05rem; }
@@ -1378,6 +1378,12 @@ input, select, textarea { touch-action: manipulation; }
 }
 .shell.swipe-dragging { transition: none; }
 .shell.swipe-settling { transition: transform .24s cubic-bezier(.2, .8, .2, 1); }
+.shell.swipe-dragging > .topbar,
+.shell.swipe-dragging > .day-context,
+.shell.swipe-settling > .topbar,
+.shell.swipe-settling > .day-context {
+  transform: translate3d(calc(var(--swipe-offset, 0px) * -1), 0, 0);
+}
 .swipe-preview {
   position: fixed !important;
   z-index: 2;
