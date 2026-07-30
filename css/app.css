@@ -848,7 +848,8 @@
       .toolbar .control,
       .toolbar .language-button { width: 30px; min-width: 30px; flex-basis: 30px; height: 34px; min-height: 34px; border-radius: 9px; }
       .toolbar #date-input { width: 116px; flex-basis: 116px; font-size: .78rem; padding-inline: 5px; }
-      .toolbar #today-button, .toolbar #theme-button { display: none !important; }
+      .toolbar #today-button { display: none !important; }
+      .toolbar #theme-button { display: inline-flex !important; }
       .toolbar .language-button { width: 30px; min-width: 30px; }
       .toolbar .language-flag { font-size: .72rem; }
       .status-line { margin-top: 0; padding: 8px 10px; }
@@ -1299,7 +1300,8 @@ body[data-app-view] .history-stats { margin-top: var(--panel-gap); }
     width: 34px; min-width: 34px; flex-basis: 34px; height: 38px; min-height: 38px; border-radius: 9px;
   }
   .toolbar #date-input { width: 120px; flex-basis: 120px; font-size: .78rem; padding-inline: 5px; }
-  .toolbar #today-button, .toolbar #theme-button { display: none !important; }
+  .toolbar #today-button { display: none !important; }
+  .toolbar #theme-button { display: inline-flex !important; }
   .toolbar .language-button { width: 34px; min-width: 34px; }
   .toolbar .language-flag { font-size: .72rem; }
   .hero { padding: 18px 15px; border-radius: 18px; }
