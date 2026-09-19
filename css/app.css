@@ -1574,6 +1574,40 @@ body[data-app-view] .tools-panel { gap: var(--panel-gap) !important; }
   width: 100%;
   max-width: 100%;
 }
+
+/* Densidad compacta para pantallas pequeñas: conserva el tamaño táctil
+   esencial, pero reduce el espacio vertical ocupado por cada ficha. */
+@media (max-width: 640px) {
+  .shell { padding-top: 56px; padding-bottom: 94px; }
+  .topbar { min-height: 48px; padding-block: 4px; }
+  .day-context { margin-bottom: 3px !important; }
+  .day-tab { min-height: 37px; padding-block: 3px; }
+  .status-line { padding-block: 7px; margin-bottom: 7px !important; }
+  .hero { padding-block: 15px; margin-bottom: 7px; }
+  .hero h2 { margin-block: 0 4px; }
+  .hero-price { margin-top: 4px; }
+  .hero-price strong { font-size: clamp(1.9rem, 8vw, 2.55rem); }
+  .metrics { gap: 7px !important; margin-bottom: 7px; }
+  .card { min-height: 88px; padding: 10px; }
+  .card-value { margin-top: 10px; }
+  .panel,
+  body[data-app-view] #chart-section,
+  body[data-app-view] #planner-section,
+  body[data-app-view] #smart-queue-section,
+  body[data-app-view] #tools-section,
+  body[data-app-view] #history-section { padding: 12px !important; }
+  .panel-header, .tool-intro { gap: 7px; margin-bottom: 8px; }
+  .panel-title { margin-bottom: 2px; }
+  .chart-wrap { min-height: 270px; }
+  #price-chart { height: 270px; }
+  .history-chart { min-height: 175px; padding-top: 12px; }
+  .history-stats { gap: 7px; }
+  .table-heading { padding-block: 11px; }
+  .table-actions { padding-top: 7px; }
+  tbody { gap: 7px; padding: 9px; }
+  tbody tr { padding-block: 7px; }
+  .footer { padding-top: 8px; }
+}
 body[data-app-view] .status-line,
 body[data-app-view] .hero,
 body[data-app-view] .metrics,
