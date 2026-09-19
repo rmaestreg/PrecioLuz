@@ -1489,7 +1489,13 @@ body {
 /* iOS instalado como PWA: el viewport puede incluir el área del notch.
    El contenido se limita al ancho visual, no al ancho del lienzo completo. */
 @media (display-mode: standalone), (display-mode: fullscreen) {
-  html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    font-size: 15px;
+  }
+  body { width: 100%; max-width: 100%; overflow-x: clip; }
   .shell {
     width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
     max-width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
