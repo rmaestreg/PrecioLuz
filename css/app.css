@@ -1545,6 +1545,35 @@ body[data-app-view] .insights,
 body[data-app-view] .history-stats,
 body[data-app-view] .calculator-layout,
 body[data-app-view] .tools-panel { gap: var(--panel-gap) !important; }
+
+/* Todos los bloques visibles parten del mismo ancho del shell. Esto evita
+   que una sección quede ligeramente más estrecha por sus márgenes propios. */
+.shell > :not(.topbar) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+.shell > .topbar {
+  box-sizing: border-box;
+}
+.shell > .day-context,
+.shell > .status-line,
+.shell > .hero,
+.shell > .metrics,
+.shell > .insights,
+.shell > .dashboard-grid,
+.shell > .planner-grid,
+.shell > #hourly-details,
+.shell > #chart-section,
+.shell > #planner-section,
+.shell > #smart-queue-section,
+.shell > #tools-section,
+.shell > #history-section,
+.shell > .footer {
+  width: 100%;
+  max-width: 100%;
+}
 body[data-app-view] .status-line,
 body[data-app-view] .hero,
 body[data-app-view] .metrics,
