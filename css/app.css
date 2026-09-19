@@ -1451,12 +1451,19 @@ html {
   --app-safe-inline: max(8px, env(safe-area-inset-left));
   --app-safe-inline-end: max(8px, env(safe-area-inset-right));
 }
-body { width: var(--app-viewport-width); }
-.shell { max-width: calc(var(--app-viewport-width) - var(--app-safe-inline) - var(--app-safe-inline-end)); }
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+.shell {
+  width: min(1160px, 100%);
+  max-width: calc(100% - var(--app-safe-inline) - var(--app-safe-inline-end));
+}
 
 @media (max-width: 640px) {
   .shell {
-    width: calc(var(--app-viewport-width) - var(--app-safe-inline) - var(--app-safe-inline-end) - 12px);
+    width: calc(100% - var(--app-safe-inline) - var(--app-safe-inline-end) - 12px);
     margin-inline: auto;
   }
   .topbar {
@@ -1476,6 +1483,26 @@ body { width: var(--app-viewport-width); }
   .toolbar #date-input {
     flex-basis: clamp(104px, 32vw, 136px);
     width: clamp(104px, 32vw, 136px);
+  }
+}
+
+/* iOS instalado como PWA: el viewport puede incluir el área del notch.
+   El contenido se limita al ancho visual, no al ancho del lienzo completo. */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+  .shell {
+    width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
+    max-width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
+  }
+  .topbar {
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+@supports (width: 100dvw) {
+  @media (display-mode: standalone), (display-mode: fullscreen) {
+    html, body { width: 100dvw; max-width: 100dvw; }
   }
 }
 
