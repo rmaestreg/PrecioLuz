@@ -52,11 +52,13 @@
 
     * { box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
+    html { width: 100%; scroll-behavior: smooth; }
 
     body {
       margin: 0;
-      min-width: 320px;
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
@@ -1440,6 +1442,41 @@ body.swipe-preview-active .swipe-preview[data-preview-view="history"] > #history
   .panel, .tools-panel { padding: var(--space-3) !important; }
   .button, .control { padding-inline: 9px; }
   .table-heading { padding-inline: var(--space-3); }
+}
+
+/* Adaptación final al viewport real, incluidos iPhone con notch y pantallas
+   de 320px. El valor lo actualiza app.js al cargar y al girar el dispositivo. */
+html {
+  --app-viewport-width: 100vw;
+  --app-safe-inline: max(8px, env(safe-area-inset-left));
+  --app-safe-inline-end: max(8px, env(safe-area-inset-right));
+}
+body { width: var(--app-viewport-width); }
+.shell { max-width: calc(var(--app-viewport-width) - var(--app-safe-inline) - var(--app-safe-inline-end)); }
+
+@media (max-width: 640px) {
+  .shell {
+    width: calc(var(--app-viewport-width) - var(--app-safe-inline) - var(--app-safe-inline-end) - 12px);
+    margin-inline: auto;
+  }
+  .topbar {
+    left: var(--app-safe-inline);
+    right: var(--app-safe-inline-end);
+    width: auto;
+    padding-inline: 4px;
+  }
+  .toolbar { gap: clamp(2px, 1.1vw, 5px); }
+  .toolbar .button,
+  .toolbar .control,
+  .toolbar .language-button {
+    flex-basis: clamp(30px, 10vw, 38px);
+    width: clamp(30px, 10vw, 38px);
+    min-width: clamp(30px, 10vw, 38px);
+  }
+  .toolbar #date-input {
+    flex-basis: clamp(104px, 32vw, 136px);
+    width: clamp(104px, 32vw, 136px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,6 +2,16 @@
 
 /* Estado de la interfaz, eventos, modo offline, histórico e inicialización. */
 
+// Mantiene el layout sincronizado con el viewport visible al girar el iPhone
+// o cuando Safari cambia el tamaño disponible por sus barras del navegador.
+const syncViewportWidth = () => {
+  const width = Math.round(window.visualViewport?.width || document.documentElement.clientWidth || window.innerWidth);
+  if (width > 0) document.documentElement.style.setProperty("--app-viewport-width", `${width}px`);
+};
+syncViewportWidth();
+window.addEventListener("resize", syncViewportWidth, { passive: true });
+window.visualViewport?.addEventListener("resize", syncViewportWidth, { passive: true });
+
     const CONFIG = Object.freeze({
       apiBase: "https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real",
       refreshMs: 15 * 60 * 1000,
